@@ -1,3 +1,3 @@
-# train_vis_mobile
+# TrainVis Mobile Application
 
 // TODO
