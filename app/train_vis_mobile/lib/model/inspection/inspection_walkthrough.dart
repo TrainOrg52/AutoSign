@@ -3,7 +3,7 @@ import 'package:train_vis_mobile/model/ModelObject.dart';
 import 'package:train_vis_mobile/model/status/conformance_status.dart';
 import 'package:train_vis_mobile/model/status/processing_status.dart';
 
-/// The gold standard walkthrough of a given train vehicle.
+/// An inspection of a given train vehicle.
 class InspectionWalkthrough extends ModelObject {
   // MEMBERS //
   ProcessingStatus
