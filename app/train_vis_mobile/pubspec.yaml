@@ -9,16 +9,19 @@ environment:
   sdk: ">=2.18.2 <3.0.0"
 
 dependencies:
+
   flutter:
     sdk: flutter
 
+  #routing
+  go_router: ^5.1.1
 
   # firebase
-  cloud_firestore: ^4.0.3
   firebase_core: ^2.1.1
+  cloud_firestore: ^4.0.3
   firebase_storage: ^11.0.3
 
-  # Aesthetics
+  # Cosmetic
   font_awesome_flutter: ^10.2.1
   intl: ^0.17.0
 
