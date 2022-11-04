@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:train_vis_mobile/view/theme/my_colors.dart';
+import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 
 /// Defines the [TextStyle]s to be used in the project.
 class MyTextStyles {
@@ -57,6 +57,7 @@ class MyTextStyles {
 
   // button text style
   static const TextStyle buttonTextStyle = TextStyle(
+    fontSize: 15,
     fontWeight: FontWeight.w500,
   );
 

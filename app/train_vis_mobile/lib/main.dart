@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:train_vis_mobile/view/routes/routes.dart';
-import 'package:train_vis_mobile/view/theme/my_colors.dart';
+import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 
 import 'firebase_options.dart';
 

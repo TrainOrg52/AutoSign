@@ -30,7 +30,7 @@ class MySizes {
   static const double largeDialogWidth = 400;
   static const double configurationEndDrawerWidth = 500;
   // buttons
-  static const double buttonHeight = 30;
+  static const double buttonHeight = 36;
   // icons
   static const double smallIconSize = 16;
   static const double mediumIconSize = 20;

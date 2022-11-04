@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:train_vis_mobile/view/theme/my_colors.dart';
-import 'package:train_vis_mobile/view/theme/my_sizes.dart';
+import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
+import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 
 /// A convenience [Container] object that comes with a border, padding and
 /// background as defined by the app's theme.

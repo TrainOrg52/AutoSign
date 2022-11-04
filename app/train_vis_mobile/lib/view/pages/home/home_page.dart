@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:train_vis_mobile/view/theme/my_colors.dart';
-import 'package:train_vis_mobile/view/theme/my_sizes.dart';
-import 'package:train_vis_mobile/view/theme/my_text_button.dart';
-import 'package:train_vis_mobile/view/theme/my_text_styles.dart';
+import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
+import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
+import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
+import 'package:train_vis_mobile/view/theme/widgets/my_text_field.dart';
 import 'package:train_vis_mobile/view/widgets/colored_container.dart';
+import 'package:train_vis_mobile/view/widgets/padded_custom_scroll_view.dart';
 
 /// The home page of the application.
 ///
 /// TODO
 class HomePage extends StatefulWidget {
+  // SIZING //
+  final double _containerHeight = 160;
+
   // ///////////////// //
   // CLASS CONSTRUCTOR //
   // ///////////////// //
@@ -57,127 +61,63 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: 0,
-            horizontal: MySizes.paddingValue,
-          ),
-          child: Center(
-            child: Row(
-              children: [
-                Expanded(
+        child: PaddedCustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(
+                child: SizedBox(
+                  height: widget._containerHeight,
                   child: ColoredContainer(
                     color: MyColors.backgroundSecondary,
-                    child: SizedBox(
-                      height: 160,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // train vis header
-                          const Text(
-                            "TrainVis",
-                            style: MyTextStyles.headerText2,
-                          ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // ///// //
+                        // TITLE //
+                        // ///// //
 
-                          // prompt
-                          const Text(
-                            "Enter the ID of the vehicle",
-                            style: MyTextStyles.bodyText1,
-                          ),
+                        const Text(
+                          "TrainVis",
+                          style: MyTextStyles.headerText2,
+                        ),
 
-                          // text field
-                          TextField(
-                            controller: vehicleIDController,
-                            decoration: const InputDecoration(
-                              hintText: "e.g., 707-008",
-                              isDense: true,
-                              contentPadding: MySizes.padding,
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: MyColors.lineColor,
-                                    width: MySizes.lineWidth),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                    color: MyColors.lineColor,
-                                    width: MySizes.lineWidth),
-                              ),
-                            ),
-                          ),
+                        // ////// //
+                        // PROMPT //
+                        // ////// //
 
-                          // submit button
-                          MyTextButton.primary(
-                            text: "Submit",
-                            onPressed: () {
-                              // navigate to train profile page
-                              context.push("/${vehicleIDController.text}");
-                            },
-                          ),
-                        ],
-                      ),
+                        const Text(
+                          "Enter the ID of the vehicle",
+                          style: MyTextStyles.bodyText1,
+                        ),
+
+                        // ////////// //
+                        // TEXT FIELD //
+                        // ////////// //
+
+                        MyTextField.normal(
+                          controller: vehicleIDController,
+                          hintText: "e.g., 707-008",
+                        ),
+
+                        // ///////////// //
+                        // SUBMIT BUTTON //
+                        // ///////////// //
+
+                        MyTextButton.primary(
+                          text: "Submit",
+                          onPressed: () {
+                            // navigate to train profile page
+                            context.push("/${vehicleIDController.text}");
+                          },
+                        ),
+                      ],
                     ),
                   ),
-                )
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-
-    return Scaffold(
-      body: Center(
-        child: ColoredContainer(
-          color: MyColors.backgroundSecondary,
-          child: SizedBox(
-            width: 380,
-            height: 160,
-            child: Padding(
-              padding: MySizes.padding,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // train vis header
-                  const Text(
-                    "TrainVis",
-                    style: MyTextStyles.headerText2,
-                  ),
-
-                  // prompt
-                  const Text(
-                    "Enter the ID of the vehicle",
-                    style: MyTextStyles.bodyText1,
-                  ),
-
-                  // text field
-                  TextField(
-                    controller: vehicleIDController,
-                    decoration: const InputDecoration(
-                      hintText: "e.g., 707-008",
-                      isDense: true,
-                      contentPadding: MySizes.padding,
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: MyColors.lineColor,
-                            width: MySizes.lineWidth),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: MyColors.lineColor,
-                            width: MySizes.lineWidth),
-                      ),
-                    ),
-                  ),
-
-                  // submit button
-                  MyTextButton.primary(
-                    text: "Submit",
-                    onPressed: () {},
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
+            )
+          ],
         ),
       ),
     );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:train_vis_mobile/view/theme/my_colors.dart';
-import 'package:train_vis_mobile/view/theme/my_sizes.dart';
+import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
+import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 
 /// The set of icon buttons to be used within the application.
 class MyIconButton extends StatelessWidget {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:train_vis_mobile/view/theme/my_sizes.dart';
+import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 
 /// A wrapper class for a [Container] that has a background color and rounded
 /// corners.
