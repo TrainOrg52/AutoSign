@@ -55,6 +55,7 @@ class MyApp extends StatelessWidget {
         appBarTheme: const AppBarTheme(
           backgroundColor: MyColors.backgroundSecondary,
           foregroundColor: MyColors.textPrimary,
+          elevation: 0,
         ),
 
         // text

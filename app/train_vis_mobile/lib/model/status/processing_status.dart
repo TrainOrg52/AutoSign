@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:train_vis_mobile/view/theme/my_colors.dart';
+import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 
 /// Defines the processing status of an inspection.
 class ProcessingStatus {
