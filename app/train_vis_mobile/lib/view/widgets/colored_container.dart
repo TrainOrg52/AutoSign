@@ -5,7 +5,7 @@ import 'package:train_vis_mobile/view/theme/my_sizes.dart';
 /// corners.
 class ColoredContainer extends StatelessWidget {
   // MEMBER VARIABLES //
-  final Widget child;
+  final Widget? child;
   final Color color;
 
   // THEME-ING //
@@ -21,7 +21,7 @@ class ColoredContainer extends StatelessWidget {
   const ColoredContainer({
     Key? key,
     // member variables
-    required this.child,
+    this.child,
     required this.color,
     // sizing
     this.padding = const EdgeInsets.all(MySizes.paddingValue / 2),
