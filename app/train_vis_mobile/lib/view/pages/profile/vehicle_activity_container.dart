@@ -52,7 +52,7 @@ class VehicleActivityContainer extends StatelessWidget {
           icon: FontAwesomeIcons.magnifyingGlass,
           onPressed: () {
             // navigating to reports page
-            context.goNamed(
+            context.pushNamed(
               Routes.reports,
               params: {"vehicleID": vehicleID},
             );
@@ -70,7 +70,7 @@ class VehicleActivityContainer extends StatelessWidget {
           icon: FontAwesomeIcons.hammer,
           onPressed: () {
             // navigating to remediationss page
-            context.goNamed(
+            context.pushNamed(
               Routes.remediations,
               params: {"vehicleID": vehicleID},
             );
@@ -119,7 +119,8 @@ class VehicleActivityContainer extends StatelessWidget {
               ),
             ),
             MyIconButton.secondary(
-              iconData: FontAwesomeIcons.chevronRight,
+              iconData: FontAwesomeIcons.circleChevronRight,
+              iconSize: MySizes.mediumIconSize,
               onPressed: onPressed,
             ),
           ],

@@ -56,7 +56,7 @@ class VehicleActionContainer extends StatelessWidget {
                 icon: FontAwesomeIcons.magnifyingGlass,
                 onPressed: () {
                   // navigating to inspect page
-                  context.goNamed(
+                  context.pushNamed(
                     Routes.inspect,
                     params: {"vehicleID": vehicleID},
                   );
@@ -76,7 +76,7 @@ class VehicleActionContainer extends StatelessWidget {
                 icon: FontAwesomeIcons.hammer,
                 onPressed: () {
                   // navigating to remediate page
-                  context.goNamed(
+                  context.pushNamed(
                     Routes.remediate,
                     params: {"vehicleID": vehicleID},
                   );
@@ -120,6 +120,7 @@ class VehicleActionContainer extends StatelessWidget {
               color: MyColors.textPrimary,
               size: MySizes.largeIconSize,
             ),
+            const SizedBox(height: MySizes.spacing),
             Text(
               text,
               style: MyTextStyles.headerText1,

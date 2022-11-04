@@ -84,7 +84,7 @@ class VehicleConformanceStatusOverview extends StatelessWidget {
                 text: "View",
                 onPressed: () {
                   // navigating to status
-                  context.goNamed(
+                  context.pushNamed(
                     Routes.status,
                     params: {"vehicleID": vehicleID},
                   );

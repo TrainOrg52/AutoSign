@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:train_vis_mobile/view/routes/routes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
@@ -109,7 +110,10 @@ class _HomePageState extends State<HomePage> {
                           text: "Submit",
                           onPressed: () {
                             // navigate to train profile page
-                            context.push("/${vehicleIDController.text}");
+                            context.pushNamed(
+                              Routes.profile,
+                              params: {"vehicleID": vehicleIDController.text},
+                            );
                           },
                         ),
                       ],
