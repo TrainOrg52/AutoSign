@@ -109,6 +109,12 @@ class _HomePageState extends State<HomePage> {
                           onPressed: () {
                             // navigate to train profile page
                             context.push("/${vehicleIDController.text}");
+
+                            // OR
+                            // context.goNamed(
+                            //   profile,
+                            //   params: {"vehicleID": vehicleIDController.text},
+                            // );
                           },
                         ),
                       ],

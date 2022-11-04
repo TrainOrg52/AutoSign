@@ -10,7 +10,7 @@ class InspectionWalkthrough extends ModelObject {
       processingStatus; // processing status of the inspection walkthrough
   ConformanceStatus conformanceStatus; // conformance status of the walkthrough
   Map<String, ConformanceStatus>
-      checkpoints; // map of checkpoints to conformance status
+      checkpoints; // map of inspection checkpoint IDs to conformance status
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
