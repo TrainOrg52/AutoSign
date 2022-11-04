@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:train_vis_mobile/view/pages/profile/vehicle_action.dart';
 import 'package:train_vis_mobile/view/pages/profile/vehicle_conformance_status_overview.dart';
 import 'package:train_vis_mobile/view/pages/profile/vehicle_overview.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
@@ -29,7 +30,10 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // /////// //
       // APP BAR //
+      // /////// //
+
       appBar: AppBar(
         leading: MyIconButton.back(
           onPressed: () {
@@ -38,6 +42,11 @@ class ProfilePage extends StatelessWidget {
         ),
         title: Text(vehicleID, style: MyTextStyles.headerText1),
       ),
+
+      // //// //
+      // BODY //
+      // //// //
+
       body: PaddedCustomScrollView(
         slivers: [
           // //////////////// //
@@ -56,6 +65,18 @@ class ProfilePage extends StatelessWidget {
 
           SliverToBoxAdapter(
             child: VehicleConformanceStatusOverview(
+              vehicleID: vehicleID,
+            ),
+          ),
+
+          const SliverToBoxAdapter(child: SizedBox(height: MySizes.spacing)),
+
+          // ////// //
+          // ACTION //
+          // ////// //
+
+          SliverToBoxAdapter(
+            child: VehicleAction(
               vehicleID: vehicleID,
             ),
           ),
