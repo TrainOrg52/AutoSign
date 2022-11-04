@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:train_vis_mobile/model/ModelObject.dart';
+import 'package:train_vis_mobile/model/model_object.dart';
 import 'package:train_vis_mobile/model/status/conformance_status.dart';
 import 'package:train_vis_mobile/model/status/processing_status.dart';
 

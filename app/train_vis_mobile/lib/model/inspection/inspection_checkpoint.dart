@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:train_vis_mobile/model/ModelObject.dart';
+import 'package:train_vis_mobile/model/model_object.dart';
 import 'package:train_vis_mobile/model/status/conformance_status.dart';
 
 /// A checkpoint within the inspection walkthrough of a given train vehicle.
