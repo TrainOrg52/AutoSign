@@ -10,21 +10,24 @@ import 'package:train_vis_mobile/view/pages/remediations/remediation_walkthrough
 import 'package:train_vis_mobile/view/pages/remediations/remediations_page.dart';
 import 'package:train_vis_mobile/view/pages/status/status_page.dart';
 
-// ///////////////// //
-// ROUTE INFORMATION //
-// ///////////////// //
+// /////////// //
+// ROUTE NAMES //
+// /////////// //
 
-const home = "home";
-const profile = "profile";
-const status = "status";
-const inspect = "inspect";
-const remediate = "remediate";
-const reports = "reports";
-const inspectionWalkthrough = "inspectionWalkthrough";
-const inspectionCheckpoint = "inspectionCheckpoint";
-const remediations = "remediations";
-const remediationWalkthrough = "remediationWalkthrough";
-const remediationCheckpoint = "remediationCheckpoint";
+/// Defines the names of routes within the application.
+class Routes {
+  static const home = "home";
+  static const profile = "profile";
+  static const status = "status";
+  static const inspect = "inspect";
+  static const remediate = "remediate";
+  static const reports = "reports";
+  static const inspectionWalkthrough = "inspectionWalkthrough";
+  static const inspectionCheckpoint = "inspectionCheckpoint";
+  static const remediations = "remediations";
+  static const remediationWalkthrough = "remediationWalkthrough";
+  static const remediationCheckpoint = "remediationCheckpoint";
+}
 
 // ///////////////// //
 // ROUTER DEFINITION //
@@ -39,7 +42,7 @@ final GoRouter router = GoRouter(
     // //// //
 
     GoRoute(
-      name: home,
+      name: Routes.home,
       path: "/",
       builder: (context, state) {
         return const HomePage();
@@ -51,7 +54,7 @@ final GoRouter router = GoRouter(
     // ///////////////// //
 
     GoRoute(
-      name: profile,
+      name: Routes.profile,
       path: "/:vehicleID",
       builder: (context, state) {
         // getting params from state
@@ -66,7 +69,7 @@ final GoRouter router = GoRouter(
         // ////// //
 
         GoRoute(
-          name: status,
+          name: Routes.status,
           path: "status",
           builder: (context, state) {
             // getting params from state
@@ -82,7 +85,7 @@ final GoRouter router = GoRouter(
         // /////// //
 
         GoRoute(
-          name: inspect,
+          name: Routes.inspect,
           path: "inspect",
           builder: (context, state) {
             // getting params from state
@@ -98,7 +101,7 @@ final GoRouter router = GoRouter(
         // ///////// //
 
         GoRoute(
-          name: remediate,
+          name: Routes.remediate,
           path: "remediate",
           builder: (context, state) {
             // getting params from state
@@ -114,7 +117,7 @@ final GoRouter router = GoRouter(
         // /////// //
 
         GoRoute(
-          name: reports,
+          name: Routes.reports,
           path: "reports",
           builder: (context, state) {
             // TODO displaying filler page
@@ -128,7 +131,7 @@ final GoRouter router = GoRouter(
             // ////////////////////// //
 
             GoRoute(
-              name: inspectionWalkthrough,
+              name: Routes.inspectionWalkthrough,
               path: ":inspectionWalkthroughID",
               builder: (context, state) {
                 // TODO displaying filler page
@@ -144,7 +147,7 @@ final GoRouter router = GoRouter(
                 // ///////////////////// //
 
                 GoRoute(
-                  name: inspectionCheckpoint,
+                  name: Routes.inspectionCheckpoint,
                   path: ":inspectionCheckpointID",
                   builder: (context, state) {
                     // TODO displaying filler page
@@ -165,7 +168,7 @@ final GoRouter router = GoRouter(
         // //////////// //
 
         GoRoute(
-          name: remediations,
+          name: Routes.remediations,
           path: "remediations",
           builder: (context, state) {
             // getting params from state
@@ -180,7 +183,7 @@ final GoRouter router = GoRouter(
             // /////////////////////// //
 
             GoRoute(
-              name: remediationWalkthrough,
+              name: Routes.remediationWalkthrough,
               path: ":remediationWalkthroughID",
               builder: (context, state) {
                 // getting params from state
@@ -198,7 +201,7 @@ final GoRouter router = GoRouter(
 
               routes: [
                 GoRoute(
-                  name: remediationCheckpoint,
+                  name: Routes.remediationCheckpoint,
                   path: ":remediationCheckpointID",
                   builder: (context, state) {
                     // getting params from state

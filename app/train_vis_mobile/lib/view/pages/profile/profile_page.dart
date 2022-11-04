@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:train_vis_mobile/view/pages/profile/vehicle_conformance_status_overview.dart';
 import 'package:train_vis_mobile/view/pages/profile/vehicle_overview.dart';
+import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_icon_button.dart';
 import 'package:train_vis_mobile/view/widgets/padded_custom_scroll_view.dart';
@@ -38,12 +40,24 @@ class ProfilePage extends StatelessWidget {
       ),
       body: PaddedCustomScrollView(
         slivers: [
-          // /////////////// //
-          // VEHICLE SUMMARY //
-          // /////////////// //
+          // //////////////// //
+          // VEHICLE OVERVIEW //
+          // //////////////// //
 
           SliverToBoxAdapter(
             child: VehicleOverview(vehicleID: vehicleID),
+          ),
+
+          const SliverToBoxAdapter(child: SizedBox(height: MySizes.spacing)),
+
+          // /////////////////////////// //
+          // CONFORMANCE STATUS OVERVIEW //
+          // /////////////////////////// //
+
+          SliverToBoxAdapter(
+            child: VehicleConformanceStatusOverview(
+              vehicleID: vehicleID,
+            ),
           ),
         ],
       ),
