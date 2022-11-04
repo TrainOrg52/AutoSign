@@ -7,7 +7,7 @@ import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/widgets/colored_container.dart';
 
 /// TODO
-class VehicleOverview extends StatelessWidget {
+class VehicleOverviewContainer extends StatelessWidget {
   // MEMBER VARIABLES //
   final String vehicleID;
 
@@ -21,7 +21,7 @@ class VehicleOverview extends StatelessWidget {
   // CLASS CONSTRUCTOR //
   // ///////////////// //
 
-  const VehicleOverview({
+  const VehicleOverviewContainer({
     super.key,
     required this.vehicleID,
   });

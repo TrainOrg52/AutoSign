@@ -7,15 +7,19 @@ import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 
 /// Widget that displays actions that can be performed on a given vehicle.
-class VehicleAction extends StatelessWidget {
+class VehicleActionContainer extends StatelessWidget {
   // MEMBER VARIABLES //
   final String vehicleID; // ID of vehicle
+
+  // THEME-ING //
+  // sizing
+  final double actionButtonHeight = 75;
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
   // ///////////////// //
 
-  const VehicleAction({
+  const VehicleActionContainer({
     super.key,
     required this.vehicleID,
   });
@@ -102,7 +106,7 @@ class VehicleAction extends StatelessWidget {
       ),
       onPressed: onPressed,
       child: SizedBox(
-        height: 75,
+        height: actionButtonHeight,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
