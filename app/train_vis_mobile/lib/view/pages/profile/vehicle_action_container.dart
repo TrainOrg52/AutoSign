@@ -74,8 +74,13 @@ class VehicleActionContainer extends StatelessWidget {
               child: _buildActionButton(
                 text: "Remediate",
                 icon: FontAwesomeIcons.hammer,
-                onPressed:
-                    null, // TODO navigate to remediate page (null for now)
+                onPressed: () {
+                  // navigating to remediate page
+                  context.goNamed(
+                    Routes.remediate,
+                    params: {"vehicleID": vehicleID},
+                  );
+                },
               ),
             ),
           ],
