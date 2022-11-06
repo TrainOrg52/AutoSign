@@ -32,6 +32,8 @@ class ObjectDetector(nn.Module):
     """
     Object detector class that initializes the object detector setup and allows for processing all instances of the inspectionWalkthrough object.
     To use the object detector call object() (do not use object.forward()). This will return bbox coordinates and the labels for each identified object.
+
+    @authors: Benjamin Sanati
     """
 
     def __init__(self, image_size, conf_thresh, iou_thresh, num_classes, view_img):
@@ -102,8 +104,7 @@ class ObjectDetector(nn.Module):
         # Set Dataloader
         dataset = LoadImages(data_src, img_size=self.image_size, stride=self.stride)
 
-        bboxes = []
-        labels = []
+        bboxes, labels = [], []
         loop = tqdm(enumerate(zip(dataset, storage_roots)), total=len(dataset))
         for index, ((path, img, im0s, vid_cap), storage_root) in loop:  # for every image in data path
             # STEP 2.4.1: Run Object Detector on each image

@@ -138,6 +138,8 @@ def processInspectionWalkthrough(inspection_walkthrough):
             # updating signs
             new_signs[sign_id] = new_sign_conformance
 
+        # STEP 2.6: UPDATE FIREBASE WITH CONFORMANCE AND PROCESSING STATUS FOR INSPECTION #
+
         # updating inspection checkpoint object
         inspection_checkpoint.signs = new_signs
         inspection_checkpoint.conformanceStatus = new_checkpoint_conformance
