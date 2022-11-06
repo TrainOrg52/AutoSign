@@ -15,22 +15,43 @@ from models.experimental import attempt_load
 from utils.datasets import LoadStreams, LoadImages
 from utils.general import check_img_size, check_requirements, check_imshow, non_max_suppression, apply_classifier, \
     scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path
-from utils.plots import plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized, TracedModel
 
 
-# Disable
+# Disable printing
 def blockPrint():
     sys.stdout = open(os.devnull, 'w')
 
 
-# Restore
+# Enable printing
 def enablePrint():
     sys.stdout = sys.__stdout__
 
 
 class ObjectDetector(nn.Module):
+    """
+    Object detector class that initializes the object detector setup and allows for processing all instances of the inspectionWalkthrough object.
+    To use the object detector call object() (do not use object.forward()). This will return bbox coordinates and the labels for each identified object.
+    """
+
     def __init__(self, image_size, conf_thresh, iou_thresh, num_classes, view_img):
+        """
+        @brief: Initializes the object detector for processing. Sets up object detector once, reducing the total processing time compared to setting up on every inference call.
+                NMS breakdown:
+                    1) Discard all the boxes having probabilities less than or equal to a pre-defined threshold (say, 0.5)
+                    2) For the remaining boxes:
+                        a) Pick the box with the highest probability and take that as the output prediction
+                        b) Discard any other box which has IoU greater than the threshold with the output box from the above step
+                    3) Repeat step 2 until all the boxes are either taken as the output prediction or discarded
+        Args:
+            image_size: size of input image (1280 for YOLOv7-e6 model)
+            conf_thresh: Minimum confidence requirement from YOLOv7 model output (~0.55 is seen to be the best from the object detector training plots)
+            iou_thresh: IoU threshold for NMS
+            num_classes: Number of classes that can be defined (number of the types of signs)
+            view_img: A bool to view the output of a processed image during processing
+
+        @authors: Benjamin Sanati
+        """
         super(ObjectDetector, self).__init__()
 
         # Initialize data and hyperparameters (to be made into argparse arguments)
@@ -63,6 +84,21 @@ class ObjectDetector(nn.Module):
         enablePrint()
 
     def forward(self, data_src, processed_destination, storage, storage_roots):
+        """
+        @brief: Runs object detection model on each image in inspectionWalkthrough. Uploads processed images to firestore storage. Returns bbox coordinate and labels for each object in each image.
+        Args:
+            data_src: source of images in local storage folder
+            processed_destination: destination of processed image to be saved to local storage folder
+            storage: firebase storage object
+            storage_roots: source of unprocessed images in cloud firebase storage
+
+        Returns:
+            bboxes - A list of [# images, # objects, 4] bbox coordinates
+            labels - A list of [# images, # objects] object labels
+
+        @authors: Benjamin Sanati
+        """
+
         # Set Dataloader
         dataset = LoadImages(data_src, img_size=self.image_size, stride=self.stride)
 
@@ -92,11 +128,13 @@ class ObjectDetector(nn.Module):
             pred[:, :4] = scale_coords(img.shape[2:], pred[:, :4], im0.shape).round()
 
             for info in pred:
+                # add bboxes around objects
                 box = info[:4]
                 label = int(info[-1])
                 cv2.rectangle(im0, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), tuple(self.colours[label]),
                               5)
 
+                # add filled bboxes with object label above bboxes
                 c1, c2 = (int(box[0]), int(box[1])), (int(box[2]), int(box[3]))
                 line_thickness = 2  # line/font thickness
                 tf = max(line_thickness - 1, 1)  # font thickness
@@ -104,8 +142,7 @@ class ObjectDetector(nn.Module):
                 c2 = int(box[0]) + t_size[0], int(box[1]) - t_size[1] - 3
                 cv2.rectangle(im0, c1, c2, self.colours[label], -1, cv2.LINE_AA)  # filled
                 cv2.putText(im0, self.names[label], (c1[0], c1[1] - 2), 0, line_thickness / 3, [225, 255, 255],
-                            thickness=tf,
-                            lineType=cv2.LINE_AA)
+                            thickness=tf, lineType=cv2.LINE_AA)
 
             # save image
             data_dst = os.path.join(processed_destination, tail)
