@@ -6,7 +6,7 @@ import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/widgets/colored_container.dart';
 
-/// TODO
+/// Widget that contains an overview of information about a given train vehicle.
 class VehicleOverviewContainer extends StatelessWidget {
   // MEMBER VARIABLES //
   final String vehicleID;
