@@ -96,8 +96,16 @@ class ObjectDetector(nn.Module):
                 label = int(info[-1])
                 cv2.rectangle(im0, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), tuple(self.colours[label]),
                               5)
-                cv2.putText(im0, self.names[label], (int(box[0]), int(box[1]) - 10), cv2.FONT_HERSHEY_SIMPLEX, 1,
-                            tuple(self.colours[label]), 3, cv2.LINE_AA)
+
+                c1, c2 = (int(box[0]), int(box[1])), (int(box[2]), int(box[3]))
+                line_thickness = 2  # line/font thickness
+                tf = max(line_thickness - 1, 1)  # font thickness
+                t_size = cv2.getTextSize(self.names[label], 0, fontScale=line_thickness / 3, thickness=tf)[0]
+                c2 = int(box[0]) + t_size[0], int(box[1]) - t_size[1] - 3
+                cv2.rectangle(im0, c1, c2, self.colours[label], -1, cv2.LINE_AA)  # filled
+                cv2.putText(im0, self.names[label], (c1[0], c1[1] - 2), 0, line_thickness / 3, [225, 255, 255],
+                            thickness=tf,
+                            lineType=cv2.LINE_AA)
 
             # save image
             data_dst = os.path.join(processed_destination, tail)
