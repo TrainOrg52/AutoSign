@@ -7,10 +7,17 @@ import 'package:train_vis_mobile/view/theme/widgets/my_icon_button.dart';
 import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 import 'package:train_vis_mobile/view/widgets/colored_container.dart';
 
-/// TODO
-class CheckpointStatusContainer extends StatefulWidget {
+/// Container that stores information on the status of a particular checkpoint
+/// within a vehicle.
+class CheckpointStatusContainer extends StatelessWidget {
   // MEMBER VARIABLES //
   final String checkpointID; // ID of vehicle being displayed
+  final bool isExpanded;
+  final Function() onExpanded;
+
+  // THEME-ING
+  // sizes
+  final double containerHeight = 100; // height of the un-expanded container.
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -19,37 +26,9 @@ class CheckpointStatusContainer extends StatefulWidget {
   const CheckpointStatusContainer({
     super.key,
     required this.checkpointID,
+    required this.isExpanded,
+    required this.onExpanded,
   });
-
-  // //////////// //
-  // CREATE STATE //
-  // //////////// //
-
-  @override
-  State<CheckpointStatusContainer> createState() =>
-      _CheckpointStatusContainerState();
-}
-
-/// TODO
-class _CheckpointStatusContainerState extends State<CheckpointStatusContainer> {
-  // STATE VARIABLES //
-  late bool isExpanded;
-
-  // THEME-ING
-  // sizes
-  final double containerHeight = 100;
-
-  // ////////// //
-  // INIT STATE //
-  // ////////// //
-
-  @override
-  void initState() {
-    super.initState();
-
-    // initializing state
-    isExpanded = false;
-  }
 
   // //////////// //
   // BUILD METHOD //
@@ -57,183 +36,205 @@ class _CheckpointStatusContainerState extends State<CheckpointStatusContainer> {
 
   @override
   Widget build(BuildContext context) {
-    return ColoredContainer(
-      color: MyColors.backgroundSecondary,
-      padding: MySizes.padding,
-      child: Column(
-        children: [
-          // ////// //
-          // HEADER //
-          // ////// //
-          SizedBox(
-            height: containerHeight,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                // //////////////// //
-                // CHECKPOINT IMAGE //
-                // //////////////// //
-
-                BorderedContainer(
-                  isDense: true,
-                  backgroundColor: Colors.transparent,
-                  padding: const EdgeInsets.all(MySizes.paddingValue / 2),
-                  child: Image.asset("resources/images/checkpoint 1.png"),
-                ),
-
-                const SizedBox(width: MySizes.spacing),
-
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // //////////////// //
-                      // CHECKPOINT TITLE //
-                      // //////////////// //
-
-                      const Text(
-                        "Entrance 1: Door",
-                        style: MyTextStyles.headerText3,
-                      ),
-
-                      const Spacer(),
-
-                      // ///////////////// //
-                      // CHECKPOINT STATUS //
-                      // ///////////////// //
-
-                      BorderedContainer(
-                        isDense: true,
-                        borderColor: MyColors.green,
-                        backgroundColor: MyColors.greenAcent,
-                        padding: const EdgeInsets.all(MySizes.paddingValue / 2),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Icon(
-                              FontAwesomeIcons.solidCircleCheck,
-                              color: MyColors.green,
-                              size: MySizes.smallIconSize,
-                            ),
-                            SizedBox(width: MySizes.spacing),
-                            Text(
-                              "Conforming",
-                              style: MyTextStyles.bodyText2,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                MyIconButton.secondary(
-                  iconData: isExpanded
-                      ? FontAwesomeIcons.circleChevronUp
-                      : FontAwesomeIcons.circleChevronDown,
-                  iconSize: MySizes.mediumIconSize,
-                  onPressed: () {
-                    // extending the drop down
-                    setState(() {
-                      isExpanded = !isExpanded;
-                    });
-                  },
-                ),
-              ],
-            ),
-          ),
-
-          if (isExpanded) ...[
-            const Divider(
-              color: MyColors.lineColor,
-              thickness: MySizes.lineWidth,
-              height: (MySizes.spacing * 2) + 1,
-            ),
-
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 500),
+      child: ColoredContainer(
+        color: MyColors.backgroundSecondary,
+        padding: MySizes.padding,
+        child: Column(
+          children: [
             // //// //
             // BODY //
             // //// //
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // /////////////// //
-                // LAST INSPECTION //
-                // /////////////// //
+            _buildContainerBody(),
 
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Last Inspection",
-                      style: MyTextStyles.bodyText2,
-                    ),
-                    const SizedBox(height: MySizes.spacing),
-                    Row(
-                      children: [
-                        const BorderedContainer(
-                          isDense: true,
-                          borderColor: MyColors.negative,
-                          backgroundColor: MyColors.negativeAccent,
-                          padding: EdgeInsets.all(MySizes.paddingValue / 2),
-                          child: Text(
-                            "Non-Conforming",
-                            style: MyTextStyles.bodyText2,
-                          ),
-                        ),
-                        const SizedBox(width: MySizes.spacing),
-                        MyIconButton.secondary(
-                          iconData: FontAwesomeIcons.circleChevronRight,
-                          onPressed: () {
-                            // navigating to inspection
-                            // TODO
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
+            // //////// //
+            // DROPDOWN //
+            // //////// //
+
+            if (isExpanded) _buildContainerDropDown()
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ////////////////////// //
+  // HELPER BUILDER METHODS //
+  // ////////////////////// //
+
+  /// Information held within the main body of the container.
+  Widget _buildContainerBody() {
+    return SizedBox(
+      height: containerHeight,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          // //////////////// //
+          // CHECKPOINT IMAGE //
+          // //////////////// //
+
+          BorderedContainer(
+            isDense: true,
+            backgroundColor: Colors.transparent,
+            padding: const EdgeInsets.all(MySizes.paddingValue / 2),
+            child: Image.asset("resources/images/checkpoint 1.png"),
+          ),
+
+          const SizedBox(width: MySizes.spacing),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // //////////////// //
+                // CHECKPOINT TITLE //
+                // //////////////// //
+
+                const Text(
+                  "Entrance 1: Door",
+                  style: MyTextStyles.headerText3,
                 ),
 
-                // //////////// //
-                // ACTION TAKEN //
-                // //////////// //
+                const Spacer(),
 
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                // ///////////////// //
+                // CHECKPOINT STATUS //
+                // ///////////////// //
+
+                BorderedContainer(
+                  isDense: true,
+                  borderColor: MyColors.green,
+                  backgroundColor: MyColors.greenAcent,
+                  padding: const EdgeInsets.all(MySizes.paddingValue / 2),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(
+                        FontAwesomeIcons.solidCircleCheck,
+                        color: MyColors.green,
+                        size: MySizes.smallIconSize,
+                      ),
+                      SizedBox(width: MySizes.spacing),
+                      Text(
+                        "Conforming",
+                        style: MyTextStyles.bodyText2,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          MyIconButton.secondary(
+            iconData: isExpanded
+                ? FontAwesomeIcons.circleChevronUp
+                : FontAwesomeIcons.circleChevronDown,
+            iconSize: MySizes.mediumIconSize,
+            onPressed: () {
+              // calling the call back
+              onExpanded();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Information held within the dropdown for the container.
+  Widget _buildContainerDropDown() {
+    return Column(
+      children: [
+        const Divider(
+          color: MyColors.lineColor,
+          thickness: MySizes.lineWidth,
+          height: (MySizes.spacing * 2) + 1,
+        ),
+
+        // //// //
+        // BODY //
+        // //// //
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // /////////////// //
+            // LAST INSPECTION //
+            // /////////////// //
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Last Inspection",
+                  style: MyTextStyles.bodyText2,
+                ),
+                const SizedBox(height: MySizes.spacing),
+                Row(
                   children: [
-                    const Text(
-                      "Action Taken",
-                      style: MyTextStyles.bodyText2,
+                    const BorderedContainer(
+                      isDense: true,
+                      borderColor: MyColors.negative,
+                      backgroundColor: MyColors.negativeAccent,
+                      padding: EdgeInsets.all(MySizes.paddingValue / 2),
+                      child: Text(
+                        "Non-Conforming",
+                        style: MyTextStyles.bodyText2,
+                      ),
                     ),
-                    const SizedBox(height: MySizes.spacing),
-                    Row(
-                      children: [
-                        const BorderedContainer(
-                          isDense: true,
-                          borderColor: MyColors.green,
-                          backgroundColor: MyColors.greenAcent,
-                          padding: EdgeInsets.all(MySizes.paddingValue / 2),
-                          child: Text(
-                            "Remediated",
-                            style: MyTextStyles.bodyText2,
-                          ),
-                        ),
-                        const SizedBox(width: MySizes.spacing),
-                        MyIconButton.secondary(
-                          iconData: FontAwesomeIcons.circleChevronRight,
-                          onPressed: () {
-                            // navigating to remediation
-                            // TODO
-                          },
-                        ),
-                      ],
+                    const SizedBox(width: MySizes.spacing),
+                    MyIconButton.secondary(
+                      iconData: FontAwesomeIcons.circleChevronRight,
+                      onPressed: () {
+                        // navigating to inspection
+                        // TODO
+                      },
                     ),
                   ],
                 ),
               ],
             ),
-          ]
-        ],
-      ),
+
+            // //////////// //
+            // ACTION TAKEN //
+            // //////////// //
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Action Taken",
+                  style: MyTextStyles.bodyText2,
+                ),
+                const SizedBox(height: MySizes.spacing),
+                Row(
+                  children: [
+                    const BorderedContainer(
+                      isDense: true,
+                      borderColor: MyColors.green,
+                      backgroundColor: MyColors.greenAcent,
+                      padding: EdgeInsets.all(MySizes.paddingValue / 2),
+                      child: Text(
+                        "Remediated",
+                        style: MyTextStyles.bodyText2,
+                      ),
+                    ),
+                    const SizedBox(width: MySizes.spacing),
+                    MyIconButton.secondary(
+                      iconData: FontAwesomeIcons.circleChevronRight,
+                      onPressed: () {
+                        // navigating to remediation
+                        // TODO
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

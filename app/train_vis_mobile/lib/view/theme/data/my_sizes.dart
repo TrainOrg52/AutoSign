@@ -16,8 +16,8 @@ class MySizes {
   static const double spacing = 10.0;
   static const double paddingValue = 10.0;
   static const EdgeInsetsGeometry padding = EdgeInsets.all(paddingValue);
-  static const double lineWidth = 2.0;
-  static const double borderWidth = 2.0;
+  static const double lineWidth = 1.0;
+  static const double borderWidth = 1.0;
   static const double dividerThickness = 1.0;
   static const double borderRadius = 6.0;
 

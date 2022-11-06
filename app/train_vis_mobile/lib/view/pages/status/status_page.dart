@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:train_vis_mobile/view/pages/status/checkpoint_status_container.dart';
 import 'package:train_vis_mobile/view/pages/status/status_action_container.dart';
+import 'package:train_vis_mobile/view/pages/status/walkthrough_status_list.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_icon_button.dart';
@@ -63,9 +63,9 @@ class StatusPage extends StatelessWidget {
           // CHECKPOINTS //
           // /////////// //
 
-          const SliverToBoxAdapter(
-            child: CheckpointStatusContainer(checkpointID: "checkpointID"),
-          )
+          SliverToBoxAdapter(
+            child: WalkthroughStatusList(vehicleID: vehicleID),
+          ),
         ],
       ),
     );
