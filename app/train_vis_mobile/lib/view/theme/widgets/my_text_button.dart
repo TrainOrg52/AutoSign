@@ -175,4 +175,40 @@ class MyTextButton extends StatelessWidget {
       borderColor: MyColors.negative,
     );
   }
+
+  // ////// //
+  // CUSTOM //
+  // ////// //
+
+  /// Custom color text button.
+  static MyTextButton custom({
+    // member variables
+    required String text,
+    required Function() onPressed,
+    required Color backgroundColor,
+    required Color borderColor,
+    required Color textColor,
+    // MySizes
+    double? height,
+    double? width,
+    EdgeInsetsGeometry? padding,
+    double? borderWidth,
+    // text style
+    TextStyle? textStyle,
+  }) {
+    return MyTextButton._(
+      // member variables
+      text: text,
+      onPressed: onPressed,
+      // MySizes
+      height: height,
+      width: width,
+      padding: padding,
+      borderWidth: borderWidth,
+      // colors
+      primaryColor: textColor,
+      backgroundColor: backgroundColor,
+      borderColor: borderColor,
+    );
+  }
 }

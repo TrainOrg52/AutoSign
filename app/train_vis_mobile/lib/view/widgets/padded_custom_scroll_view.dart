@@ -3,8 +3,6 @@ import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 
 /// A wrapper round [CustomScrollView] to add some padding within the scrollable
 /// area of the view, not just around the whole view.
-///
-/// A maximum width for the view can also be set using the [maxWidth] property.
 class PaddedCustomScrollView extends StatelessWidget {
   // MEMBER VARIABLES //
   // slivers
@@ -24,7 +22,7 @@ class PaddedCustomScrollView extends StatelessWidget {
     // member variables
     required this.slivers,
     // sizing
-    this.topPadding = MySizes.paddingValue * 3,
+    this.topPadding = MySizes.paddingValue * 2,
     this.bottomPadding = MySizes.paddingValue * 3,
     this.sidePadding = MySizes.paddingValue * 2,
   }) : super(key: key);

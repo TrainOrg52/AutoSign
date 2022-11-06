@@ -11,8 +11,9 @@ import 'package:train_vis_mobile/view/widgets/padded_custom_scroll_view.dart';
 ///
 /// TODO
 class HomePage extends StatefulWidget {
-  // SIZING //
-  final double _containerHeight = 160;
+  // THEME-ING //
+  // sizes
+  final double containerHeight = 160;
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -67,7 +68,7 @@ class _HomePageState extends State<HomePage> {
               hasScrollBody: false,
               child: Center(
                 child: SizedBox(
-                  height: widget._containerHeight,
+                  height: widget.containerHeight,
                   child: ColoredContainer(
                     color: MyColors.backgroundSecondary,
                     child: Column(
@@ -109,12 +110,6 @@ class _HomePageState extends State<HomePage> {
                           onPressed: () {
                             // navigate to train profile page
                             context.push("/${vehicleIDController.text}");
-
-                            // OR
-                            // context.goNamed(
-                            //   profile,
-                            //   params: {"vehicleID": vehicleIDController.text},
-                            // );
                           },
                         ),
                       ],

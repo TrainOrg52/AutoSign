@@ -7,7 +7,7 @@ import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 class MyIconButton extends StatelessWidget {
   // MEMBER VARIABLES //
   final IconData iconData;
-  final Function() onPressed;
+  final Function()? onPressed;
 
   // THEME-ING //
   // MySizes
@@ -33,7 +33,7 @@ class MyIconButton extends StatelessWidget {
     Key? key,
     // member variables
     required this.iconData,
-    required this.onPressed,
+    this.onPressed,
     // MySizes
     double? height,
     double? width,
@@ -94,7 +94,7 @@ class MyIconButton extends StatelessWidget {
   static MyIconButton primary({
     // member variables
     required IconData iconData,
-    required Function() onPressed,
+    Function()? onPressed,
     // MySizes
     double? height,
     double? width,
@@ -129,7 +129,7 @@ class MyIconButton extends StatelessWidget {
   static MyIconButton secondary({
     // member variables
     required IconData iconData,
-    required Function() onPressed,
+    Function()? onPressed,
     // MySizes
     double? height,
     double? width,
@@ -166,7 +166,7 @@ class MyIconButton extends StatelessWidget {
   static MyIconButton negative({
     // member variables
     required IconData iconData,
-    required Function() onPressed,
+    Function()? onPressed,
     // MySizes
     double? height,
     double? width,
@@ -200,7 +200,7 @@ class MyIconButton extends StatelessWidget {
   /// Back icon button.
   static MyIconButton back({
     // member variables
-    required Function() onPressed,
+    Function()? onPressed,
     // MySizes
     double? height, // increased height
     double? width, // increased width

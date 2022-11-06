@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
       // ROUTING //
-      routerConfig: router,
+      routerConfig: Routes.router,
 
       // THEME //
       theme: ThemeData(

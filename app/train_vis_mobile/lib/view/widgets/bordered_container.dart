@@ -6,7 +6,7 @@ import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 /// background as defined by the app's theme.
 class BorderedContainer extends StatelessWidget {
   // MEMBER VARIABLES //
-  final Widget child;
+  final Widget? child;
 
   // THEME-ING //
   // MySizes
@@ -28,7 +28,7 @@ class BorderedContainer extends StatelessWidget {
   const BorderedContainer({
     Key? key,
     // member variables
-    required this.child,
+    this.child,
     //MySizes
     this.height,
     this.width = double.infinity,

@@ -1,4 +1,3 @@
-// router
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:train_vis_mobile/view/pages/home/home_page.dart';
@@ -10,211 +9,213 @@ import 'package:train_vis_mobile/view/pages/remediations/remediation_walkthrough
 import 'package:train_vis_mobile/view/pages/remediations/remediations_page.dart';
 import 'package:train_vis_mobile/view/pages/status/status_page.dart';
 
-// ///////////////// //
-// ROUTE INFORMATION //
-// ///////////////// //
+/// TODO
+class Routes {
+  // ///////////////// //
+  // ROUTE INFORMATION //
+  // ///////////////// //
 
-const home = "home";
-const profile = "profile";
-const status = "status";
-const inspect = "inspect";
-const remediate = "remediate";
-const reports = "reports";
-const inspectionWalkthrough = "inspectionWalkthrough";
-const inspectionCheckpoint = "inspectionCheckpoint";
-const remediations = "remediations";
-const remediationWalkthrough = "remediationWalkthrough";
-const remediationCheckpoint = "remediationCheckpoint";
+  static const home = "home";
+  static const profile = "profile";
+  static const status = "status";
+  static const inspect = "inspect";
+  static const remediate = "remediate";
+  static const reports = "reports";
+  static const inspectionWalkthrough = "inspectionWalkthrough";
+  static const inspectionCheckpoint = "inspectionCheckpoint";
+  static const remediations = "remediations";
+  static const remediationWalkthrough = "remediationWalkthrough";
+  static const remediationCheckpoint = "remediationCheckpoint";
 
-// ///////////////// //
-// ROUTER DEFINITION //
-// ///////////////// //
+  // ///////////////// //
+  // ROUTER DEFINITION //
+  // ///////////////// //
 
-// go router object
-final GoRouter router = GoRouter(
-  initialLocation: "/",
-  routes: [
-    // //// //
-    // HOME //
-    // //// //
+  static final GoRouter router = GoRouter(
+    initialLocation: "/",
+    routes: [
+      // //// //
+      // HOME //
+      // //// //
 
-    GoRoute(
-      name: home,
-      path: "/",
-      builder: (context, state) {
-        return const HomePage();
-      },
-    ),
+      GoRoute(
+        name: Routes.home,
+        path: "/",
+        builder: (context, state) {
+          return const HomePage();
+        },
+      ),
 
-    // ///////////////// //
-    // VEHICLE (PROFILE) //
-    // ///////////////// //
+      // ///////////////// //
+      // VEHICLE (PROFILE) //
+      // ///////////////// //
 
-    GoRoute(
-      name: profile,
-      path: "/:vehicleID",
-      builder: (context, state) {
-        // getting params from state
-        String vehicleID = state.params["vehicleID"]!;
+      GoRoute(
+        name: Routes.profile,
+        path: "/:vehicleID",
+        builder: (context, state) {
+          // getting params from state
+          String vehicleID = state.params["vehicleID"]!;
 
-        // displaying profile page
-        return ProfilePage(vehicleID: vehicleID);
-      },
-      routes: [
-        // ////// //
-        // STATUS //
-        // ////// //
+          // displaying profile page
+          return ProfilePage(vehicleID: vehicleID);
+        },
+        routes: [
+          // ////// //
+          // STATUS //
+          // ////// //
 
-        GoRoute(
-          name: status,
-          path: "status",
-          builder: (context, state) {
-            // getting params from state
-            String vehicleID = state.params["vehicleID"]!;
+          GoRoute(
+            name: Routes.status,
+            path: "status",
+            builder: (context, state) {
+              // getting params from state
+              String vehicleID = state.params["vehicleID"]!;
 
-            // displaying status page
-            return StatusPage(vehicleID: vehicleID);
-          },
-        ),
+              // displaying status page
+              return StatusPage(vehicleID: vehicleID);
+            },
+          ),
 
-        // /////// //
-        // INSPECT //
-        // /////// //
+          // /////// //
+          // INSPECT //
+          // /////// //
 
-        GoRoute(
-          name: inspect,
-          path: "inspect",
-          builder: (context, state) {
-            // getting params from state
-            String vehicleID = state.params["vehicleID"]!;
+          GoRoute(
+            name: Routes.inspect,
+            path: "inspect",
+            builder: (context, state) {
+              // getting params from state
+              String vehicleID = state.params["vehicleID"]!;
 
-            // displaying inspect page
-            return InspectPage(vehicleID: vehicleID);
-          },
-        ),
+              // displaying inspect page
+              return InspectPage(vehicleID: vehicleID);
+            },
+          ),
 
-        // ///////// //
-        // REMEDIATE //
-        // ///////// //
+          // ///////// //
+          // REMEDIATE //
+          // ///////// //
 
-        GoRoute(
-          name: remediate,
-          path: "remediate",
-          builder: (context, state) {
-            // getting params from state
-            String vehicleID = state.params["vehicleID"]!;
+          GoRoute(
+            name: Routes.remediate,
+            path: "remediate",
+            builder: (context, state) {
+              // getting params from state
+              String vehicleID = state.params["vehicleID"]!;
 
-            // displaying remediate page
-            return RemediatePage(vehicleID: vehicleID);
-          },
-        ),
+              // displaying remediate page
+              return RemediatePage(vehicleID: vehicleID);
+            },
+          ),
 
-        // /////// //
-        // REPORTS //
-        // /////// //
+          // /////// //
+          // REPORTS //
+          // /////// //
 
-        GoRoute(
-          name: reports,
-          path: "reports",
-          builder: (context, state) {
-            // TODO displaying filler page
-            return Center(
-              child: Text("Reports for ${state.params["vehicleID"]}."),
-            );
-          },
-          routes: [
-            // ////////////////////// //
-            // INSPECTION WALKTHROUGH //
-            // ////////////////////// //
-
-            GoRoute(
-              name: inspectionWalkthrough,
-              path: ":inspectionWalkthroughID",
-              builder: (context, state) {
-                // TODO displaying filler page
-                return Center(
-                  child: Text(
-                    "Inspection: ${state.params["inspectionWalkthroughID"]}.",
-                  ),
-                );
-              },
-              routes: [
-                // ///////////////////// //
-                // INSPECTION CHECKPOINT //
-                // ///////////////////// //
-
-                GoRoute(
-                  name: inspectionCheckpoint,
-                  path: ":inspectionCheckpointID",
-                  builder: (context, state) {
-                    // TODO displaying filler page
-                    return Center(
-                      child: Text(
-                        "Inspection checkpoint: ${state.params["inspectionCheckpointID"]}.",
-                      ),
-                    );
-                  },
-                )
-              ],
-            ),
-          ],
-        ),
-
-        // //////////// //
-        // REMEDIATIONS //
-        // //////////// //
-
-        GoRoute(
-          name: remediations,
-          path: "remediations",
-          builder: (context, state) {
-            // getting params from state
-            String vehicleID = state.params["vehicleID"]!;
-
-            // displaying remediate page
-            return RemediationsPage(vehicleID: vehicleID);
-          },
-          routes: [
-            // /////////////////////// //
-            // REMEDIATION WALKTHROUGH //
-            // /////////////////////// //
-
-            GoRoute(
-              name: remediationWalkthrough,
-              path: ":remediationWalkthroughID",
-              builder: (context, state) {
-                // getting params from state
-                String remediationWalkthroughID =
-                    state.params["remediationWalkthroughID"]!;
-
-                // displaying remediate page
-                return RemediationWalkthroughPage(
-                    remediationWalkthroughID: remediationWalkthroughID);
-              },
-
+          GoRoute(
+            name: Routes.reports,
+            path: "reports",
+            builder: (context, state) {
+              // TODO displaying filler page
+              return Center(
+                child: Text("Reports for ${state.params["vehicleID"]}."),
+              );
+            },
+            routes: [
               // ////////////////////// //
-              // REMEDIATION CHECKPOINT //
+              // INSPECTION WALKTHROUGH //
               // ////////////////////// //
 
-              routes: [
-                GoRoute(
-                  name: remediationCheckpoint,
-                  path: ":remediationCheckpointID",
-                  builder: (context, state) {
-                    // getting params from state
-                    String remediationCheckpointID =
-                        state.params["remediationCheckpointID"]!;
+              GoRoute(
+                name: Routes.inspectionWalkthrough,
+                path: ":inspectionWalkthroughID",
+                builder: (context, state) {
+                  // TODO displaying filler page
+                  return Center(
+                    child: Text(
+                      "Inspection: ${state.params["inspectionWalkthroughID"]}.",
+                    ),
+                  );
+                },
+                routes: [
+                  // ///////////////////// //
+                  // INSPECTION CHECKPOINT //
+                  // ///////////////////// //
 
-                    // displaying remediate page
-                    return RemediationCheckpointPage(
-                        remediationCheckpointID: remediationCheckpointID);
-                  },
-                )
-              ],
-            ),
-          ],
-        ),
-      ],
-    ),
-  ],
-);
+                  GoRoute(
+                    name: Routes.inspectionCheckpoint,
+                    path: ":inspectionCheckpointID",
+                    builder: (context, state) {
+                      // TODO displaying filler page
+                      return Center(
+                        child: Text(
+                          "Inspection checkpoint: ${state.params["inspectionCheckpointID"]}.",
+                        ),
+                      );
+                    },
+                  )
+                ],
+              ),
+            ],
+          ),
+
+          // //////////// //
+          // REMEDIATIONS //
+          // //////////// //
+
+          GoRoute(
+            name: Routes.remediations,
+            path: "remediations",
+            builder: (context, state) {
+              // getting params from state
+              String vehicleID = state.params["vehicleID"]!;
+
+              // displaying remediate page
+              return RemediationsPage(vehicleID: vehicleID);
+            },
+            routes: [
+              // /////////////////////// //
+              // REMEDIATION WALKTHROUGH //
+              // /////////////////////// //
+
+              GoRoute(
+                name: Routes.remediationWalkthrough,
+                path: ":remediationWalkthroughID",
+                builder: (context, state) {
+                  // getting params from state
+                  String remediationWalkthroughID =
+                      state.params["remediationWalkthroughID"]!;
+
+                  // displaying remediate page
+                  return RemediationWalkthroughPage(
+                      remediationWalkthroughID: remediationWalkthroughID);
+                },
+
+                // ////////////////////// //
+                // REMEDIATION CHECKPOINT //
+                // ////////////////////// //
+
+                routes: [
+                  GoRoute(
+                    name: Routes.remediationCheckpoint,
+                    path: ":remediationCheckpointID",
+                    builder: (context, state) {
+                      // getting params from state
+                      String remediationCheckpointID =
+                          state.params["remediationCheckpointID"]!;
+
+                      // displaying remediate page
+                      return RemediationCheckpointPage(
+                          remediationCheckpointID: remediationCheckpointID);
+                    },
+                  )
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  );
+}

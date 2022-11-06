@@ -22,8 +22,8 @@ class RemediationsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text("Remediations")),
+    return Scaffold(
+      body: Center(child: Text("Remediations for $vehicleID")),
     );
   }
 }
