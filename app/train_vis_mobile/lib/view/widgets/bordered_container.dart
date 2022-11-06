@@ -11,7 +11,8 @@ class BorderedContainer extends StatelessWidget {
   // THEME-ING //
   // MySizes
   final double? height;
-  final double width;
+  final double? width;
+  final bool isDense;
   final double spacing;
   final EdgeInsetsGeometry padding;
   final double borderRadius;
@@ -32,6 +33,7 @@ class BorderedContainer extends StatelessWidget {
     //MySizes
     this.height,
     this.width = double.infinity,
+    this.isDense = false,
     this.spacing = MySizes.spacing,
     this.padding = MySizes.padding,
     this.borderRadius = MySizes.borderRadius,
@@ -50,7 +52,7 @@ class BorderedContainer extends StatelessWidget {
     return Container(
       // CONFIGURATION //
       height: height,
-      width: width,
+      width: isDense ? null : width,
       padding: padding,
       decoration: BoxDecoration(
         color: backgroundColor,

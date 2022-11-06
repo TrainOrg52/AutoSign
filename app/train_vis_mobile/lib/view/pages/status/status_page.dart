@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:train_vis_mobile/view/pages/status/checkpoint_status_container.dart';
 import 'package:train_vis_mobile/view/pages/status/status_action_container.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
@@ -61,6 +62,10 @@ class StatusPage extends StatelessWidget {
           // /////////// //
           // CHECKPOINTS //
           // /////////// //
+
+          const SliverToBoxAdapter(
+            child: CheckpointStatusContainer(checkpointID: "checkpointID"),
+          )
         ],
       ),
     );
