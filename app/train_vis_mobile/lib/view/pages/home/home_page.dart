@@ -111,7 +111,7 @@ class _HomePageState extends State<HomePage> {
                           onPressed: () {
                             // navigate to train profile page
                             context.pushNamed(
-                              Routes.inspect,
+                              Routes.profile,
                               params: {"vehicleID": vehicleIDController.text},
                             );
                           },
