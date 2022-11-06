@@ -5,13 +5,12 @@ import 'package:train_vis_mobile/view/routes/routes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
-import 'package:train_vis_mobile/view/theme/widgets/my_icon_button.dart';
 
 /// Displays buttons to access activity log of the given vehicle in terms of
 /// inspections and remediations.
 class VehicleActivityContainer extends StatelessWidget {
   // MEMBER VARIABLES //
-  final String vehicleID;
+  final String vehicleID; // ID of vehicle
 
   // THEME-ING //
   // sizing
@@ -48,8 +47,8 @@ class VehicleActivityContainer extends StatelessWidget {
         // /////// //
 
         _buildButton(
-          text: "Inspections",
-          icon: FontAwesomeIcons.magnifyingGlass,
+          text: "Reports",
+          icon: FontAwesomeIcons.clipboardList,
           onPressed: () {
             // navigating to reports page
             context.pushNamed(
@@ -118,10 +117,9 @@ class VehicleActivityContainer extends StatelessWidget {
                 style: MyTextStyles.headerText1,
               ),
             ),
-            MyIconButton.secondary(
-              iconData: FontAwesomeIcons.circleChevronRight,
-              iconSize: MySizes.mediumIconSize,
-              onPressed: onPressed,
+            const Icon(
+              FontAwesomeIcons.circleChevronRight,
+              size: MySizes.mediumIconSize,
             ),
           ],
         ),
