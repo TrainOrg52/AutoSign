@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:train_vis_mobile/model/status/conformance_status.dart';
+import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
 import 'package:train_vis_mobile/view/routes/routes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
@@ -11,7 +12,7 @@ import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 /// Widget that displays an overview of the status of a given train vehicle.
 class VehicleStatusContainer extends StatelessWidget {
   // MEMBER VARIABLES //
-  final String vehicleID; // ID of vehicle
+  final Vehicle vehicle; // vehicle being displayed
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -19,7 +20,7 @@ class VehicleStatusContainer extends StatelessWidget {
 
   const VehicleStatusContainer({
     super.key,
-    required this.vehicleID,
+    required this.vehicle,
   });
 
   // //////////// //
@@ -47,8 +48,8 @@ class VehicleStatusContainer extends StatelessWidget {
         // /////////////// //
 
         BorderedContainer(
-          borderColor: MyColors.green,
-          backgroundColor: MyColors.greenAcent,
+          borderColor: vehicle.conformanceStatus.color,
+          backgroundColor: vehicle.conformanceStatus.accentColor,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -57,15 +58,15 @@ class VehicleStatusContainer extends StatelessWidget {
               // /////////////////// //
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Icon(
-                    FontAwesomeIcons.solidCircleCheck,
+                    vehicle.conformanceStatus.iconData,
                     size: MySizes.mediumIconSize,
-                    color: MyColors.green,
+                    color: vehicle.conformanceStatus.color,
                   ),
-                  SizedBox(width: MySizes.spacing),
+                  const SizedBox(width: MySizes.spacing),
                   Text(
-                    "No non-conformances present.",
+                    vehicle.conformanceStatus.description,
                     style: MyTextStyles.headerText3,
                   ),
                 ],
@@ -78,16 +79,25 @@ class VehicleStatusContainer extends StatelessWidget {
               // /////////// //
 
               MyTextButton.custom(
-                backgroundColor: MyColors.green,
-                borderColor: MyColors.green,
+                backgroundColor: vehicle.conformanceStatus.color,
+                borderColor: vehicle.conformanceStatus.accentColor,
                 textColor: MyColors.antiPrimary,
                 text: "View",
                 onPressed: () {
-                  // navigating to status
-                  context.pushNamed(
-                    Routes.status,
-                    params: {"vehicleID": vehicleID},
-                  );
+                  // navigating based on conformance status
+                  if (vehicle.conformanceStatus == ConformanceStatus.pending) {
+                    // conformance status pending -> go to most recent inspection
+
+                    // TODO
+                  } else {
+                    // conformance status not pending -> go to status page
+
+                    // navigating to status page
+                    context.pushNamed(
+                      Routes.status,
+                      params: {"vehicleID": vehicle.id},
+                    );
+                  }
                 },
               ),
             ],

@@ -74,7 +74,7 @@ class ProfilePage extends StatelessWidget {
 
               SliverToBoxAdapter(
                 child: VehicleStatusContainer(
-                  vehicleID: vehicleID,
+                  vehicle: vehicle,
                 ),
               ),
 
