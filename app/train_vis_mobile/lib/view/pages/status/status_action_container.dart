@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
 import 'package:train_vis_mobile/view/routes/routes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
@@ -12,7 +13,7 @@ import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 /// should be taken.
 class StatusActionContainer extends StatelessWidget {
   // MEMBER VARIABLES //
-  final String vehicleID; // ID of vehicle being displayed
+  final Vehicle vehicle; // vehicle being displayed
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -20,7 +21,7 @@ class StatusActionContainer extends StatelessWidget {
 
   const StatusActionContainer({
     super.key,
-    required this.vehicleID,
+    required this.vehicle,
   });
 
   // //////////// //
@@ -81,7 +82,7 @@ class StatusActionContainer extends StatelessWidget {
               // navigating to status
               context.pushNamed(
                 Routes.remediate,
-                params: {"vehicleID": vehicleID},
+                params: {"vehicleID": vehicle.id},
               );
             },
           ),

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:train_vis_mobile/controller/vehicle_controller.dart';
+import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
 import 'package:train_vis_mobile/view/pages/status/status_action_container.dart';
 import 'package:train_vis_mobile/view/pages/status/walkthrough_status_list.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_icon_button.dart';
+import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:train_vis_mobile/view/widgets/padded_custom_scroll_view.dart';
 
 /// Page to display the status of a train vehicle.
@@ -47,26 +50,32 @@ class StatusPage extends StatelessWidget {
       // BODY //
       // //// //
 
-      body: PaddedCustomScrollView(
-        slivers: [
-          // ///////////// //
-          // STATUS ACTION //
-          // ///////////// //
+      body: CustomStreamBuilder<Vehicle>(
+        stream: VehicleController.instance.getVehicle(vehicleID),
+        builder: (context, vehicle) {
+          return PaddedCustomScrollView(
+            slivers: [
+              // ///////////// //
+              // STATUS ACTION //
+              // ///////////// //
 
-          SliverToBoxAdapter(
-            child: StatusActionContainer(vehicleID: vehicleID),
-          ),
+              SliverToBoxAdapter(
+                child: StatusActionContainer(vehicle: vehicle),
+              ),
 
-          const SliverToBoxAdapter(child: SizedBox(height: MySizes.spacing)),
+              const SliverToBoxAdapter(
+                  child: SizedBox(height: MySizes.spacing)),
 
-          // /////////// //
-          // CHECKPOINTS //
-          // /////////// //
+              // /////////// //
+              // CHECKPOINTS //
+              // /////////// //
 
-          SliverToBoxAdapter(
-            child: WalkthroughStatusList(vehicleID: vehicleID),
-          ),
-        ],
+              SliverToBoxAdapter(
+                child: WalkthroughStatusList(vehicleID: vehicleID),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

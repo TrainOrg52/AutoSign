@@ -54,14 +54,14 @@ class VehicleOverviewContainer extends StatelessWidget {
                     // ////////////// //
                     // VEHICLE STATUS //
                     // ////////////// //
-                    const Align(
+                    Align(
                       alignment: Alignment.topRight,
                       child: Padding(
                         padding: MySizes.padding,
                         child: Icon(
-                          FontAwesomeIcons.solidCircleCheck,
+                          vehicle.conformanceStatus.iconData,
                           size: MySizes.mediumIconSize,
-                          color: MyColors.green,
+                          color: vehicle.conformanceStatus.color,
                         ),
                       ),
                     ),
@@ -134,7 +134,7 @@ class VehicleOverviewContainer extends StatelessWidget {
             radius: avatarRadius,
             lineWidth: avatarOutlineWidth,
             percent: 1.0,
-            progressColor: MyColors.green,
+            progressColor: vehicle.conformanceStatus.color,
             center: CustomFutureBuilder(
               future: VehicleController.instance
                   .getVehicleAvatarDownloadURL(vehicle.id),

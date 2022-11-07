@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 
 /// Defines the conformance status of an inspection walkthrough, checkpoint or
@@ -7,6 +8,7 @@ class ConformanceStatus {
   // MEMBER VARIABLES //
   final String title; // the title for the conformance status
   final Color color; // the color associated with the conformances status
+  final IconData iconData; // icon to be displayed for this status
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -19,6 +21,7 @@ class ConformanceStatus {
   const ConformanceStatus._({
     required this.title,
     required this.color,
+    required this.iconData,
   });
 
   // ///////////////// //
@@ -67,23 +70,27 @@ class ConformanceStatus {
   static const ConformanceStatus pending = ConformanceStatus._(
     title: "pending",
     color: MyColors.lineColor,
+    iconData: FontAwesomeIcons.circleExclamation,
   );
 
   // conforming
   static const ConformanceStatus conforming = ConformanceStatus._(
     title: "conforming",
     color: MyColors.green,
+    iconData: FontAwesomeIcons.solidCircleCheck,
   );
 
   // non-conforming
   static const ConformanceStatus nonConforming = ConformanceStatus._(
     title: "non-conforming",
     color: MyColors.negative,
+    iconData: FontAwesomeIcons.circleExclamation,
   );
 
   // error
   static const ConformanceStatus error = ConformanceStatus._(
     title: "error",
     color: MyColors.negative,
+    iconData: FontAwesomeIcons.circleExclamation,
   );
 }
