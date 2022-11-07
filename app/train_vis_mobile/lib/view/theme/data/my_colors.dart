@@ -43,6 +43,7 @@ class MyColors {
   static const Color amberAccent = Color.fromARGB(255, 234, 202, 182);
   static const Color red = Color.fromARGB(255, 217, 119, 117);
   static const Color redAccent = Color.fromARGB(255, 235, 183, 183);
+  static const Color greyAccent = grey100;
 
   // GREY COLORS (higher is darker) //
   static const Color grey100 = Color.fromARGB(255, 250, 250, 250);

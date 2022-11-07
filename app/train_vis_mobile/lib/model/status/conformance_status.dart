@@ -38,6 +38,8 @@ class ConformanceStatus {
     // returning priority based on string
     if (status == pending.title) {
       return pending;
+    } else if (status == processing.title) {
+      return processing;
     } else if (status == conforming.title) {
       return conforming;
     } else if (status == nonConforming.title) {
@@ -66,15 +68,25 @@ class ConformanceStatus {
   // all instances
   static const List<ConformanceStatus> statuses = [
     pending,
+    processing,
     conforming,
     nonConforming,
     error,
   ];
 
-  // unknown
+  // pending
   static const ConformanceStatus pending = ConformanceStatus._(
     title: "pending",
-    description: "Inspection Processing",
+    description: "Inspectiton Pending",
+    color: MyColors.amber,
+    accentColor: MyColors.amberAccent,
+    iconData: FontAwesomeIcons.solidClock,
+  );
+
+  // processing
+  static const ConformanceStatus processing = ConformanceStatus._(
+    title: "processing",
+    description: "Inspectiton Processing",
     color: MyColors.amber,
     accentColor: MyColors.amberAccent,
     iconData: FontAwesomeIcons.solidClock,
@@ -92,7 +104,7 @@ class ConformanceStatus {
   // non-conforming
   static const ConformanceStatus nonConforming = ConformanceStatus._(
     title: "non-conforming",
-    description: "Non-Conformances Present",
+    description: "Non-Conforming",
     color: MyColors.negative,
     accentColor: MyColors.negativeAccent,
     iconData: FontAwesomeIcons.circleExclamation,

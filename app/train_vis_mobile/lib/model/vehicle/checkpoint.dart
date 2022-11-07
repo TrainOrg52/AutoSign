@@ -13,7 +13,8 @@ class Checkpoint extends ModelObject {
   String lastVehicleInspectionID; // most recent inspection
   ConformanceStatus
       lastVehicleInspectionResult; // ID of most recent inspection walkthrough
-  String? lastRemediationID; // ID of most recent remediation (if there is one)
+  String?
+      lastVehicleRemediationID; // ID of most recent remediation (if there is one)
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -29,7 +30,7 @@ class Checkpoint extends ModelObject {
     ConformanceStatus? conformanceStatus,
     this.lastVehicleInspectionID = "",
     ConformanceStatus? lastVehicleInspectionResult,
-    this.lastRemediationID,
+    this.lastVehicleRemediationID,
   })  : signs = signs ?? [],
         conformanceStatus = conformanceStatus ?? ConformanceStatus.pending,
         lastVehicleInspectionResult =
@@ -59,9 +60,9 @@ class Checkpoint extends ModelObject {
       lastVehicleInspectionID: data?["lastVehicleInspectionID"],
       lastVehicleInspectionResult:
           ConformanceStatus.fromString(data?["lastVehicleInspectionResult"]),
-      lastRemediationID: data?["lastRemediationID"] == "null"
+      lastVehicleRemediationID: data?["lastVehicleRemediationID"] == "null"
           ? null
-          : data?["lastRemediationID"],
+          : data?["lastVehicleRemediationID"],
     );
   }
 
@@ -78,7 +79,7 @@ class Checkpoint extends ModelObject {
       "conformanceStatus": conformanceStatus.toString(),
       "lastVehicleInspectionID": lastVehicleInspectionID,
       "lastVehicleInspectionResult": lastVehicleInspectionResult,
-      "lastRemediationID": lastRemediationID,
+      "lastVehicleRemediationID": lastVehicleRemediationID,
     };
   }
 }

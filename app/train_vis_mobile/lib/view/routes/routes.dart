@@ -21,8 +21,8 @@ class Routes {
   static const inspect = "inspect";
   static const remediate = "remediate";
   static const reports = "reports";
-  static const inspectionWalkthrough = "inspectionWalkthrough";
-  static const inspectionCheckpoint = "inspectionCheckpoint";
+  static const vehicleInspection = "inspectionWalkthrough";
+  static const checkpointInspection = "inspectionCheckpoint";
   static const remediations = "remediations";
   static const remediationWalkthrough = "remediationWalkthrough";
   static const remediationCheckpoint = "remediationCheckpoint";
@@ -123,34 +123,34 @@ class Routes {
               );
             },
             routes: [
-              // ////////////////////// //
-              // INSPECTION WALKTHROUGH //
-              // ////////////////////// //
+              // ////////////////// //
+              // VEHICLE INSPECTION //
+              // ////////////////// //
 
               GoRoute(
-                name: Routes.inspectionWalkthrough,
-                path: ":inspectionWalkthroughID",
+                name: Routes.vehicleInspection,
+                path: ":vehicleInspectionID",
                 builder: (context, state) {
                   // TODO displaying filler page
                   return Center(
                     child: Text(
-                      "Inspection: ${state.params["inspectionWalkthroughID"]}.",
+                      "Inspection: ${state.params["vehicleInspectionID"]}.",
                     ),
                   );
                 },
                 routes: [
                   // ///////////////////// //
-                  // INSPECTION CHECKPOINT //
+                  // CHECKPOINT INSPECTION //
                   // ///////////////////// //
 
                   GoRoute(
-                    name: Routes.inspectionCheckpoint,
-                    path: ":inspectionCheckpointID",
+                    name: Routes.checkpointInspection,
+                    path: ":checkpointInspectionID",
                     builder: (context, state) {
                       // TODO displaying filler page
                       return Center(
                         child: Text(
-                          "Inspection checkpoint: ${state.params["inspectionCheckpointID"]}.",
+                          "Checkpoint inspection: ${state.params["checkpointInspectionID"]}.",
                         ),
                       );
                     },

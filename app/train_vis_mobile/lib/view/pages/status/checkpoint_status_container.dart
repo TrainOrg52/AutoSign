@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:train_vis_mobile/controller/checkpoint_controller.dart';
 import 'package:train_vis_mobile/main.dart';
 import 'package:train_vis_mobile/model/vehicle/checkpoint.dart';
+import 'package:train_vis_mobile/view/routes/routes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
@@ -57,7 +59,7 @@ class CheckpointStatusContainer extends StatelessWidget {
             // DROPDOWN //
             // //////// //
 
-            if (isExpanded) _buildContainerDropDown()
+            if (isExpanded) _buildContainerDropDown(context)
           ],
         ),
       ),
@@ -156,7 +158,7 @@ class CheckpointStatusContainer extends StatelessWidget {
   }
 
   /// Information held within the dropdown for the container.
-  Widget _buildContainerDropDown() {
+  Widget _buildContainerDropDown(BuildContext context) {
     return Column(
       children: [
         const Divider(
@@ -203,7 +205,14 @@ class CheckpointStatusContainer extends StatelessWidget {
                       iconData: FontAwesomeIcons.circleChevronRight,
                       onPressed: () {
                         // navigating to inspection
-                        // TODO
+                        context.pushNamed(
+                          Routes.vehicleInspection,
+                          params: {
+                            "vehicleID": checkpoint.vehicleID,
+                            "vehicleInspectionID":
+                                checkpoint.lastVehicleInspectionID,
+                          },
+                        );
                       },
                     ),
                   ],
@@ -225,11 +234,11 @@ class CheckpointStatusContainer extends StatelessWidget {
                 const SizedBox(height: MySizes.spacing),
                 Row(
                   children: [
-                    if (checkpoint.lastRemediationID == null)
+                    if (checkpoint.lastVehicleRemediationID == null)
                       const BorderedContainer(
                         isDense: true,
                         borderColor: MyColors.lineColor,
-                        backgroundColor: MyColors.grey100,
+                        backgroundColor: MyColors.greyAccent,
                         padding: EdgeInsets.all(MySizes.paddingValue / 2),
                         child: Text(
                           "None",
@@ -252,7 +261,14 @@ class CheckpointStatusContainer extends StatelessWidget {
                         iconData: FontAwesomeIcons.circleChevronRight,
                         onPressed: () {
                           // navigating to remediation
-                          // TODO
+                          context.pushNamed(
+                            Routes.remediationWalkthrough,
+                            params: {
+                              "vehicleID": checkpoint.vehicleID,
+                              "vehicleRemediationID":
+                                  checkpoint.lastVehicleRemediationID!,
+                            },
+                          );
                         },
                       ),
                     ]
