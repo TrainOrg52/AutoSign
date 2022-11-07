@@ -1,8 +1,9 @@
 class Vehicle:
-    def __init__(self, id, timestamp, title):
+    def __init__(self, id, timestamp, title, conformanceStatus):
         self.id = id
         self.timestamp = timestamp
         self.title = title
+        self.conformanceStatus = conformanceStatus
 
     @staticmethod
     def from_doc(doc):
@@ -11,12 +12,15 @@ class Vehicle:
         return Vehicle(
             doc.id,
             data["timestamp"],
-            data["title"])
+            data["title"],
+            data["conformanceStatus"]
+        )
 
     def to_dict(self):
         return {
             "timestamp": self.timestamp,
             "title": self.title,
+            "conformanceStatus": self.conformanceStatus
         }
 
     def update(self, db):

@@ -28,10 +28,12 @@ def runServer():
             for inspection_walkthrough in inspection_walkthroughs:
                 # creating model object
                 inspection_walkthrough = InspectionWalkthrough.from_doc(inspection_walkthrough)
+                inspection_vehicle = vehicle_collection.document(inspection_walkthrough.vehicleID).get()
+                inspection_vehicle = Vehicle.from_doc(inspection_vehicle)
                 print(f"Identified inspection walkthrough for train {inspection_walkthrough.vehicleID}")
 
                 # processing inspection walkthrough
-                processInspectionWalkthrough(inspection_walkthrough)
+                processInspectionWalkthrough(inspection_walkthrough, inspection_vehicle)
 
             print("All trains processed!")
 
@@ -42,7 +44,7 @@ def runServer():
 # @params: 'inspection_walkthrough' is an instance of an inspection that is yet to be processed.
 # @return: N/A
 # @authors: Benjamin Sanati, Charlie Powell
-def processInspectionWalkthrough(inspection_walkthrough):
+def processInspectionWalkthrough(inspection_walkthrough, inspection_vehicle):
     # ############################################### #
     # STEP 1: UPDATE STATUS OF INSPECTION WALKTHROUGH #
     # ############################################### #
@@ -52,6 +54,7 @@ def processInspectionWalkthrough(inspection_walkthrough):
     inspection_walkthrough.processingStatus = "processing"
     inspection_walkthrough.update(db)
     inspection_walkthrough.conformanceStatus = "conforming"
+    inspection_vehicle.conformanceStatus = "conforming"
 
     new_checkpoints = inspection_walkthrough.checkpoints
 
@@ -134,6 +137,7 @@ def processInspectionWalkthrough(inspection_walkthrough):
                 # setting checkpoint conformance
                 new_checkpoint_conformance = "non-conforming"
                 inspection_walkthrough.conformanceStatus = "non-conforming"
+                inspection_vehicle.conformanceStatus = "non-conforming"
 
             # updating signs
             new_signs[sign_id] = new_sign_conformance
@@ -144,6 +148,7 @@ def processInspectionWalkthrough(inspection_walkthrough):
         inspection_checkpoint.signs = new_signs
         inspection_checkpoint.conformanceStatus = new_checkpoint_conformance
         inspection_checkpoint.update(db)
+        inspection_vehicle.update(db)
 
         new_checkpoints[inspection_checkpoint.id] = new_checkpoint_conformance
 
@@ -189,6 +194,7 @@ if __name__ == "__main__":
     checkpoints_collection = db.collection(u'checkpoints')
     inspection_walkthroughs_collection = db.collection(u'inspectionWalkthroughs')
     inspection_checkpoints_collection = db.collection(u'inspectionCheckpoints')
+    vehicle_collection = db.collection(u'vehicles')
 
     # ################# #
     # PROCESSING SET UP #
