@@ -9,7 +9,7 @@ from numpy import random
 import sys
 from tqdm import tqdm
 
-sys.path.insert(0, r'C:\Users\benja\Documents\University\UniWork\GDP\firebase_api\setup\yolov7_e6\yolov7')
+sys.path.insert(0, r'object_detector/yolov7')
 
 from models.experimental import attempt_load
 from utils.datasets import LoadStreams, LoadImages
