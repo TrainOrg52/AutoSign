@@ -18,22 +18,22 @@ def runServer():
         print("Checking for unprocessed inspection walkthroughs...")
 
         # get all inspections where status is "pending"
-        inspection_walkthroughs = inspection_walkthroughs_collection.where(u'processingStatus', u'==', u'pending').get()
+        inspection_walkthroughs = vehicle_inspections_collection.where(u'processingStatus', u'==', u'pending').get()
 
         # checking if any pending inspections are present
         if len(inspection_walkthroughs) > 0:
             # pending inspection present -> need to process it
 
             # iterating over each pending inspection
-            for inspection_walkthrough in inspection_walkthroughs:
+            for vehicle_inspection in inspection_walkthroughs:
                 # creating model object
-                inspection_walkthrough = InspectionWalkthrough.from_doc(inspection_walkthrough)
-                inspection_vehicle = vehicle_collection.document(inspection_walkthrough.vehicleID).get()
+                vehicle_inspection = vehicleInspection.from_doc(vehicle_inspection)
+                inspection_vehicle = vehicle_collection.document(vehicle_inspection.vehicleID).get()
                 inspection_vehicle = Vehicle.from_doc(inspection_vehicle)
-                print(f"Identified inspection walkthrough for train {inspection_walkthrough.vehicleID}")
+                print(f"Identified inspection walkthrough for train {vehicle_inspection.vehicleID}")
 
                 # processing inspection walkthrough
-                processInspectionWalkthrough(inspection_walkthrough, inspection_vehicle)
+                processInspectionWalkthrough(vehicle_inspection, inspection_vehicle)
 
             print("All trains processed!")
 
@@ -44,45 +44,47 @@ def runServer():
 # @params: 'inspection_walkthrough' is an instance of an inspection that is yet to be processed.
 # @return: N/A
 # @authors: Benjamin Sanati, Charlie Powell
-def processInspectionWalkthrough(inspection_walkthrough, inspection_vehicle):
+def processInspectionWalkthrough(vehicle_inspection, inspection_vehicle):
     # ############################################### #
     # STEP 1: UPDATE STATUS OF INSPECTION WALKTHROUGH #
     # ############################################### #
 
     print("-----------------------")
-    print(f"Processing train {inspection_walkthrough.vehicleID}...")
-    inspection_walkthrough.processingStatus = "processing"
-    inspection_walkthrough.update(db)
-    inspection_walkthrough.conformanceStatus = "conforming"
+    print(f"Processing train {vehicle_inspection.vehicleID}...")
+    vehicle_inspection.processingStatus = "processing"
+    vehicle_inspection.update(db)
+    vehicle_inspection.conformanceStatus = "conforming"
+    inspection_vehicle.conformanceStatus = "pending"
+    inspection_vehicle.update(db)
     inspection_vehicle.conformanceStatus = "conforming"
 
-    new_checkpoints = inspection_walkthrough.checkpoints
+    new_checkpoints = vehicle_inspection.checkpoints
 
     # ########################################### #
     # STEP 2: ITERATE OVER INSPECTION CHECKPOINTS #
     # ########################################### #
 
     storage_roots = []
-    inspection_checkpoint_signs = []
-    inspection_checkpoints = []
-    for inspection_checkpoint_id in inspection_walkthrough.checkpoints:
+    vehicle_checkpoint_signs = []
+    vehicle_checkpoints = []
+    for vehicle_inspection_id in vehicle_inspection.checkpoints:
         # STEP 2.1: GATHERING INSPECTION CHECKPOINT OBJECT AND CHECKPOINT OBJECT #
 
-        inspection_checkpoint = inspection_checkpoints_collection.document(inspection_checkpoint_id).get()
-        inspection_checkpoint = InspectionCheckpoint.from_doc(inspection_checkpoint)
-        inspection_checkpoints.append(inspection_checkpoint)
-        inspection_checkpoint_signs.append(inspection_checkpoint.signs)
+        vehicle_checkpoint = checkpoint_inspections_collection.document(vehicle_inspection_id).get()
+        vehicle_checkpoint = CheckpointInspection.from_doc(vehicle_checkpoint)
+        vehicle_checkpoints.append(vehicle_checkpoint)
+        vehicle_checkpoint_signs.append(vehicle_checkpoint.signs)
 
         # STEP 2.2: DOWNLOADING UNPROCESSED MEDIA FROM CLOUD STROAGE #
 
         # defining path to Cloud Storage
-        storage_root = f"/{inspection_walkthrough.vehicleID}/inspectionWalkthroughs/{inspection_walkthrough.id}/{inspection_checkpoint.id}"
+        storage_root = f"/{vehicle_inspection.vehicleID}/inspectionWalkthroughs/{vehicle_inspection.id}/{vehicle_checkpoint.id}"
         storage_roots.append(storage_root)
         storage_path = f"{storage_root}/unprocessed.png"
-        print(f"\tIdentified checkpoint {inspection_checkpoint.id}")
+        print(f"\tIdentified checkpoint {vehicle_checkpoint.id}")
 
         # defining path to local storage
-        local_path = f"storage/images/{inspection_checkpoint.id}.png"
+        local_path = f"storage/images/{vehicle_checkpoint.id}.png"
 
         # downloading image from firebase storage
         storage.child(storage_path).download(local_path)
@@ -105,20 +107,20 @@ def processInspectionWalkthrough(inspection_walkthrough, inspection_vehicle):
     # STEP 2.5: COMPARE LOCATED LABELS TO EXPECTED #
 
     print("\tChecking Conformance Status...")
-    for predicted_signs, inspection_signs, inspection_checkpoint in zip(identified_signs, inspection_checkpoint_signs,
-                                                                        inspection_checkpoints):
+    for predicted_signs, vehicle_sign, vehicle_checkpoint in zip(identified_signs, vehicle_checkpoint_signs,
+                                                                        vehicle_checkpoints):
         new_checkpoint_conformance = "conforming"
 
         # updating signs
-        new_signs = inspection_signs
+        new_signs = vehicle_sign
 
-        checkpoint = checkpoints_collection.document(inspection_checkpoint.checkpointID).get()
+        checkpoint = checkpoints_collection.document(vehicle_checkpoint.checkpointID).get()
         checkpoint = Checkpoint.from_doc(checkpoint)
 
         checkpoint.conformanceStatus = "processing"
-        checkpoint.mostRecentInspectionWalkthroughResult = "conforming"
+        checkpoint.lastVehicleInspectionResult = "conforming"
 
-        for (sign_id, sign_conformance) in inspection_signs.items():
+        for (sign_id, sign_conformance) in vehicle_sign.items():
             # checking if inspection sign identified
             if sign_id in predicted_signs:
                 # sign identified -> updating status
@@ -138,14 +140,14 @@ def processInspectionWalkthrough(inspection_walkthrough, inspection_vehicle):
 
                 # setting checkpoint conformance
                 new_checkpoint_conformance = "non-conforming"
-                inspection_walkthrough.conformanceStatus = "non-conforming"
+                vehicle_inspection.conformanceStatus = "non-conforming"
                 inspection_vehicle.conformanceStatus = "non-conforming"
 
-                checkpoint.mostRecentInspectionWalkthroughResult = "non-conforming"
+                checkpoint.lastVehicleInspectionResult = "non-conforming"
 
             # updating checkpoints object
-            checkpoint.conformanceStatus = checkpoint.mostRecentInspectionWalkthroughResult
-            checkpoint.mostRecentInspectionWalkthroughID = inspection_walkthrough.id
+            checkpoint.conformanceStatus = checkpoint.lastVehicleInspectionResult
+            checkpoint.lastVehicleInspectionID = vehicle_inspection.id
             checkpoint.update(db)
 
             # updating signs
@@ -154,20 +156,19 @@ def processInspectionWalkthrough(inspection_walkthrough, inspection_vehicle):
         # STEP 2.6: UPDATE FIREBASE WITH CONFORMANCE AND PROCESSING STATUS FOR INSPECTION #
 
         # updating inspection checkpoint object
-        inspection_checkpoint.signs = new_signs
-        inspection_checkpoint.conformanceStatus = new_checkpoint_conformance
-        inspection_checkpoint.update(db)
+        vehicle_checkpoint.signs = new_signs
+        vehicle_checkpoint.conformanceStatus = new_checkpoint_conformance
+        vehicle_checkpoint.update(db)
 
-        # updating checkpoint object
+        new_checkpoints[vehicle_checkpoint.id] = new_checkpoint_conformance
 
-        # updating inspection vehicle object
-        inspection_vehicle.update(db)
+    vehicle_inspection.processingStatus = "processed"
+    vehicle_inspection.checkpoints = new_checkpoints
+    vehicle_inspection.update(db)
 
-        new_checkpoints[inspection_checkpoint.id] = new_checkpoint_conformance
+    # updating inspection vehicle object
+    inspection_vehicle.update(db)
 
-    inspection_walkthrough.processingStatus = "processed"
-    inspection_walkthrough.checkpoints = new_checkpoints
-    inspection_walkthrough.update(db)
     print(f"\tConformance status uploaded.")
 
     print(f"Processing Complete!")
@@ -203,10 +204,9 @@ if __name__ == "__main__":
     storage = firebase.storage()
 
     # firestore collections
-    walkthroughs_collection = db.collection(u'walkthroughs')
     checkpoints_collection = db.collection(u'checkpoints')
-    inspection_walkthroughs_collection = db.collection(u'inspectionWalkthroughs')
-    inspection_checkpoints_collection = db.collection(u'inspectionCheckpoints')
+    vehicle_inspections_collection = db.collection(u'vehicleInspections')
+    checkpoint_inspections_collection = db.collection(u'checkpointInspections')
     vehicle_collection = db.collection(u'vehicles')
 
     # ################# #
