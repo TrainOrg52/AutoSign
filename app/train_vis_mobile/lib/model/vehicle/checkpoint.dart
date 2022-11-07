@@ -58,7 +58,7 @@ class Checkpoint extends ModelObject {
           ConformanceStatus.fromString(data?["conformanceStatus"]),
       lastVehicleInspectionID: data?["lastVehicleInspectionID"],
       lastVehicleInspectionResult:
-          ConformanceStatus.fromString(data?["lastVehicleInspectionID"]),
+          ConformanceStatus.fromString(data?["lastVehicleInspectionResult"]),
       lastRemediationID: data?["lastRemediationID"] == "null"
           ? null
           : data?["lastRemediationID"],

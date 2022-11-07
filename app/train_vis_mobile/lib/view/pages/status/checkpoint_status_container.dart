@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:train_vis_mobile/controller/checkpoint_controller.dart';
+import 'package:train_vis_mobile/main.dart';
 import 'package:train_vis_mobile/model/vehicle/checkpoint.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
@@ -130,7 +131,7 @@ class CheckpointStatusContainer extends StatelessWidget {
                       ),
                       const SizedBox(width: MySizes.spacing),
                       Text(
-                        checkpoint.conformanceStatus.title,
+                        checkpoint.conformanceStatus.title.toTitleCase(),
                         style: MyTextStyles.bodyText2,
                       ),
                     ],
@@ -164,9 +165,9 @@ class CheckpointStatusContainer extends StatelessWidget {
           height: (MySizes.spacing * 2) + 1,
         ),
 
-        // //// //
-        // BODY //
-        // //// //
+        // ///////// //
+        // DROP DOWN //
+        // ///////// //
 
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -192,7 +193,8 @@ class CheckpointStatusContainer extends StatelessWidget {
                           checkpoint.lastVehicleInspectionResult.accentColor,
                       padding: const EdgeInsets.all(MySizes.paddingValue / 2),
                       child: Text(
-                        checkpoint.lastVehicleInspectionResult.title,
+                        checkpoint.lastVehicleInspectionResult.title
+                            .toTitleCase(),
                         style: MyTextStyles.bodyText2,
                       ),
                     ),

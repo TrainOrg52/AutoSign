@@ -64,3 +64,20 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+// ////////////// //
+// HELPER METHODS //
+// ////////////// //
+
+/// TODO
+extension StringCasingExtension on String {
+  /// TODO
+  String toCapitalized() =>
+      length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
+
+  /// TODO
+  String toTitleCase() => replaceAll(RegExp(' +'), ' ')
+      .split(' ')
+      .map((str) => str.toCapitalized())
+      .join(' ');
+}
