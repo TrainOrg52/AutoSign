@@ -10,12 +10,10 @@ class Checkpoint extends ModelObject {
   String prompt; // prompt shown when capturing the checkpoint
   List<String> signs; // list of signs expected within the checkpoint
   ConformanceStatus conformanceStatus; // current conformance status of CP
-  String
-      mostRecentInspectionWalkthroughID; // most recent inspection walkthrough
+  String lastVehicleInspectionID; // most recent inspection
   ConformanceStatus
-      mostRecentInspectionWalkthroughResult; // ID of most recent inspection walkthrough
-  String?
-      mostRecentRemediationWalkthroughID; // ID of most recent remediation (if there is one)
+      lastVehicleInspectionResult; // ID of most recent inspection walkthrough
+  String? lastRemediationID; // ID of most recent remediation (if there is one)
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -29,13 +27,13 @@ class Checkpoint extends ModelObject {
     this.prompt = "",
     List<String>? signs,
     ConformanceStatus? conformanceStatus,
-    this.mostRecentInspectionWalkthroughID = "",
-    ConformanceStatus? mostRecentInspectionWalkthroughResult,
-    this.mostRecentRemediationWalkthroughID,
+    this.lastVehicleInspectionID = "",
+    ConformanceStatus? lastVehicleInspectionResult,
+    this.lastRemediationID,
   })  : signs = signs ?? [],
         conformanceStatus = conformanceStatus ?? ConformanceStatus.pending,
-        mostRecentInspectionWalkthroughResult =
-            mostRecentInspectionWalkthroughResult ?? ConformanceStatus.pending,
+        lastVehicleInspectionResult =
+            lastVehicleInspectionResult ?? ConformanceStatus.pending,
         super(id: id, timestamp: timestamp);
 
   // ///////// //
@@ -58,14 +56,12 @@ class Checkpoint extends ModelObject {
       signs: List.from(data?["signs"]),
       conformanceStatus:
           ConformanceStatus.fromString(data?["conformanceStatus"]),
-      mostRecentInspectionWalkthroughID:
-          data?["mostRecentInspectionWalkthroughID"],
-      mostRecentInspectionWalkthroughResult: ConformanceStatus.fromString(
-          data?["mostRecentInspectionWalkthroughResult"]),
-      mostRecentRemediationWalkthroughID:
-          data?["mostRecentRemediationWalkthroughID"] == "null"
-              ? null
-              : data?["mostRecentRemediationWalkthroughID"],
+      lastVehicleInspectionID: data?["lastVehicleInspectionID"],
+      lastVehicleInspectionResult:
+          ConformanceStatus.fromString(data?["lastVehicleInspectionID"]),
+      lastRemediationID: data?["lastRemediationID"] == "null"
+          ? null
+          : data?["lastRemediationID"],
     );
   }
 
@@ -80,10 +76,9 @@ class Checkpoint extends ModelObject {
       "prompt": prompt,
       "signs": signs,
       "conformanceStatus": conformanceStatus.toString(),
-      "mostRecentInspectionWalkthroughID": mostRecentInspectionWalkthroughID,
-      "mostRecentInspectionWalkthroughResult":
-          mostRecentInspectionWalkthroughResult,
-      "mostRecentRemediationWalkthroughID": mostRecentRemediationWalkthroughID,
+      "lastVehicleInspectionID": lastVehicleInspectionID,
+      "lastVehicleInspectionResult": lastVehicleInspectionResult,
+      "lastRemediationID": lastRemediationID,
     };
   }
 }

@@ -187,13 +187,12 @@ class CheckpointStatusContainer extends StatelessWidget {
                   children: [
                     BorderedContainer(
                       isDense: true,
-                      borderColor: checkpoint
-                          .mostRecentInspectionWalkthroughResult.color,
-                      backgroundColor: checkpoint
-                          .mostRecentInspectionWalkthroughResult.accentColor,
+                      borderColor: checkpoint.lastVehicleInspectionResult.color,
+                      backgroundColor:
+                          checkpoint.lastVehicleInspectionResult.accentColor,
                       padding: const EdgeInsets.all(MySizes.paddingValue / 2),
                       child: Text(
-                        checkpoint.mostRecentInspectionWalkthroughResult.title,
+                        checkpoint.lastVehicleInspectionResult.title,
                         style: MyTextStyles.bodyText2,
                       ),
                     ),
@@ -224,7 +223,7 @@ class CheckpointStatusContainer extends StatelessWidget {
                 const SizedBox(height: MySizes.spacing),
                 Row(
                   children: [
-                    if (checkpoint.mostRecentRemediationWalkthroughID == null)
+                    if (checkpoint.lastRemediationID == null)
                       const BorderedContainer(
                         isDense: true,
                         borderColor: MyColors.lineColor,
