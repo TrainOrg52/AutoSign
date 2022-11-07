@@ -79,6 +79,8 @@ class Checkpoint extends ModelObject {
       "signs": signs,
       "conformanceStatus": conformanceStatus.toString(),
       "mostRecentInspectionWalkthroughID": mostRecentInspectionWalkthroughID,
+      "mostRecentInspectionWalkthroughResult":
+          mostRecentInspectionWalkthroughResult,
       "mostRecentRemediationWalkthroughID": mostRecentRemediationWalkthroughID,
     };
   }
