@@ -1,11 +1,12 @@
 class Vehicle:
-    def __init__(self, id, timestamp, title, conformanceStatus, location, checkpoints):
+    def __init__(self, id, timestamp, title, conformanceStatus, location, checkpoints, lastVehicleInspectionID):
         self.id = id
         self.timestamp = timestamp
         self.title = title
         self.conformanceStatus = conformanceStatus
         self.location = location
         self.checkpoints = checkpoints
+        self.lastVehicleInspectionID = lastVehicleInspectionID
 
     @staticmethod
     def from_doc(doc):
@@ -17,7 +18,8 @@ class Vehicle:
             data["title"],
             data["conformanceStatus"],
             data["location"],
-            data["checkpoints"]
+            data["checkpoints"],
+            data["lastVehicleInspectionID"]
         )
 
     def to_dict(self):
@@ -26,7 +28,8 @@ class Vehicle:
             "timestamp": self.timestamp,
             "title": self.title,
             "conformanceStatus": self.conformanceStatus,
-            "checkpoints": self.checkpoints
+            "checkpoints": self.checkpoints,
+            "lastVehicleInspectionID": self.lastVehicleInspectionID
         }
 
     def update(self, db):
@@ -81,11 +84,10 @@ class Checkpoint:
 
 
 class vehicleInspection:
-    def __init__(self, id, timestamp, vehicleID, processingStatus, conformanceStatus, checkpoints):
+    def __init__(self, id, timestamp, vehicleID, conformanceStatus, checkpoints):
         self.id = id
         self.timestamp = timestamp
         self.vehicleID = vehicleID
-        self.processingStatus = processingStatus
         self.conformanceStatus = conformanceStatus
         self.checkpoints = checkpoints
 
@@ -97,7 +99,6 @@ class vehicleInspection:
             doc.id,
             data["timestamp"],
             data["vehicleID"],
-            data["processingStatus"],
             data["conformanceStatus"],
             data["checkpoints"]
         )
@@ -106,7 +107,6 @@ class vehicleInspection:
         return {
             "timestamp": self.timestamp,
             "vehicleID": self.vehicleID,
-            "processingStatus": self.processingStatus,
             "conformanceStatus": self.conformanceStatus,
             "checkpoints": self.checkpoints
         }

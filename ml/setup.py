@@ -8,17 +8,19 @@ import torchvision.transforms as transforms
 from object_detector.inference import ObjectDetector
 
 
-# @brief: Every 3 seconds, performs a get request from firestore and looks for any inspection walkthrough processing status fields that are 'pending'. It then iterates over each instance of the occurrence and then processes the inspection.
-# @params: N/A
-# @return: N/A
-# @authors: Benjamin Sanati, Charlie Powell
+"""
+    @brief: Every 3 seconds, performs a get request from firestore and looks for any inspection walkthrough processing status fields that are 'pending'. It then iterates over each instance of the occurrence and then processes the inspection.
+    @params: N/A
+    @return: N/A
+    @authors: Benjamin Sanati, Charlie Powell
+"""
 def runServer():
     while True:
 
         print("Checking for unprocessed inspection walkthroughs...")
 
         # get all inspections where status is "pending"
-        inspection_walkthroughs = vehicle_inspections_collection.where(u'processingStatus', u'==', u'pending').get()
+        inspection_walkthroughs = vehicle_inspections_collection.where(u'conformanceStatus', u'==', u'pending').get()
 
         # checking if any pending inspections are present
         if len(inspection_walkthroughs) > 0:
@@ -39,11 +41,12 @@ def runServer():
 
         sleep(3)
 
-
-# @brief: Processes each inspection walkthrough and uploads the processed results to firestore and storage. Uses the object detector followed by (non-optimal) predicted instance/ground-truth instance matching logic.
-# @params: 'inspection_walkthrough' is an instance of an inspection that is yet to be processed.
-# @return: N/A
-# @authors: Benjamin Sanati, Charlie Powell
+"""
+    @brief: Processes each inspection walkthrough and uploads the processed results to firestore and storage. Uses the object detector followed by (non-optimal) predicted instance/ground-truth instance matching logic.
+    @params: 'inspection_walkthrough' is an instance of an inspection that is yet to be processed.
+    @return: N/A
+    @authors: Benjamin Sanati, Charlie Powell
+"""
 def processInspectionWalkthrough(vehicle_inspection, inspection_vehicle):
     # ############################################### #
     # STEP 1: UPDATE STATUS OF INSPECTION WALKTHROUGH #
@@ -51,11 +54,12 @@ def processInspectionWalkthrough(vehicle_inspection, inspection_vehicle):
 
     print("-----------------------")
     print(f"Processing train {vehicle_inspection.vehicleID}...")
-    vehicle_inspection.processingStatus = "processing"
+    vehicle_inspection.conformanceStatus = "processing"
     vehicle_inspection.update(db)
-    vehicle_inspection.conformanceStatus = "conforming"
-    inspection_vehicle.conformanceStatus = "pending"
+    inspection_vehicle.conformanceStatus = "processing"  # TODO: Remove when done in app
     inspection_vehicle.update(db)
+
+    vehicle_inspection.conformanceStatus = "conforming"
     inspection_vehicle.conformanceStatus = "conforming"
 
     new_checkpoints = vehicle_inspection.checkpoints
@@ -162,7 +166,6 @@ def processInspectionWalkthrough(vehicle_inspection, inspection_vehicle):
 
         new_checkpoints[vehicle_checkpoint.id] = new_checkpoint_conformance
 
-    vehicle_inspection.processingStatus = "processed"
     vehicle_inspection.checkpoints = new_checkpoints
     vehicle_inspection.update(db)
 
@@ -175,10 +178,12 @@ def processInspectionWalkthrough(vehicle_inspection, inspection_vehicle):
     print("-----------------------")
 
 
-# @brief: Performs setup of firebase firestore, storage and the initialization of YOLOv7. Calls the server once the setup is completed
-# @params: N/A
-# @return: N/A
-# @authors: Benjamin Sanati, Charlie Powell
+"""
+    @brief: Performs setup of firebase firestore, storage and the initialization of YOLOv7. Calls the server once the setup is completed
+    @params: N/A
+    @return: N/A
+    @authors: Benjamin Sanati, Charlie Powell
+"""
 if __name__ == "__main__":
     # ############## #
     # FIREBASE SETUP #
