@@ -66,7 +66,7 @@ def processInspectionWalkthrough(inspection_walkthrough, inspection_vehicle):
     inspection_checkpoint_signs = []
     inspection_checkpoints = []
     for inspection_checkpoint_id in inspection_walkthrough.checkpoints:
-        # STEP 2.1: GATHERING INSPECTION CHECKPOINT OBJECT #
+        # STEP 2.1: GATHERING INSPECTION CHECKPOINT OBJECT AND CHECKPOINT OBJECT #
 
         inspection_checkpoint = inspection_checkpoints_collection.document(inspection_checkpoint_id).get()
         inspection_checkpoint = InspectionCheckpoint.from_doc(inspection_checkpoint)
@@ -80,10 +80,6 @@ def processInspectionWalkthrough(inspection_walkthrough, inspection_vehicle):
         storage_roots.append(storage_root)
         storage_path = f"{storage_root}/unprocessed.png"
         print(f"\tIdentified checkpoint {inspection_checkpoint.id}")
-
-        # creating directory for media
-        # if not os.path.exists(f"storage/images/{inspection_checkpoint.id}"):
-        #    os.mkdir(f"storage/images/{inspection_checkpoint.id}")
 
         # defining path to local storage
         local_path = f"storage/images/{inspection_checkpoint.id}.png"
@@ -116,6 +112,12 @@ def processInspectionWalkthrough(inspection_walkthrough, inspection_vehicle):
         # updating signs
         new_signs = inspection_signs
 
+        checkpoint = checkpoints_collection.document(inspection_checkpoint.checkpointID).get()
+        checkpoint = Checkpoint.from_doc(checkpoint)
+
+        checkpoint.conformanceStatus = "processing"
+        checkpoint.mostRecentInspectionWalkthroughResult = "conforming"
+
         for (sign_id, sign_conformance) in inspection_signs.items():
             # checking if inspection sign identified
             if sign_id in predicted_signs:
@@ -139,6 +141,13 @@ def processInspectionWalkthrough(inspection_walkthrough, inspection_vehicle):
                 inspection_walkthrough.conformanceStatus = "non-conforming"
                 inspection_vehicle.conformanceStatus = "non-conforming"
 
+                checkpoint.mostRecentInspectionWalkthroughResult = "non-conforming"
+
+            # updating checkpoints object
+            checkpoint.conformanceStatus = checkpoint.mostRecentInspectionWalkthroughResult
+            checkpoint.mostRecentInspectionWalkthroughID = inspection_walkthrough.id
+            checkpoint.update(db)
+
             # updating signs
             new_signs[sign_id] = new_sign_conformance
 
@@ -148,6 +157,10 @@ def processInspectionWalkthrough(inspection_walkthrough, inspection_vehicle):
         inspection_checkpoint.signs = new_signs
         inspection_checkpoint.conformanceStatus = new_checkpoint_conformance
         inspection_checkpoint.update(db)
+
+        # updating checkpoint object
+
+        # updating inspection vehicle object
         inspection_vehicle.update(db)
 
         new_checkpoints[inspection_checkpoint.id] = new_checkpoint_conformance
