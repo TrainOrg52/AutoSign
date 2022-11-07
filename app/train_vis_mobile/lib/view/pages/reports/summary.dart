@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:train_vis_mobile/view/theme/my_colors.dart';
-import "package:train_vis_mobile/view/theme/my_icon_button.dart";
-import 'package:train_vis_mobile/view/theme/my_sizes.dart';
-import 'package:train_vis_mobile/view/theme/my_text_button.dart';
-import 'package:train_vis_mobile/view/theme/my_text_styles.dart';
+import 'package:train_vis_mobile/view/pages/reports/reports.dart';
+import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
+import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
+import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
 import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 import 'package:train_vis_mobile/view/widgets/colored_container.dart';
-import 'package:train_vis_mobile/view/pages/reports/reports.dart';
 
 ///Page showing the summary of the checkpoints for a given report
 ///Currently contains dummy data just to demonstrate the UI
 class ReportSummary extends StatelessWidget {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -65,7 +64,7 @@ Widget checkpointViewWidget(CheckPoint currentPoint, bool pending) {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Image"),
+              const Text("Image"),
               !pending
                   ? currentPoint.conforming
                       ? conforming()
@@ -86,7 +85,7 @@ Widget notProcessedWidget() {
       backgroundColor: MyColors.grey500,
       borderColor: MyColors.grey1000,
       child: Row(
-        children: [
+        children: const [
           Icon(
             Icons.warning,
             color: MyColors.grey1000,
@@ -111,7 +110,7 @@ Widget nonconforming() {
       borderColor: MyColors.negative,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
+        children: const [
           Icon(
             Icons.warning,
             color: MyColors.negative,
@@ -135,7 +134,7 @@ Widget conforming() {
       backgroundColor: MyColors.greenAcent,
       borderColor: MyColors.green,
       child: Row(
-        children: [
+        children: const [
           Icon(
             Icons.check_circle,
             color: MyColors.green,
@@ -155,7 +154,7 @@ Widget conforming() {
 Widget reportTitleTile(bool pending, bool current) {
   return BorderedContainer(
       backgroundColor: MyColors.grey500,
-      padding: EdgeInsets.all(0),
+      padding: const EdgeInsets.all(0),
       height: 70,
       borderRadius: 10,
       child: Center(
@@ -167,16 +166,16 @@ Widget reportTitleTile(bool pending, bool current) {
               ),
               subtitle: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.location_on,
                     color: Colors.black,
                   ),
-                  Text("Reading"),
-                  SizedBox(
+                  const Text("Reading"),
+                  const SizedBox(
                     width: 16,
                   ),
                   pending ? pendingWidget() : processedWidget(),
-                  SizedBox(
+                  const SizedBox(
                     width: 16,
                   ),
                   current ? upToDateWidget() : outdatedWidget()

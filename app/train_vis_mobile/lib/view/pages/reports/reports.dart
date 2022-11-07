@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:train_vis_mobile/view/theme/my_colors.dart';
-import "package:train_vis_mobile/view/theme/my_icon_button.dart";
-import 'package:train_vis_mobile/view/theme/my_sizes.dart';
-import 'package:train_vis_mobile/view/theme/my_text_styles.dart';
+import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
+import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
-import 'package:train_vis_mobile/view/widgets/colored_container.dart';
 
 ///Page for showing the list of reports associated with a train
 ///Currently contains dummy data just to demonstrate the UI
 class ReportsPage extends StatelessWidget {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Inspections",
           style: MyTextStyles.headerText1,
         ),
@@ -51,7 +49,7 @@ ListView _buildReportList(BuildContext context) {
 /// Widget which generates a tile for a given report object
 Widget reportTile(Report report) {
   return BorderedContainer(
-      padding: EdgeInsets.all(0),
+      padding: const EdgeInsets.all(0),
       height: 70,
       borderRadius: 10,
       child: Center(
@@ -64,7 +62,7 @@ Widget reportTile(Report report) {
               subtitle: Row(
                 children: [
                   locationWidget(report.location),
-                  SizedBox(
+                  const SizedBox(
                     width: 16,
                   ),
                   report.processed ? processedWidget() : pendingWidget()
@@ -85,11 +83,11 @@ Widget reportTile(Report report) {
 Widget locationWidget(String location) {
   return Row(
     children: [
-      Icon(
+      const Icon(
         Icons.location_on,
         color: Colors.black,
       ),
-      Container(width: 60, child: Text(location)),
+      SizedBox(width: 60, child: Text(location)),
     ],
   );
 }
@@ -97,7 +95,7 @@ Widget locationWidget(String location) {
 ///Widget with a green checkmark for when a report has been processed
 Widget processedWidget() {
   return Row(
-    children: [
+    children: const [
       Icon(
         Icons.check_circle,
         color: MyColors.green,
@@ -110,7 +108,7 @@ Widget processedWidget() {
 ///Widget with an amber warning for when a report is pending processing
 Widget pendingWidget() {
   return Row(
-    children: [
+    children: const [
       Icon(
         Icons.warning,
         color: MyColors.amber,
@@ -123,7 +121,7 @@ Widget pendingWidget() {
 ///Widget with an amber warning for when a report is outdated
 Widget outdatedWidget() {
   return Row(
-    children: [
+    children: const [
       Icon(
         Icons.warning,
         color: MyColors.amber,
@@ -136,7 +134,7 @@ Widget outdatedWidget() {
 ///Widget with a green checkmark for when a report is the most recent available
 Widget upToDateWidget() {
   return Row(
-    children: [
+    children: const [
       Icon(
         Icons.check_circle,
         color: MyColors.green,
