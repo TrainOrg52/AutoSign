@@ -5,7 +5,7 @@ import 'package:train_vis_mobile/model/status/conformance_status.dart';
 /// A checkpoint within the gold standard walkthrough of a given train vehicle.
 class Checkpoint extends ModelObject {
   // MEMBERS //
-  String walkthroughID; // id of this checkpoints associated walkthrough
+  String vehicleID; // id of this checkpoints associated vehicle
   String title; // title of the checkpoint
   String prompt; // prompt shown when capturing the checkpoint
   List<String> signs; // list of signs expected within the checkpoint
@@ -24,7 +24,7 @@ class Checkpoint extends ModelObject {
   Checkpoint({
     String id = "",
     int? timestamp,
-    this.walkthroughID = "",
+    this.vehicleID = "",
     this.title = "",
     this.prompt = "",
     List<String>? signs,
@@ -52,10 +52,10 @@ class Checkpoint extends ModelObject {
     return Checkpoint(
       id: snapshot.id,
       timestamp: data?["timestamp"],
-      walkthroughID: data?["walkthroughID"],
+      vehicleID: data?["vehicleID"],
       title: data?["title"],
       prompt: data?["prompt"],
-      signs: data?["signs"],
+      signs: List.from(data?["signs"]),
       conformanceStatus:
           ConformanceStatus.fromString(data?["conformanceStatus"]),
       mostRecentInspectionWalkthroughID:
@@ -63,7 +63,9 @@ class Checkpoint extends ModelObject {
       mostRecentInspectionWalkthroughResult: ConformanceStatus.fromString(
           data?["mostRecentInspectionWalkthroughResult"]),
       mostRecentRemediationWalkthroughID:
-          data?["mostRecentRemediationWalkthroughID"],
+          data?["mostRecentRemediationWalkthroughID"] == "null"
+              ? null
+              : data?["mostRecentRemediationWalkthroughID"],
     );
   }
 
@@ -73,7 +75,7 @@ class Checkpoint extends ModelObject {
     // converting to a map
     return {
       "timestamp": timestamp,
-      "walkthroughID": walkthroughID,
+      "vehicleID": vehicleID,
       "title": title,
       "prompt": prompt,
       "signs": signs,

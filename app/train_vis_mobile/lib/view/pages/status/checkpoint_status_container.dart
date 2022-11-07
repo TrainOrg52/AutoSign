@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:train_vis_mobile/controller/checkpoint_controller.dart';
+import 'package:train_vis_mobile/model/vehicle/checkpoint.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_icon_button.dart';
 import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 import 'package:train_vis_mobile/view/widgets/colored_container.dart';
+import 'package:train_vis_mobile/view/widgets/custom_future_builder.dart';
 
 /// Container that stores information on the status of a particular checkpoint
 /// within a vehicle.
 class CheckpointStatusContainer extends StatelessWidget {
   // MEMBER VARIABLES //
-  final String checkpointID; // ID of vehicle being displayed
+  final Checkpoint checkpoint; // checkpoint being displayed
   final bool isExpanded;
   final Function() onExpanded;
 
@@ -25,7 +28,7 @@ class CheckpointStatusContainer extends StatelessWidget {
 
   const CheckpointStatusContainer({
     super.key,
-    required this.checkpointID,
+    required this.checkpoint,
     required this.isExpanded,
     required this.onExpanded,
   });
@@ -79,7 +82,16 @@ class CheckpointStatusContainer extends StatelessWidget {
             isDense: true,
             backgroundColor: Colors.transparent,
             padding: const EdgeInsets.all(MySizes.paddingValue / 2),
-            child: Image.asset("resources/images/checkpoint 1.png"),
+            child: CustomFutureBuilder(
+              future:
+                  CheckpointController.instance.getCheckpointImageDownloadURL(
+                checkpoint.vehicleID,
+                checkpoint.id,
+              ),
+              builder: (context, downloadURL) {
+                return Image.network(downloadURL);
+              },
+            ),
           ),
 
           const SizedBox(width: MySizes.spacing),
@@ -92,8 +104,8 @@ class CheckpointStatusContainer extends StatelessWidget {
                 // CHECKPOINT TITLE //
                 // //////////////// //
 
-                const Text(
-                  "Entrance 1: Door",
+                Text(
+                  checkpoint.title,
                   style: MyTextStyles.headerText3,
                 ),
 
@@ -105,20 +117,20 @@ class CheckpointStatusContainer extends StatelessWidget {
 
                 BorderedContainer(
                   isDense: true,
-                  borderColor: MyColors.green,
-                  backgroundColor: MyColors.greenAcent,
+                  borderColor: checkpoint.conformanceStatus.color,
+                  backgroundColor: checkpoint.conformanceStatus.accentColor,
                   padding: const EdgeInsets.all(MySizes.paddingValue / 2),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
+                    children: [
                       Icon(
-                        FontAwesomeIcons.solidCircleCheck,
-                        color: MyColors.green,
+                        checkpoint.conformanceStatus.iconData,
+                        color: checkpoint.conformanceStatus.color,
                         size: MySizes.smallIconSize,
                       ),
-                      SizedBox(width: MySizes.spacing),
+                      const SizedBox(width: MySizes.spacing),
                       Text(
-                        "Conforming",
+                        checkpoint.conformanceStatus.title,
                         style: MyTextStyles.bodyText2,
                       ),
                     ],
@@ -173,13 +185,15 @@ class CheckpointStatusContainer extends StatelessWidget {
                 const SizedBox(height: MySizes.spacing),
                 Row(
                   children: [
-                    const BorderedContainer(
+                    BorderedContainer(
                       isDense: true,
-                      borderColor: MyColors.negative,
-                      backgroundColor: MyColors.negativeAccent,
-                      padding: EdgeInsets.all(MySizes.paddingValue / 2),
+                      borderColor: checkpoint
+                          .mostRecentInspectionWalkthroughResult.color,
+                      backgroundColor: checkpoint
+                          .mostRecentInspectionWalkthroughResult.accentColor,
+                      padding: const EdgeInsets.all(MySizes.paddingValue / 2),
                       child: Text(
-                        "Non-Conforming",
+                        checkpoint.mostRecentInspectionWalkthroughResult.title,
                         style: MyTextStyles.bodyText2,
                       ),
                     ),
@@ -210,24 +224,37 @@ class CheckpointStatusContainer extends StatelessWidget {
                 const SizedBox(height: MySizes.spacing),
                 Row(
                   children: [
-                    const BorderedContainer(
-                      isDense: true,
-                      borderColor: MyColors.green,
-                      backgroundColor: MyColors.greenAcent,
-                      padding: EdgeInsets.all(MySizes.paddingValue / 2),
-                      child: Text(
-                        "Remediated",
-                        style: MyTextStyles.bodyText2,
+                    if (checkpoint.mostRecentRemediationWalkthroughID == null)
+                      const BorderedContainer(
+                        isDense: true,
+                        borderColor: MyColors.lineColor,
+                        backgroundColor: MyColors.grey100,
+                        padding: EdgeInsets.all(MySizes.paddingValue / 2),
+                        child: Text(
+                          "None",
+                          style: MyTextStyles.bodyText2,
+                        ),
+                      )
+                    else ...[
+                      const BorderedContainer(
+                        isDense: true,
+                        borderColor: MyColors.green,
+                        backgroundColor: MyColors.greenAcent,
+                        padding: EdgeInsets.all(MySizes.paddingValue / 2),
+                        child: Text(
+                          "Remediated",
+                          style: MyTextStyles.bodyText2,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: MySizes.spacing),
-                    MyIconButton.secondary(
-                      iconData: FontAwesomeIcons.circleChevronRight,
-                      onPressed: () {
-                        // navigating to remediation
-                        // TODO
-                      },
-                    ),
+                      const SizedBox(width: MySizes.spacing),
+                      MyIconButton.secondary(
+                        iconData: FontAwesomeIcons.circleChevronRight,
+                        onPressed: () {
+                          // navigating to remediation
+                          // TODO
+                        },
+                      ),
+                    ]
                   ],
                 ),
               ],

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:train_vis_mobile/model/vehicle/checkpoint.dart';
 
 /// Controller that manages the application's list of [Checkpoint] objects.
@@ -35,9 +36,20 @@ class CheckpointController {
         .map((snapshot) => Checkpoint.fromFirestore(snapshot));
   }
 
-  // /// Returns the list of [Checkpoint]s associated with the given [Walkthrough].
-  // Stream<List<Checkpoint> getCheckpointsWhereWalkthroughIs(String walkthroughID){
-  //   // getting walkthrough object
-  //   Walkthrough
-  // }
+  // ///////////////////// //
+  // RETREIVING AT INSTANT //
+  // ///////////////////// //
+
+  /// Returns the download URL for the image of the [Checkpoint].
+  Future<String> getCheckpointImageDownloadURL(
+    String vehicleID,
+    String checkpointID,
+  ) {
+    // defining reference to Storage
+    Reference reference = FirebaseStorage.instance
+        .ref("$vehicleID/checkpoints/$checkpointID.png");
+
+    // returning download URL
+    return reference.getDownloadURL();
+  }
 }

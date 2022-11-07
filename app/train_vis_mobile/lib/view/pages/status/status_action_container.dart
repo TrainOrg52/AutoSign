@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
 import 'package:train_vis_mobile/view/routes/routes.dart';
@@ -31,8 +30,8 @@ class StatusActionContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BorderedContainer(
-      borderColor: MyColors.negative,
-      backgroundColor: MyColors.negativeAccent,
+      borderColor: vehicle.conformanceStatus.color,
+      backgroundColor: vehicle.conformanceStatus.accentColor,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -41,15 +40,15 @@ class StatusActionContainer extends StatelessWidget {
           // /////////////////// //
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
+            children: [
               Icon(
-                FontAwesomeIcons.circleExclamation,
+                vehicle.conformanceStatus.iconData,
                 size: MySizes.mediumIconSize,
-                color: MyColors.red,
+                color: vehicle.conformanceStatus.color,
               ),
-              SizedBox(width: MySizes.spacing),
+              const SizedBox(width: MySizes.spacing),
               Text(
-                "Non-conformances present.",
+                vehicle.conformanceStatus.description,
                 style: MyTextStyles.headerText3,
               ),
             ],
@@ -57,15 +56,15 @@ class StatusActionContainer extends StatelessWidget {
 
           const SizedBox(height: MySizes.spacing),
 
-          // /////////////////////// //
-          // CONFORMANCE DESCRIPTION //
-          // /////////////////////// //
+          // // /////////////////////// //
+          // // CONFORMANCE DESCRIPTION //
+          // // /////////////////////// //
 
-          const Text(
-            "There are currently 5 non-conformances present on this vehicle.",
-            style: MyTextStyles.bodyText1,
-            textAlign: TextAlign.center,
-          ),
+          // const Text(
+          //   "There are currently 5 non-conformances present on this vehicle.",
+          //   style: MyTextStyles.bodyText1,
+          //   textAlign: TextAlign.center,
+          // ),
 
           const SizedBox(height: MySizes.spacing),
 
@@ -74,8 +73,8 @@ class StatusActionContainer extends StatelessWidget {
           // //////////////////////// //
 
           MyTextButton.custom(
-            backgroundColor: MyColors.negative,
-            borderColor: MyColors.negative,
+            backgroundColor: vehicle.conformanceStatus.color,
+            borderColor: vehicle.conformanceStatus.color,
             textColor: MyColors.antiPrimary,
             text: "Start Remediation",
             onPressed: () {
