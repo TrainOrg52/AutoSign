@@ -57,3 +57,5 @@ app/*/android/app/release
 ## PROCESSING SERVER ##
 ## ################# ##
 ml/object_detector/finetuned_models/
+__pycache__/
+.idea/
