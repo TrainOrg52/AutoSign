@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:train_vis_mobile/view/theme/my_colors.dart';
-import "package:train_vis_mobile/view/theme/my_icon_button.dart";
-import 'package:train_vis_mobile/view/theme/my_text_styles.dart';
+import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
+import "package:train_vis_mobile/view/theme/widgets/my_icon_button.dart";
+import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 import 'package:train_vis_mobile/view/widgets/colored_container.dart';
 import 'package:train_vis_mobile/view/pages/remediations/remediation_summary.dart';
