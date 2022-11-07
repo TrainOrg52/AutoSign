@@ -40,15 +40,6 @@ class VehicleController {
   // RETRIEVING AT INSTANT //
   // ///////////////////// //
 
-  /// Returns a snapshot of [Vehicle] matching the given [id] at the current time.
-  Future<Vehicle> getVehicleAtInstant(String id) async {
-    // returning s snapshot of the module
-    return await _vehiclesRef
-        .doc(id)
-        .get()
-        .then((snapshot) => Vehicle.fromFirestore(snapshot));
-  }
-
   /// Returnss the download URL for the avatar image of the [Vehicle] with the
   /// given [id].
   Future<String> getVehicleAvatarDownloadURL(String id) {

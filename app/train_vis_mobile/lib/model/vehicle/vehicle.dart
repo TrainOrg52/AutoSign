@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:train_vis_mobile/model/model_object.dart';
+import 'package:train_vis_mobile/model/status/conformance_status.dart';
 
 /// A single train vehicle.
 class Vehicle extends ModelObject {
   // MEMBERS //
   String title; // title for the vehicle
   String location; // current location of vehicle
+  ConformanceStatus conformanceStatus; // current conformance status of vehicle
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -16,7 +18,9 @@ class Vehicle extends ModelObject {
     int? timestamp,
     this.title = "",
     this.location = "",
-  }) : super(id: id, timestamp: timestamp);
+    ConformanceStatus? conformanceStatus,
+  })  : conformanceStatus = conformanceStatus ?? ConformanceStatus.pending,
+        super(id: id, timestamp: timestamp);
 
   // ///////// //
   // FIRESTORE //
@@ -34,6 +38,8 @@ class Vehicle extends ModelObject {
       timestamp: data?["timestamp"],
       title: data?["title"],
       location: data?["location"],
+      conformanceStatus:
+          ConformanceStatus.fromString(data?["conformanceStatus"]),
     );
   }
 
@@ -45,6 +51,7 @@ class Vehicle extends ModelObject {
       "timestamp": timestamp,
       "title": title,
       "location": location,
+      "conformanceStatus": conformanceStatus.toString(),
     };
   }
 }

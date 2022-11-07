@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:train_vis_mobile/model/model_object.dart';
+import 'package:train_vis_mobile/model/status/conformance_status.dart';
 
 /// A checkpoint within the gold standard walkthrough of a given train vehicle.
 class Checkpoint extends ModelObject {
@@ -8,6 +9,13 @@ class Checkpoint extends ModelObject {
   String title; // title of the checkpoint
   String prompt; // prompt shown when capturing the checkpoint
   List<String> signs; // list of signs expected within the checkpoint
+  ConformanceStatus conformanceStatus; // current conformance status of CP
+  String
+      mostRecentInspectionWalkthroughID; // most recent inspection walkthrough
+  ConformanceStatus
+      mostRecentInspectionWalkthroughResult; // ID of most recent inspection walkthrough
+  String?
+      mostRecentRemediationWalkthroughID; // ID of most recent remediation (if there is one)
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -20,7 +28,14 @@ class Checkpoint extends ModelObject {
     this.title = "",
     this.prompt = "",
     List<String>? signs,
+    ConformanceStatus? conformanceStatus,
+    this.mostRecentInspectionWalkthroughID = "",
+    ConformanceStatus? mostRecentInspectionWalkthroughResult,
+    this.mostRecentRemediationWalkthroughID,
   })  : signs = signs ?? [],
+        conformanceStatus = conformanceStatus ?? ConformanceStatus.pending,
+        mostRecentInspectionWalkthroughResult =
+            mostRecentInspectionWalkthroughResult ?? ConformanceStatus.pending,
         super(id: id, timestamp: timestamp);
 
   // ///////// //
@@ -41,6 +56,14 @@ class Checkpoint extends ModelObject {
       title: data?["title"],
       prompt: data?["prompt"],
       signs: data?["signs"],
+      conformanceStatus:
+          ConformanceStatus.fromString(data?["conformanceStatus"]),
+      mostRecentInspectionWalkthroughID:
+          data?["mostRecentInspectionWalkthroughID"],
+      mostRecentInspectionWalkthroughResult: ConformanceStatus.fromString(
+          data?["mostRecentInspectionWalkthroughResult"]),
+      mostRecentRemediationWalkthroughID:
+          data?["mostRecentRemediationWalkthroughID"],
     );
   }
 
@@ -54,6 +77,9 @@ class Checkpoint extends ModelObject {
       "title": title,
       "prompt": prompt,
       "signs": signs,
+      "conformanceStatus": conformanceStatus.toString(),
+      "mostRecentInspectionWalkthroughID": mostRecentInspectionWalkthroughID,
+      "mostRecentRemediationWalkthroughID": mostRecentRemediationWalkthroughID,
     };
   }
 }

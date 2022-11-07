@@ -48,7 +48,7 @@ class StatusActionContainer extends StatelessWidget {
               ),
               SizedBox(width: MySizes.spacing),
               Text(
-                "No non-conformances present.",
+                "Non-conformances present.",
                 style: MyTextStyles.headerText3,
               ),
             ],

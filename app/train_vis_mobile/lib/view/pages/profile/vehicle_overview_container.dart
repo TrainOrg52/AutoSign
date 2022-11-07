@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:train_vis_mobile/controller/vehicle_controller.dart';
+import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/widgets/colored_container.dart';
+import 'package:train_vis_mobile/view/widgets/custom_future_builder.dart';
 
 /// Widget that contains an overview of information about a given train vehicle.
 class VehicleOverviewContainer extends StatelessWidget {
   // MEMBER VARIABLES //
-  final String vehicleID; // ID of vehicle
+  final Vehicle vehicle; // ID of vehicle
 
   // THEME-ING //
   // sizes
@@ -23,7 +26,7 @@ class VehicleOverviewContainer extends StatelessWidget {
 
   const VehicleOverviewContainer({
     super.key,
-    required this.vehicleID,
+    required this.vehicle,
   });
 
   // //////////// //
@@ -74,7 +77,7 @@ class VehicleOverviewContainer extends StatelessWidget {
                         // ////////// //
 
                         Text(
-                          vehicleID,
+                          vehicle.id,
                           style: MyTextStyles.headerText1,
                         ),
 
@@ -85,7 +88,7 @@ class VehicleOverviewContainer extends StatelessWidget {
                         // ///////////// //
 
                         Text(
-                          "Southeastern Type 707",
+                          vehicle.title,
                           style: MyTextStyles.headerText2
                               .copyWith(fontWeight: FontWeight.w400),
                         ),
@@ -98,14 +101,14 @@ class VehicleOverviewContainer extends StatelessWidget {
 
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(
+                          children: [
+                            const Icon(
                               FontAwesomeIcons.locationDot,
                               size: MySizes.smallIconSize,
                             ),
-                            SizedBox(width: MySizes.spacing),
+                            const SizedBox(width: MySizes.spacing),
                             Text(
-                              "CAF, Newport",
+                              vehicle.location,
                               style: MyTextStyles.bodyText1,
                             ),
                           ],
@@ -132,9 +135,15 @@ class VehicleOverviewContainer extends StatelessWidget {
             lineWidth: avatarOutlineWidth,
             percent: 1.0,
             progressColor: MyColors.green,
-            center: CircleAvatar(
-              radius: avatarImageRadius,
-              backgroundImage: const AssetImage("resources/images/707-012.png"),
+            center: CustomFutureBuilder(
+              future: VehicleController.instance
+                  .getVehicleAvatarDownloadURL(vehicle.id),
+              builder: (context, downloadURL) {
+                return CircleAvatar(
+                  radius: avatarImageRadius,
+                  backgroundImage: NetworkImage(downloadURL),
+                );
+              },
             ),
           ),
         ),

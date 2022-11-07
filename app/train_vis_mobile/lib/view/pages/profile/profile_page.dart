@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:train_vis_mobile/controller/vehicle_controller.dart';
 import 'package:train_vis_mobile/view/pages/profile/vehicle_action_container.dart';
 import 'package:train_vis_mobile/view/pages/profile/vehicle_activity_container.dart';
 import 'package:train_vis_mobile/view/pages/profile/vehicle_overview_container.dart';
@@ -6,6 +7,7 @@ import 'package:train_vis_mobile/view/pages/profile/vehicle_status_container.dar
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_icon_button.dart';
+import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:train_vis_mobile/view/widgets/padded_custom_scroll_view.dart';
 
 /// Page to display the profile of a train vehicle.
@@ -50,52 +52,60 @@ class ProfilePage extends StatelessWidget {
       // BODY //
       // //// //
 
-      body: PaddedCustomScrollView(
-        slivers: [
-          // //////////////// //
-          // VEHICLE OVERVIEW //
-          // //////////////// //
+      body: CustomStreamBuilder(
+        stream: VehicleController.instance.getVehicle(vehicleID),
+        builder: (context, vehicle) {
+          return PaddedCustomScrollView(
+            slivers: [
+              // //////////////// //
+              // VEHICLE OVERVIEW //
+              // //////////////// //
 
-          SliverToBoxAdapter(
-            child: VehicleOverviewContainer(vehicleID: vehicleID),
-          ),
+              SliverToBoxAdapter(
+                child: VehicleOverviewContainer(vehicle: vehicle),
+              ),
 
-          const SliverToBoxAdapter(child: SizedBox(height: MySizes.spacing)),
+              const SliverToBoxAdapter(
+                  child: SizedBox(height: MySizes.spacing)),
 
-          // /////////////////////////// //
-          // CONFORMANCE STATUS OVERVIEW //
-          // /////////////////////////// //
+              // /////////////////////////// //
+              // CONFORMANCE STATUS OVERVIEW //
+              // /////////////////////////// //
 
-          SliverToBoxAdapter(
-            child: VehicleStatusContainer(
-              vehicleID: vehicleID,
-            ),
-          ),
+              SliverToBoxAdapter(
+                child: VehicleStatusContainer(
+                  vehicleID: vehicleID,
+                ),
+              ),
 
-          const SliverToBoxAdapter(child: SizedBox(height: MySizes.spacing)),
+              const SliverToBoxAdapter(
+                  child: SizedBox(height: MySizes.spacing)),
 
-          // ////// //
-          // ACTION //
-          // ////// //
+              // ////// //
+              // ACTION //
+              // ////// //
 
-          SliverToBoxAdapter(
-            child: VehicleActionContainer(
-              vehicleID: vehicleID,
-            ),
-          ),
+              SliverToBoxAdapter(
+                child: VehicleActionContainer(
+                  vehicleID: vehicleID,
+                ),
+              ),
 
-          const SliverToBoxAdapter(child: SizedBox(height: MySizes.spacing)),
+              const SliverToBoxAdapter(
+                  child: SizedBox(height: MySizes.spacing)),
 
-          // //////// //
-          // ACTIVITY //
-          // //////// //
+              // //////// //
+              // ACTIVITY //
+              // //////// //
 
-          SliverToBoxAdapter(
-            child: VehicleActivityContainer(
-              vehicleID: vehicleID,
-            ),
-          ),
-        ],
+              SliverToBoxAdapter(
+                child: VehicleActivityContainer(
+                  vehicleID: vehicleID,
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
