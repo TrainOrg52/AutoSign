@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:train_vis_mobile/model/model_object.dart';
 import 'package:train_vis_mobile/model/status/conformance_status.dart';
+import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
 
 /// An inspection of a given train vehicle.
 class VehicleInspection extends ModelObject {
   // MEMBERS //
+  String vehicleID; // ID of vehicle being inspected
   ConformanceStatus conformanceStatus; // conformance status of the walkthrough
   Map<String, ConformanceStatus>
       checkpoints; // map of inspection checkpoint IDs to conformance status
@@ -16,11 +18,29 @@ class VehicleInspection extends ModelObject {
   VehicleInspection({
     String id = "",
     int? timestamp,
+    this.vehicleID = "",
     ConformanceStatus? conformanceStatus,
     Map<String, ConformanceStatus>? checkpoints,
   })  : conformanceStatus = conformanceStatus ?? ConformanceStatus.pending,
         checkpoints = checkpoints ?? {},
         super(id: id, timestamp: timestamp);
+
+  // //////////// //
+  // FROM VEHICLE //
+  // //////////// //
+
+  factory VehicleInspection.fromVehicle({
+    required Vehicle vehicle,
+  }) {
+    return VehicleInspection(
+      vehicleID: vehicle.id,
+      conformanceStatus: ConformanceStatus.pending,
+      checkpoints: {
+        for (String checkpointID in vehicle.checkpoints)
+          checkpointID: ConformanceStatus.pending
+      },
+    );
+  }
 
   // ///////// //
   // FIRESTORE //
@@ -36,6 +56,7 @@ class VehicleInspection extends ModelObject {
     return VehicleInspection(
       id: snapshot.id,
       timestamp: data?["timestamp"],
+      vehicleID: data?["vehicleID"],
       conformanceStatus:
           ConformanceStatus.fromString(data?["conformanceStatus"]),
       checkpoints: data?["checkpoints"],
@@ -49,6 +70,7 @@ class VehicleInspection extends ModelObject {
     // converting to a map
     return {
       "timestamp": timestamp,
+      "vehicleID": vehicleID,
       "conformanceStatus": conformanceStatus.toString(),
       "checkpoints": checkpoints,
     };

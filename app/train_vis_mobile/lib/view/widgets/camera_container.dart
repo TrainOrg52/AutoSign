@@ -12,7 +12,7 @@ import 'package:train_vis_mobile/view/widgets/custom_future_builder.dart';
 /// TODO
 class CameraContainer extends StatelessWidget {
   // MEMBER VARIABLES //
-  final Function() onCapture;
+  final Function(String) onCapture;
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -49,7 +49,7 @@ class CameraContainer extends StatelessWidget {
 class CameraContainerAux extends StatefulWidget {
   // MEMBER VARIABLES //
   final List<CameraDescription> cameras;
-  final Function() onCapture;
+  final Function(String) onCapture;
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -95,7 +95,7 @@ class _CameraContainerAuxState extends State<CameraContainerAux> {
     // initializing controller
     controller = CameraController(
       widget.cameras.first, // first camera is rear camera
-      ResolutionPreset.high,
+      ResolutionPreset.max,
       imageFormatGroup: ImageFormatGroup.bgra8888,
     );
     controller.initialize().then((_) {
@@ -155,10 +155,7 @@ class _CameraContainerAuxState extends State<CameraContainerAux> {
             alignment: Alignment.bottomCenter,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(MySizes.borderRadius * 2),
-              child: AspectRatio(
-                aspectRatio: 1 / controller.value.aspectRatio,
-                child: CameraPreview(controller),
-              ),
+              child: CameraPreview(controller),
             ),
           ),
 
@@ -185,7 +182,9 @@ class _CameraContainerAuxState extends State<CameraContainerAux> {
                       color: MyColors.backgroundSecondary,
                     ),
                   ),
-                  onPressed: widget.onCapture,
+                  onPressed: () async {
+                    await _capturePhoto();
+                  },
                   child: SizedBox(
                     height: captureButtonRadius * 2,
                     width: captureButtonRadius * 2,
@@ -197,5 +196,21 @@ class _CameraContainerAuxState extends State<CameraContainerAux> {
         ],
       );
     }
+  }
+
+  // /////////////// //
+  // CAPTURING MEDIA //
+  // /////////////// //
+
+  /// Handles the capturing of a photo.
+  ///
+  /// Takes a photo using the camera controller and passes it on to the handling
+  /// method.
+  Future<void> _capturePhoto() async {
+    // capturing the photo
+    XFile? photoFile = await controller.takePicture();
+
+    // handling the capture
+    widget.onCapture(photoFile.path);
   }
 }

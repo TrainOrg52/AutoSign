@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:train_vis_mobile/view/pages/inspect/review/checkpoint_inspection_review_container.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
@@ -6,11 +7,19 @@ import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
 
 /// TODO
 class VehicleInspectionReviewContainer extends StatefulWidget {
+  // MEMBER VARIABLES //
+  final List<CheckpointInspection> checkpointInspections; // TODO
+  final Function(List<CheckpointInspection>) onSubmit; // TODO
+
   // ///////////////// //
   // CLASS CONSTRUCTOR //
   // ///////////////// //
 
-  const VehicleInspectionReviewContainer({super.key});
+  const VehicleInspectionReviewContainer({
+    super.key,
+    required this.checkpointInspections,
+    required this.onSubmit,
+  });
 
   // //////////// //
   // CREATE STATE //
@@ -56,17 +65,29 @@ class _VehicleInspectionReviewContainerState
           textAlign: TextAlign.center,
         ),
 
-        const SizedBox(height: MySizes.spacing),
+        const SizedBox(height: MySizes.spacing * 2),
 
         // //////////////////////////// //
         // CHECKPOINT REVIEW CONTAINERS //
         // //////////////////////////// //
 
-        const CheckpointInspectionReviewContainer(),
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: widget.checkpointInspections.length,
+          itemBuilder: (context, index) {
+            return Column(
+              children: [
+                CheckpointInspectionReviewContainer(
+                  checkpointInspection: widget.checkpointInspections[index],
+                ),
+                if (index != widget.checkpointInspections.length - 1)
+                  const SizedBox(height: MySizes.spacing * 2)
+              ],
+            );
+          },
+        ),
 
-        const SizedBox(height: MySizes.spacing),
-
-        // TODO add more review containers
+        const SizedBox(height: MySizes.spacing * 2),
 
         // ///////////// //
         // SUBMIT BUTTON //
@@ -75,8 +96,8 @@ class _VehicleInspectionReviewContainerState
         MyTextButton.primary(
           text: "Submit",
           onPressed: () {
-            // submitting the inspection
-            // TODO
+            // handling the submit
+            widget.onSubmit(widget.checkpointInspections);
           },
         ),
       ],

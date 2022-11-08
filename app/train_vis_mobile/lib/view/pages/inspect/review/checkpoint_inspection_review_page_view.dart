@@ -66,7 +66,12 @@ class CheckpointInspectionCapturePageView extends StatelessWidget {
               // CAPTURE //
               // /////// //
 
-              CameraContainer(onCapture: () {}),
+              CameraContainer(
+                onCapture: (photoData) {
+                  // handling capture
+                  // TODO
+                },
+              ),
             ],
           ),
         ),

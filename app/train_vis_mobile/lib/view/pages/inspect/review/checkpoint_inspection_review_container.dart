@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
@@ -6,11 +9,17 @@ import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 
 /// TODO
 class CheckpointInspectionReviewContainer extends StatefulWidget {
+  // MEMBER VARIABLES //
+  final CheckpointInspection checkpointInspection; // checkpoing being reviewed
+
   // ///////////////// //
   // CLASS CONSTRUCTOR //
   // ///////////////// //
 
-  const CheckpointInspectionReviewContainer({super.key});
+  const CheckpointInspectionReviewContainer({
+    super.key,
+    required this.checkpointInspection,
+  });
 
   // //////////// //
   // CREATE STATE //
@@ -62,7 +71,7 @@ class _CheckpointInspectionReviewContainerState
             isDense: true,
             backgroundColor: Colors.transparent,
             padding: const EdgeInsets.all(MySizes.paddingValue / 2),
-            child: Image.asset("resources/images/checkpoint 1.png"),
+            child: Image.file(File(widget.checkpointInspection.capturePath)),
           ),
 
           const SizedBox(width: MySizes.spacing),
@@ -75,8 +84,8 @@ class _CheckpointInspectionReviewContainerState
                 // CHECKPOINT TITLE //
                 // //////////////// //
 
-                const Text(
-                  "Entrance 1: Door",
+                Text(
+                  widget.checkpointInspection.title,
                   style: MyTextStyles.headerText3,
                 ),
 
@@ -132,22 +141,6 @@ class _CheckpointInspectionReviewContainerState
             onPressed: () {
               // performing review
               // TODO
-            },
-          ),
-
-          const SizedBox(width: MySizes.spacing),
-
-          // ////////////// //
-          // CONFIRM BUTTON //
-          // ////////////// //
-
-          MyTextButton.secondary(
-            text: "Confirm",
-            onPressed: () {
-              // conforming the inspection
-              setState(() {
-                isReviewed = true;
-              });
             },
           ),
         ],

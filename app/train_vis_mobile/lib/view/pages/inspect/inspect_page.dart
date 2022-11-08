@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:train_vis_mobile/controller/vehicle_controller.dart';
+import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
+import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
 import 'package:train_vis_mobile/view/pages/inspect/capture/vehicle_inspection_capture_page_view.dart';
 import 'package:train_vis_mobile/view/pages/inspect/inspect_progress_bar.dart';
 import 'package:train_vis_mobile/view/pages/inspect/review/vehicle_inspection_review_container.dart';
@@ -8,12 +11,13 @@ import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_icon_button.dart';
+import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:train_vis_mobile/view/widgets/padded_custom_scroll_view.dart';
 
 /// Page to carry out inspection of a train vehicle.
 ///
 /// TODO
-class InspectPage extends StatelessWidget {
+class InspectPage extends StatefulWidget {
   // MEMBERS //
   final String vehicleID;
 
@@ -27,14 +31,38 @@ class InspectPage extends StatelessWidget {
   });
 
   // //////////// //
+  // CREATE STATE //
+  // //////////// //
+
+  @override
+  State<InspectPage> createState() => _InspectPageState();
+}
+
+/// TODO
+class _InspectPageState extends State<InspectPage> {
+  // STATE VARIABLES //
+  late PageController pageController; // controller for pageview
+  late List<CheckpointInspection> checkpointInspections; // TODO
+
+  // ////////// //
+  // INIT STATE //
+  // ////////// //
+
+  @override
+  void initState() {
+    super.initState();
+
+    // initializing state
+    pageController = PageController();
+    checkpointInspections = [];
+  }
+
+  // //////////// //
   // BUILD METHOD //
   // //////////// //
 
   @override
   Widget build(BuildContext context) {
-    // page view controller
-    PageController pageController = PageController(initialPage: 1);
-
     return Scaffold(
       // ///////////// //
       // CONFIGURATION //
@@ -81,28 +109,63 @@ class InspectPage extends StatelessWidget {
             // ///////////////// //
 
             SliverFillRemaining(
-              child: PageView(
-                controller: pageController,
-                physics: const NeverScrollableScrollPhysics(),
-                children: const [
-                  // //////////////////////////// //
-                  // VEHICLE INSPECTION PAGE VIEW //
-                  // //////////////////////////// //
+              child: CustomStreamBuilder<Vehicle>(
+                stream: VehicleController.instance.getVehicle(widget.vehicleID),
+                builder: (context, vehicle) {
+                  return PageView(
+                    controller: pageController,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      // //////////////////////////// //
+                      // VEHICLE INSPECTION PAGE VIEW //
+                      // //////////////////////////// //
 
-                  VehicleInspectionCapturePageView(),
+                      VehicleInspectionCapturePageView(
+                        vehicle: vehicle,
+                        onVehicleInspectionCaptured: (checkpointInspections) {
+                          // updating state
+                          setState(() {
+                            this.checkpointInspections = checkpointInspections;
+                          });
 
-                  // ////// //
-                  // REVIEW //
-                  // ////// //
+                          // navigating to review container
+                          pageController.nextPage(
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.ease,
+                          );
+                        },
+                      ),
 
-                  VehicleInspectionReviewContainer(),
+                      // ////// //
+                      // REVIEW //
+                      // ////// //
 
-                  // ////// //
-                  // SUBMIT //
-                  // ////// //
+                      VehicleInspectionReviewContainer(
+                        checkpointInspections: checkpointInspections,
+                        onSubmit: (checkpointInspections) {
+                          // updating state
+                          setState(() {
+                            this.checkpointInspections = checkpointInspections;
+                          });
 
-                  VehicleInspectionSubmitContainer(),
-                ],
+                          // navigating to review container
+                          pageController.nextPage(
+                            duration: const Duration(milliseconds: 500),
+                            curve: Curves.ease,
+                          );
+                        },
+                      ),
+
+                      // ////// //
+                      // SUBMIT //
+                      // ////// //
+
+                      VehicleInspectionSubmitContainer(
+                        checkpointInspections: checkpointInspections,
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ],
