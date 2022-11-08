@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:train_vis_mobile/controller/vehicle_controller.dart';
 import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
@@ -11,6 +12,7 @@ import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_icon_button.dart';
+import 'package:train_vis_mobile/view/widgets/confirmation_dialog.dart';
 import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:train_vis_mobile/view/widgets/padded_custom_scroll_view.dart';
 
@@ -79,7 +81,8 @@ class _InspectPageState extends State<InspectPage> {
           iconData: FontAwesomeIcons.xmark,
           iconSize: MySizes.largeIconSize,
           onPressed: () {
-            Navigator.of(context).pop();
+            // handling the close
+            _handleClose(context);
           },
         ),
         title: const Text("Inspect", style: MyTextStyles.headerText1),
@@ -172,5 +175,40 @@ class _InspectPageState extends State<InspectPage> {
         ),
       ),
     );
+  }
+
+  // ////////////// //
+  // HELPER METHODS //
+  // ////////////// //
+
+  /// TODO
+  Future<void> _handleClose(BuildContext context) async {
+    // displaying confirmation dialog
+    bool result = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const ConfirmationDialog(
+          title: "Cancel Inspection",
+          message:
+              "Are you sure you want to cancel this inspection? All progress will be lost.",
+          falseText: "No",
+          trueText: "Yes",
+          trueBackgroundColor: MyColors.negative,
+          trueTextColor: MyColors.antiNegative,
+        );
+      },
+    );
+
+    // acting based on result of dialog
+    if (result) {
+      // result true -> navigate to inspect
+
+      // navigating to inspect page
+      context.pop();
+    } else {
+      // result false -> do nothing
+
+      // nothing
+    }
   }
 }

@@ -5,6 +5,7 @@ import 'package:train_vis_mobile/view/routes/routes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
+import 'package:train_vis_mobile/view/widgets/confirmation_dialog.dart';
 
 /// Widget that displays actions that can be performed on a given vehicle.
 class VehicleActionContainer extends StatelessWidget {
@@ -55,11 +56,8 @@ class VehicleActionContainer extends StatelessWidget {
                 text: "Inspect",
                 icon: FontAwesomeIcons.magnifyingGlass,
                 onPressed: () {
-                  // navigating to inspect page
-                  context.pushNamed(
-                    Routes.inspect,
-                    params: {"vehicleID": vehicleID},
-                  );
+                  // handling the action
+                  _handleInspect(context);
                 },
               ),
             ),
@@ -129,5 +127,43 @@ class VehicleActionContainer extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // ////////////// //
+  // HELPER METHODS //
+  // ////////////// //
+
+  /// TODO
+  Future<void> _handleInspect(BuildContext context) async {
+    // displaying confirmation dialog
+    bool result = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return const ConfirmationDialog(
+          title: "Start Inspection",
+          message:
+              "Are you sure you want to start an inspection? This will overwrite the existing status of the vehicle.",
+          falseText: "No",
+          trueText: "Yes",
+          trueBackgroundColor: MyColors.green,
+          trueTextColor: MyColors.antiPrimary,
+        );
+      },
+    );
+
+    // acting based on result of dialog
+    if (result) {
+      // result true -> navigate to inspect
+
+      // navigating to inspect page
+      context.pushNamed(
+        Routes.inspect,
+        params: {"vehicleID": vehicleID},
+      );
+    } else {
+      // result false -> do nothing
+
+      // nothing
+    }
   }
 }
