@@ -137,7 +137,7 @@ class CheckpointInspection:
             data["title"],
             data["conformanceStatus"],
             data["signs"],
-            data["checkpointID"]
+            data["checkpointID"],
             data["vehicleInspectionID"]
         )
 
