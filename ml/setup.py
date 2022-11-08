@@ -7,7 +7,6 @@ from model import *
 import torchvision.transforms as transforms
 from object_detector.inference import ObjectDetector
 
-
 """
     @brief: Every 3 seconds, performs a get request from firestore and looks for any inspection walkthrough processing status fields that are 'pending'. It then iterates over each instance of the occurrence and then processes the inspection.
     @params: N/A
@@ -40,6 +39,7 @@ def runServer():
             print("All trains processed!")
 
         sleep(3)
+
 
 """
     @brief: Processes each inspection walkthrough and uploads the processed results to firestore and storage. Uses the object detector followed by (non-optimal) predicted instance/ground-truth instance matching logic.
@@ -112,7 +112,7 @@ def processInspectionWalkthrough(vehicle_inspection, inspection_vehicle):
 
     print("\tChecking Conformance Status...")
     for predicted_signs, vehicle_sign, vehicle_checkpoint in zip(identified_signs, vehicle_checkpoint_signs,
-                                                                        vehicle_checkpoints):
+                                                                 vehicle_checkpoints):
         new_checkpoint_conformance = "conforming"
 
         # updating signs

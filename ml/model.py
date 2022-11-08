@@ -116,7 +116,7 @@ class vehicleInspection:
 
 
 class CheckpointInspection:
-    def __init__(self, id, timestamp, vehicleID, title, conformanceStatus, signs, checkpointID):
+    def __init__(self, id, timestamp, vehicleID, title, conformanceStatus, signs, checkpointID, vehicleInspectionID):
         self.id = id
         self.timestamp = timestamp
         self.vehicleID = vehicleID
@@ -124,6 +124,7 @@ class CheckpointInspection:
         self.title = title
         self.conformanceStatus = conformanceStatus
         self.signs = signs
+        self.vehicleInspectionID = vehicleInspectionID
 
     @staticmethod
     def from_doc(doc):
@@ -137,6 +138,7 @@ class CheckpointInspection:
             data["conformanceStatus"],
             data["signs"],
             data["checkpointID"]
+            data["vehicleInspectionID"]
         )
 
     def to_dict(self):
@@ -146,7 +148,8 @@ class CheckpointInspection:
             "title": self.title,
             "conformanceStatus": self.conformanceStatus,
             "signs": self.signs,
-            "checkpointID": self.checkpointID
+            "checkpointID": self.checkpointID,
+            "vehicleInspectionID": self.vehicleInspectionID
         }
 
     def update(self, db):
