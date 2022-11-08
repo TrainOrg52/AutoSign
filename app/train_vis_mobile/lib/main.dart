@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:train_vis_mobile/view/routes/routes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 
@@ -10,11 +11,24 @@ import 'firebase_options.dart';
 // /////////// //
 
 Future<void> main() async {
-  // configuring app
+  // ///////////////// //
+  // APP CONFIGURATION //
+  // ///////////////// //
+
+  // Firebase
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // device orientation
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
+
+  // /////////// //
+  // RUNNING APP //
+  // /////////// //
 
   // running app
   runApp(const MyApp());
@@ -38,6 +52,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // setting preferred application orientation
+
     // building app
     return MaterialApp.router(
       // CONFIGURATION //
