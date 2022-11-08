@@ -152,7 +152,7 @@ class MyIconButton extends StatelessWidget {
       borderRadius: borderRadius,
       iconSize: iconSize,
       // colors
-      iconColor: iconColor,
+      iconColor: MyColors.textPrimary,
       backgroundColor: Colors.transparent,
       borderColor: Colors.transparent,
     );
@@ -213,6 +213,7 @@ class MyIconButton extends StatelessWidget {
       // member variables
       iconData: FontAwesomeIcons.arrowLeftLong,
       onPressed: onPressed,
+      iconColor: MyColors.textPrimary,
       // MySizes
       height: height,
       width: width,

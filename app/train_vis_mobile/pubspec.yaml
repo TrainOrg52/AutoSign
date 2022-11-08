@@ -14,12 +14,16 @@ dependencies:
     sdk: flutter
 
   #routing
-  go_router: ^5.1.1 # application routing
+  go_router: ^5.1.5 # application routing
 
   # firebase
   firebase_core: ^2.1.1 # main firebase packages
-  cloud_firestore: ^4.0.3 # Firebase Firestore (database)
-  firebase_storage: ^11.0.3 # Firebase Storage (cloud storage)
+  cloud_firestore: ^4.0.4 # Firebase Firestore
+  firebase_storage: ^11.0.4 # Firebase Storage
+
+  # camera
+  camera: ^0.10.0+4 # access to device camera
+  video_compress: ^3.1.1 # video processing/compressing
 
   # Cosmetic
   font_awesome_flutter: ^10.2.1 # custom ucons
