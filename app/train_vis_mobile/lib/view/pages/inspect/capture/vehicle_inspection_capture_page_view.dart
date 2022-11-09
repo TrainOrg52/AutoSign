@@ -72,67 +72,51 @@ class _VehicleInspectionCapturePageViewState
 
   @override
   Widget build(BuildContext context) {
-    return PageView(
-      controller: pageController,
-      physics: const NeverScrollableScrollPhysics(),
-      children: _buildPages(),
-    );
-  }
+    return CustomStreamBuilder<List<Checkpoint>>(
+      stream: CheckpointController.instance
+          .getCheckpointsWhereVehicleIs(widget.vehicle.id),
+      builder: (context, checkpoints) {
+        return PageView(
+          controller: pageController,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            for (Checkpoint checkpoint in checkpoints)
+              CheckpointInspectionCapturePageView(
+                checkpoint: checkpoint,
+                onCheckpointInspectionCaptured: (capturePath) {
+                  // handling capture
 
-  // ////////////////////// //
-  // HELPER BUILDER METHODS //
-  // ////////////////////// //
+                  // updating current page number
+                  currentPage = currentPage + 1;
 
-  /// TODO
-  List<Widget> _buildPages() {
-    // creating empty list of pages
-    List<Widget> pages = [];
-
-    // populating list of pages using vehicle object
-    for (String checkpointID in widget.vehicle.checkpoints) {
-      pages.add(
-        CustomStreamBuilder<Checkpoint>(
-          stream: CheckpointController.instance.getCheckpoint(checkpointID),
-          builder: (context, checkpoint) {
-            return CheckpointInspectionCapturePageView(
-              checkpoint: checkpoint,
-              onCheckpointInspectionCaptured: (capturePath) {
-                // handling capture
-
-                // updating current page number
-                currentPage = currentPage + 1;
-
-                // creating new inspection checkpoint for capture
-                checkpointInspections.add(
-                  CheckpointInspection.fromCheckpoint(
-                    checkpoint: checkpoint,
-                    capturePath: capturePath,
-                  ),
-                );
-
-                // checking if all checkpoints have been captured
-                if (currentPage < widget.vehicle.checkpoints.length) {
-                  // not all checkpoints captured -> move to next checkpoint
-
-                  // navigating to next page
-                  pageController.nextPage(
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.ease,
+                  // creating new inspection checkpoint for capture
+                  checkpointInspections.add(
+                    CheckpointInspection.fromCheckpoint(
+                      checkpoint: checkpoint,
+                      capturePath: capturePath,
+                    ),
                   );
-                } else {
-                  // all checkpoints captured -> calling on inspection captured
 
-                  // calling on vehicle inspection captured
-                  widget.onCaptured(checkpointInspections);
-                }
-              },
-            );
-          },
-        ),
-      );
-    }
+                  // checking if all checkpoints have been captured
+                  if (currentPage < checkpoints.length) {
+                    // not all checkpoints captured -> move to next checkpoint
 
-    // returning list of pages
-    return pages;
+                    // navigating to next page
+                    pageController.nextPage(
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.ease,
+                    );
+                  } else {
+                    // all checkpoints captured -> calling on inspection captured
+
+                    // calling on vehicle inspection captured
+                    widget.onCaptured(checkpointInspections);
+                  }
+                },
+              )
+          ],
+        );
+      },
+    );
   }
 }

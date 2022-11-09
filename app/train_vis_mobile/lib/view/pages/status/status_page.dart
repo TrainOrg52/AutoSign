@@ -3,7 +3,7 @@ import 'package:train_vis_mobile/controller/vehicle_controller.dart';
 import 'package:train_vis_mobile/model/status/conformance_status.dart';
 import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
 import 'package:train_vis_mobile/view/pages/status/checkpoint_status_list.dart';
-import 'package:train_vis_mobile/view/pages/status/status_action_container.dart';
+import 'package:train_vis_mobile/view/pages/status/vehicle_status_action_container.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_icon_button.dart';
@@ -58,7 +58,7 @@ class StatusPage extends StatelessWidget {
             slivers: [
               if (vehicle.conformanceStatus == ConformanceStatus.nonConforming)
                 SliverToBoxAdapter(
-                  child: StatusActionContainer(vehicle: vehicle),
+                  child: VehicleStatusActionContainer(vehicle: vehicle),
                 ),
               // ///////////// //
               // STATUS ACTION //
@@ -72,7 +72,7 @@ class StatusPage extends StatelessWidget {
               // /////////// //
 
               SliverToBoxAdapter(
-                child: CheckpointStatusList(checkpoints: vehicle.checkpoints),
+                child: CheckpointStatusList(vehicleID: vehicleID),
               ),
             ],
           );

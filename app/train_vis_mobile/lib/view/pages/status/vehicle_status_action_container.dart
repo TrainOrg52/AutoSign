@@ -10,7 +10,7 @@ import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 
 /// Widget that displays the status of the vehicle along with any action that
 /// should be taken.
-class StatusActionContainer extends StatelessWidget {
+class VehicleStatusActionContainer extends StatelessWidget {
   // MEMBER VARIABLES //
   final Vehicle vehicle; // vehicle being displayed
 
@@ -18,7 +18,7 @@ class StatusActionContainer extends StatelessWidget {
   // CLASS CONSTRUCTOR //
   // ///////////////// //
 
-  const StatusActionContainer({
+  const VehicleStatusActionContainer({
     super.key,
     required this.vehicle,
   });

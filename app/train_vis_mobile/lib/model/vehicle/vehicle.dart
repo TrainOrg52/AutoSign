@@ -8,7 +8,6 @@ class Vehicle extends ModelObject {
   String title; // title for the vehicle
   String location; // current location of vehicle
   ConformanceStatus conformanceStatus; // current conformance status of vehicle
-  List<String> checkpoints; // checkpoints in the vehicle
   String lastVehicleInspectionID; // ID of last inspection done on vehicle
 
   // ///////////////// //
@@ -24,7 +23,6 @@ class Vehicle extends ModelObject {
     List<String>? checkpoints,
     this.lastVehicleInspectionID = "",
   })  : conformanceStatus = conformanceStatus ?? ConformanceStatus.pending,
-        checkpoints = checkpoints ?? [],
         super(id: id, timestamp: timestamp);
 
   // ///////// //
@@ -45,7 +43,6 @@ class Vehicle extends ModelObject {
       location: data?["location"],
       conformanceStatus:
           ConformanceStatus.fromString(data?["conformanceStatus"]),
-      checkpoints: List.from(data?["checkpoints"]),
       lastVehicleInspectionID: data?["lastVehicleInspectionID"],
     );
   }
@@ -59,7 +56,6 @@ class Vehicle extends ModelObject {
       "title": title,
       "location": location,
       "conformanceStatus": conformanceStatus.toString(),
-      "checkpoints": checkpoints,
       "lastVehicleInspectionID": lastVehicleInspectionID,
     };
   }

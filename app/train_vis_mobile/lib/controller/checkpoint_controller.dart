@@ -36,6 +36,18 @@ class CheckpointController {
         .map((snapshot) => Checkpoint.fromFirestore(snapshot));
   }
 
+  /// TODO
+  Stream<List<Checkpoint>> getCheckpointsWhereVehicleIs(String vehicleID) {
+    return _checkpointsRef
+        .where("vehicleID", isEqualTo: vehicleID)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => Checkpoint.fromFirestore(doc))
+              .toList(),
+        );
+  }
+
   // ///////////////////// //
   // RETREIVING AT INSTANT //
   // ///////////////////// //
