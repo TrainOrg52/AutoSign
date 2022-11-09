@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:train_vis_mobile/controller/vehicle_controller.dart';
+import 'package:train_vis_mobile/controller/vehicle_inspection_controller.dart';
 import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:train_vis_mobile/model/inspection/vehicle_inspection.dart';
 import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
@@ -223,6 +224,20 @@ class _InspectPageState extends State<InspectPage> {
 
   /// TODO
   Future<void> _handleSubmit() async {
-    // TODO
+    // creating the vehicle inspection object
+    VehicleInspection vehicleInspection = VehicleInspection(
+      vehicleID: widget.vehicleID,
+    );
+
+    // adding the vehicle inspection to firestore
+    await VehicleInspectionController.instance.addVehicleInspection(
+      vehicleInspection,
+      checkpointInspections,
+    );
+
+    // updating the submission status
+    setState(() {
+      isSubmitted = true;
+    });
   }
 }

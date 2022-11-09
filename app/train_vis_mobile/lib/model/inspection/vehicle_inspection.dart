@@ -9,8 +9,6 @@ class VehicleInspection extends ModelObject {
   String vehicleID; // ID of vehicle being inspected
   ProcessingStatus processingStatus; // processing status of inspection
   ConformanceStatus conformanceStatus; // conformance status of inspection
-  Map<String, ConformanceStatus>
-      checkpoints; // map of inspection checkpoint IDs to conformance status
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -25,7 +23,6 @@ class VehicleInspection extends ModelObject {
     Map<String, ConformanceStatus>? checkpoints,
   })  : processingStatus = processingStatus ?? ProcessingStatus.pending,
         conformanceStatus = conformanceStatus ?? ConformanceStatus.pending,
-        checkpoints = checkpoints ?? {},
         super(id: id, timestamp: timestamp);
 
   // ///////// //
@@ -46,7 +43,6 @@ class VehicleInspection extends ModelObject {
       processingStatus: ProcessingStatus.fromString(data?["processingStatus"]),
       conformanceStatus:
           ConformanceStatus.fromString(data?["conformanceStatus"]),
-      checkpoints: data?["checkpoints"],
     );
   }
 
@@ -60,7 +56,6 @@ class VehicleInspection extends ModelObject {
       "vehicleID": vehicleID,
       "processingStatus": processingStatus.toString(),
       "conformanceStatus": conformanceStatus.toString(),
-      "checkpoints": checkpoints,
     };
   }
 }

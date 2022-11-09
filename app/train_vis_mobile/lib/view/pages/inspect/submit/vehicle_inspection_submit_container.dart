@@ -27,7 +27,7 @@ class VehicleInspectionSubmitContainer extends StatelessWidget {
     // building based on submission status
     if (isSubmitted) {
       // inspection submitted -> build submitted container
-      return _buildInspectionSubmittedContainer();
+      return _buildInspectionSubmittedContainer(context);
     } else {
       // inspection not submitted -> build submitting container
       return _buildInspectionSubmittingContainer();
@@ -84,7 +84,7 @@ class VehicleInspectionSubmitContainer extends StatelessWidget {
   }
 
   /// TODO
-  Widget _buildInspectionSubmittedContainer() {
+  Widget _buildInspectionSubmittedContainer(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -120,7 +120,7 @@ class VehicleInspectionSubmitContainer extends StatelessWidget {
           text: "Finish",
           onPressed: () {
             // navigating back to home screen
-            // TODO
+            Navigator.of(context).pop();
           },
         ),
       ],

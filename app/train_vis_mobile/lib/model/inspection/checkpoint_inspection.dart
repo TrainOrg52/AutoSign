@@ -94,8 +94,13 @@ class CheckpointInspection extends ModelObject {
       "checkpointID": checkpointID,
       "title": title,
       "index": index,
-      "conformanceStatus": conformanceStatus,
-      "signs": signs,
+      "conformanceStatus": conformanceStatus.toString(),
+      "signs": signs.map(
+        (signID, conformanceStatus) => MapEntry(
+          signID,
+          conformanceStatus.toString(),
+        ),
+      ),
     };
   }
 }
