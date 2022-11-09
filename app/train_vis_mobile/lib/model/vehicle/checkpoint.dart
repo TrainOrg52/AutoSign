@@ -8,6 +8,7 @@ class Checkpoint extends ModelObject {
   String vehicleID; // id of this checkpoints associated vehicle
   String title; // title of the checkpoint
   String prompt; // prompt shown when capturing the checkpoint
+  int index; // index for the checkpoint
   List<String> signs; // list of signs expected within the checkpoint
   ConformanceStatus conformanceStatus; // current conformance status of CP
   String lastVehicleInspectionID; // most recent inspection
@@ -26,6 +27,7 @@ class Checkpoint extends ModelObject {
     this.vehicleID = "",
     this.title = "",
     this.prompt = "",
+    this.index = 0,
     List<String>? signs,
     ConformanceStatus? conformanceStatus,
     this.lastVehicleInspectionID = "",
@@ -54,6 +56,7 @@ class Checkpoint extends ModelObject {
       vehicleID: data?["vehicleID"],
       title: data?["title"],
       prompt: data?["prompt"],
+      index: data?["index"],
       signs: List.from(data?["signs"]),
       conformanceStatus:
           ConformanceStatus.fromString(data?["conformanceStatus"]),
@@ -75,6 +78,7 @@ class Checkpoint extends ModelObject {
       "vehicleID": vehicleID,
       "title": title,
       "prompt": prompt,
+      "index": index,
       "signs": signs,
       "conformanceStatus": conformanceStatus.toString(),
       "lastVehicleInspectionID": lastVehicleInspectionID,

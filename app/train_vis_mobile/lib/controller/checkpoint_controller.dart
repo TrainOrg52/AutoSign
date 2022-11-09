@@ -40,6 +40,7 @@ class CheckpointController {
   Stream<List<Checkpoint>> getCheckpointsWhereVehicleIs(String vehicleID) {
     return _checkpointsRef
         .where("vehicleID", isEqualTo: vehicleID)
+        .orderBy("index")
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
