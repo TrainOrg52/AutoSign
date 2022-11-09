@@ -13,20 +13,22 @@ from object_detector.inference import ObjectDetector
     @return: N/A
     @authors: Benjamin Sanati, Charlie Powell
 """
+
+
 def runServer():
     while True:
 
         print("Checking for unprocessed inspection walkthroughs...")
 
         # get all inspections where status is "pending"
-        inspection_walkthroughs = vehicle_inspections_collection.where(u'processingStatus', u'==', u'pending').get()
+        vehicle_inspections = vehicle_inspections_collection.where(u'processingStatus', u'==', u'pending').get()
 
         # checking if any pending inspections are present
-        if len(inspection_walkthroughs) > 0:
+        if len(vehicle_inspections) > 0:
             # pending inspection present -> need to process it
 
             # iterating over each pending inspection
-            for vehicle_inspection in inspection_walkthroughs:
+            for vehicle_inspection in vehicle_inspections:
                 # creating model object
                 vehicle_inspection = vehicleInspection.from_doc(vehicle_inspection)
                 vehicle = vehicle_collection.document(vehicle_inspection.vehicleID).get()
@@ -47,6 +49,8 @@ def runServer():
     @return: N/A
     @authors: Benjamin Sanati, Charlie Powell
 """
+
+
 def processInspectionWalkthrough(vehicle_inspection, vehicle):
     # ############################################### #
     # STEP 1: UPDATE STATUS OF INSPECTION WALKTHROUGH #
@@ -63,22 +67,53 @@ def processInspectionWalkthrough(vehicle_inspection, vehicle):
     vehicle_inspection.conformanceStatus = "conforming"
     vehicle.conformanceStatus = "conforming"
 
-    new_checkpoints = vehicle_inspection.checkpoints
-
     # ########################################### #
     # STEP 2: ITERATE OVER INSPECTION CHECKPOINTS #
     # ########################################### #
 
+    checkpoint_inspections = checkpoint_inspections_collection.where(u'vehicleInspectionID', u'==',
+                                                                     vehicle_inspection.id).get()
+
     storage_roots = []
-    vehicle_checkpoint_signs = []
     vehicle_checkpoints = []
-    for vehicle_inspection_id in vehicle_inspection.checkpoints:
+    vehicle_checkpoint_signs = []
+    for checkpoint_inspection in checkpoint_inspections:
+        # STEP 2.1: GATHERING INSPECTION CHECKPOINT DOCUMENT #
+        vehicle_checkpoint = CheckpointInspection.from_doc(checkpoint_inspection)
+
+        # STEP 2.2: DOWNLOADING UNPROCESSED MEDIA FROM CLOUD STROAGE #
+
+        # defining path to Cloud Storage
+        storage_root = f"/{vehicle_inspection.vehicleID}/inspectionWalkthroughs/{vehicle_inspection.id}/{vehicle_checkpoint.id}"
+        storage_path = f"{storage_root}/unprocessed.png"
+        print(f"\tIdentified checkpoint {vehicle_checkpoint.id}")
+
+        # defining path to local storage
+        local_path = f"samples/images/{vehicle_checkpoint.id}.png"
+
+        # downloading image from firebase storage
+        storage.child(storage_path).download(local_path)
+
+        # STEP 2.3: PRE-PROCESSING MEDIA #
+
+        image = Image.open(local_path)
+        image = ImageOps.exif_transpose(image)
+        image = resize(image)
+        image.save(local_path)
+
+        # adding data to lists
+        storage_roots.append(storage_root)
+        vehicle_checkpoints.append(vehicle_checkpoint)
+        vehicle_checkpoint_signs.append(vehicle_checkpoint.signs)
+
+    """
+    for vehicle_inspection_id in checkpoint_inspections:
         # STEP 2.1: GATHERING INSPECTION CHECKPOINT OBJECT AND CHECKPOINT OBJECT #
 
         vehicle_checkpoint = checkpoint_inspections_collection.document(vehicle_inspection_id).get()
         vehicle_checkpoint = CheckpointInspection.from_doc(vehicle_checkpoint)
-        vehicle_checkpoints.append(vehicle_checkpoint)
-        vehicle_checkpoint_signs.append(vehicle_checkpoint.signs)
+        #vehicle_checkpoints.append(vehicle_checkpoint)
+        #vehicle_checkpoint_signs.append(vehicle_checkpoint.signs)
 
         # STEP 2.2: DOWNLOADING UNPROCESSED MEDIA FROM CLOUD STROAGE #
 
@@ -100,6 +135,7 @@ def processInspectionWalkthrough(vehicle_inspection, vehicle):
         image = ImageOps.exif_transpose(image)
         image = resize(image)
         image.save(local_path)
+    """
 
     # STEP 2.4: PROCESSING MEDIA AND SAVING TO STORAGE #
 
@@ -165,9 +201,6 @@ def processInspectionWalkthrough(vehicle_inspection, vehicle):
         vehicle_checkpoint.conformanceStatus = new_checkpoint_conformance
         vehicle_checkpoint.update(db)
 
-        new_checkpoints[vehicle_checkpoint.id] = new_checkpoint_conformance
-
-    vehicle_inspection.checkpoints = new_checkpoints
     vehicle_inspection.processingStatus = "processed"
     vehicle_inspection.update(db)
 

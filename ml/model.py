@@ -84,13 +84,12 @@ class Checkpoint:
 
 
 class vehicleInspection:
-    def __init__(self, id, timestamp, vehicleID, processingStatus, conformanceStatus, checkpoints):
+    def __init__(self, id, timestamp, vehicleID, processingStatus, conformanceStatus):
         self.id = id
         self.timestamp = timestamp
         self.vehicleID = vehicleID
         self.processingStatus = processingStatus
         self.conformanceStatus = conformanceStatus
-        self.checkpoints = checkpoints
 
     @staticmethod
     def from_doc(doc):
@@ -101,8 +100,7 @@ class vehicleInspection:
             data["timestamp"],
             data["vehicleID"],
             data["processingStatus"],
-            data["conformanceStatus"],
-            data["checkpoints"]
+            data["conformanceStatus"]
         )
 
     def to_dict(self):
@@ -110,8 +108,7 @@ class vehicleInspection:
             "timestamp": self.timestamp,
             "vehicleID": self.vehicleID,
             "processingStatus": self.processingStatus,
-            "conformanceStatus": self.conformanceStatus,
-            "checkpoints": self.checkpoints
+            "conformanceStatus": self.conformanceStatus
         }
 
     def update(self, db):
@@ -119,8 +116,9 @@ class vehicleInspection:
 
 
 class CheckpointInspection:
-    def __init__(self, id, timestamp, vehicleID, title, conformanceStatus, signs, checkpointID, vehicleInspectionID):
+    def __init__(self, id, index, timestamp, vehicleID, title, conformanceStatus, signs, checkpointID, vehicleInspectionID):
         self.id = id
+        self.index = index
         self.timestamp = timestamp
         self.vehicleID = vehicleID
         self.checkpointID = checkpointID
@@ -135,6 +133,7 @@ class CheckpointInspection:
 
         return CheckpointInspection(
             doc.id,
+            data["index"],
             data["timestamp"],
             data["vehicleID"],
             data["title"],
@@ -146,6 +145,7 @@ class CheckpointInspection:
 
     def to_dict(self):
         return {
+            "index": self.index,
             "timestamp": self.timestamp,
             "vehicleID": self.vehicleID,
             "title": self.title,
