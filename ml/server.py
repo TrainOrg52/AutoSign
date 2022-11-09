@@ -13,8 +13,6 @@ from object_detector.inference import ObjectDetector
     @return: N/A
     @authors: Benjamin Sanati, Charlie Powell
 """
-
-
 def runServer():
     while True:
 
@@ -49,8 +47,6 @@ def runServer():
     @return: N/A
     @authors: Benjamin Sanati, Charlie Powell
 """
-
-
 def processInspectionWalkthrough(vehicle_inspection, vehicle):
     # ############################################### #
     # STEP 1: UPDATE STATUS OF INSPECTION WALKTHROUGH #
@@ -84,7 +80,7 @@ def processInspectionWalkthrough(vehicle_inspection, vehicle):
         # STEP 2.2: DOWNLOADING UNPROCESSED MEDIA FROM CLOUD STROAGE #
 
         # defining path to Cloud Storage
-        storage_root = f"/{vehicle_inspection.vehicleID}/inspectionWalkthroughs/{vehicle_inspection.id}/{vehicle_checkpoint.id}"
+        storage_root = f"/{vehicle_inspection.vehicleID}/vehicleInspections/{vehicle_inspection.id}/{vehicle_checkpoint.id}"
         storage_path = f"{storage_root}/unprocessed.png"
         print(f"\tIdentified checkpoint {vehicle_checkpoint.id}")
 
