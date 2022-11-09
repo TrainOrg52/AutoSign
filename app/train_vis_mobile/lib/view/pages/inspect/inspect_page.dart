@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:train_vis_mobile/controller/vehicle_controller.dart';
 import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
+import 'package:train_vis_mobile/model/inspection/vehicle_inspection.dart';
 import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
 import 'package:train_vis_mobile/view/pages/inspect/capture/vehicle_inspection_capture_page_view.dart';
 import 'package:train_vis_mobile/view/pages/inspect/inspect_progress_bar.dart';
@@ -44,7 +45,9 @@ class InspectPage extends StatefulWidget {
 class _InspectPageState extends State<InspectPage> {
   // STATE VARIABLES //
   late PageController pageController; // controller for pageview
+  late VehicleInspection vehicleInspection; // TODO
   late List<CheckpointInspection> checkpointInspections; // TODO
+  late bool isSubmitted; // submission status of vehicle inspection
 
   // ////////// //
   // INIT STATE //
@@ -56,7 +59,9 @@ class _InspectPageState extends State<InspectPage> {
 
     // initializing state
     pageController = PageController();
+    vehicleInspection = VehicleInspection();
     checkpointInspections = [];
+    isSubmitted = false;
   }
 
   // //////////// //
@@ -125,7 +130,7 @@ class _InspectPageState extends State<InspectPage> {
 
                       VehicleInspectionCapturePageView(
                         vehicle: vehicle,
-                        onVehicleInspectionCaptured: (checkpointInspections) {
+                        onCaptured: (checkpointInspections) {
                           // updating state
                           setState(() {
                             this.checkpointInspections = checkpointInspections;
@@ -145,13 +150,17 @@ class _InspectPageState extends State<InspectPage> {
 
                       VehicleInspectionReviewContainer(
                         checkpointInspections: checkpointInspections,
-                        onSubmit: (checkpointInspections) {
+                        onSubmit: (reviewedCheckpointInspections) {
                           // updating state
                           setState(() {
-                            this.checkpointInspections = checkpointInspections;
+                            checkpointInspections =
+                                reviewedCheckpointInspections;
                           });
 
-                          // navigating to review container
+                          // starting the submission process
+                          _handleSubmit();
+
+                          // navigating to submit container
                           pageController.nextPage(
                             duration: const Duration(milliseconds: 500),
                             curve: Curves.ease,
@@ -164,7 +173,7 @@ class _InspectPageState extends State<InspectPage> {
                       // ////// //
 
                       VehicleInspectionSubmitContainer(
-                        checkpointInspections: checkpointInspections,
+                        isSubmitted: isSubmitted,
                       ),
                     ],
                   );
@@ -210,5 +219,10 @@ class _InspectPageState extends State<InspectPage> {
 
       // nothing
     }
+  }
+
+  /// TODO
+  Future<void> _handleSubmit() async {
+    // TODO
   }
 }

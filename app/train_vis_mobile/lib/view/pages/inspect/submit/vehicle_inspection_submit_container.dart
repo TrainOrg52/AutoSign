@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
 
 /// TODO
-class VehicleInspectionSubmitContainer extends StatefulWidget {
+class VehicleInspectionSubmitContainer extends StatelessWidget {
   // MEMBER VARIABLES //
-  final List<CheckpointInspection> checkpointInspections;
+  final bool isSubmitted; // submission status of inspection
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -16,23 +15,8 @@ class VehicleInspectionSubmitContainer extends StatefulWidget {
 
   const VehicleInspectionSubmitContainer({
     super.key,
-    required this.checkpointInspections,
+    required this.isSubmitted,
   });
-
-  // //////////// //
-  // CREATE STATE //
-  // //////////// //
-
-  @override
-  State<VehicleInspectionSubmitContainer> createState() =>
-      _VehicleInspectionSubmitContainerState();
-}
-
-/// TODO
-class _VehicleInspectionSubmitContainerState
-    extends State<VehicleInspectionSubmitContainer> {
-  // THEME-ING //
-  // sizes
 
   // //////////// //
   // BUILD METHOD //
@@ -40,7 +24,14 @@ class _VehicleInspectionSubmitContainerState
 
   @override
   Widget build(BuildContext context) {
-    return _buildInspectionSubmittingContainer();
+    // building based on submission status
+    if (isSubmitted) {
+      // inspection submitted -> build submitted container
+      return _buildInspectionSubmittedContainer();
+    } else {
+      // inspection not submitted -> build submitting container
+      return _buildInspectionSubmittingContainer();
+    }
   }
 
   // ////////////////////// //

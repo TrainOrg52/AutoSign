@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 
-/// Defines the conformance status of an inspection walkthrough, checkpoint or
-/// sign.
-class ConformanceStatus {
+/// Defines the processing status of a vehicle inspection.
+class ProcessingStatus {
   // MEMBER VARIABLES //
   final String title; // the title for the conformance status
-  final String description; // description of the status
   final Color color; // the color associated with the conformances status
   final Color
       accentColor; // acccent color associated with the conformance status
@@ -17,13 +15,12 @@ class ConformanceStatus {
   // CLASS CONSTRUCTOR //
   // ///////////////// //
 
-  /// Constructs a new [ConformanceStatus] with the provided title and color.
+  /// Constructs a new [ProcessingStatus] with the provided title and color.
   ///
-  /// Private so that only the pre-defined [ConformanceStatus] instances
+  /// Private so that only the pre-defined [ProcessingStatus] instances
   /// can be used.
-  const ConformanceStatus._({
+  const ProcessingStatus._({
     required this.title,
-    required this.description,
     required this.color,
     required this.accentColor,
     required this.iconData,
@@ -33,15 +30,17 @@ class ConformanceStatus {
   // STRING CONVERTION //
   // ///////////////// //
 
-  /// Creates a [ConformanceStatus] based on the given string.
-  static ConformanceStatus? fromString(String status) {
+  /// Creates a [ProcessingStatus] based on the given string.
+  static ProcessingStatus? fromString(String status) {
     // returning priority based on string
     if (status == pending.title) {
       return pending;
-    } else if (status == conforming.title) {
-      return conforming;
-    } else if (status == nonConforming.title) {
-      return nonConforming;
+    } else if (status == processing.title) {
+      return processing;
+    } else if (status == processed.title) {
+      return processed;
+    } else if (status == processed.title) {
+      return processed;
     } else if (status == error.title) {
       return error;
     }
@@ -52,7 +51,7 @@ class ConformanceStatus {
     }
   }
 
-  /// Converts the [ConformanceStatus] object to a string representation.
+  /// Converts the [ProcessingStatus] object to a string representation.
   @override
   String toString() {
     // returning the title of the status
@@ -64,44 +63,40 @@ class ConformanceStatus {
   // ///////// //
 
   // all instances
-  static const List<ConformanceStatus> statuses = [
+  static const List<ProcessingStatus> statuses = [
     pending,
-    conforming,
-    nonConforming,
+    processing,
+    processed,
     error,
   ];
 
   // pending
-  static const ConformanceStatus pending = ConformanceStatus._(
+  static const ProcessingStatus pending = ProcessingStatus._(
     title: "pending",
-    description: "Inspectiton Pending",
     color: MyColors.amber,
     accentColor: MyColors.amberAccent,
     iconData: FontAwesomeIcons.solidClock,
   );
 
-  // conforming
-  static const ConformanceStatus conforming = ConformanceStatus._(
-    title: "conforming",
-    description: "Conforming",
+  // processing
+  static const ProcessingStatus processing = ProcessingStatus._(
+    title: "processing",
+    color: MyColors.amber,
+    accentColor: MyColors.amberAccent,
+    iconData: FontAwesomeIcons.solidClock,
+  );
+
+  // processed
+  static const ProcessingStatus processed = ProcessingStatus._(
+    title: "processed",
     color: MyColors.green,
     accentColor: MyColors.greenAcent,
     iconData: FontAwesomeIcons.solidCircleCheck,
   );
 
-  // non-conforming
-  static const ConformanceStatus nonConforming = ConformanceStatus._(
-    title: "non-conforming",
-    description: "Non-Conforming",
-    color: MyColors.negative,
-    accentColor: MyColors.negativeAccent,
-    iconData: FontAwesomeIcons.circleExclamation,
-  );
-
   // error
-  static const ConformanceStatus error = ConformanceStatus._(
+  static const ProcessingStatus error = ProcessingStatus._(
     title: "error",
-    description: "Error",
     color: MyColors.negative,
     accentColor: MyColors.negativeAccent,
     iconData: FontAwesomeIcons.circleExclamation,
