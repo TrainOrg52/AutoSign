@@ -19,7 +19,7 @@ def runServer():
         print("Checking for unprocessed inspection walkthroughs...")
 
         # get all inspections where status is "pending"
-        inspection_walkthroughs = vehicle_inspections_collection.where(u'conformanceStatus', u'==', u'pending').get()
+        inspection_walkthroughs = vehicle_inspections_collection.where(u'processingStatus', u'==', u'pending').get()
 
         # checking if any pending inspections are present
         if len(inspection_walkthroughs) > 0:
@@ -29,12 +29,12 @@ def runServer():
             for vehicle_inspection in inspection_walkthroughs:
                 # creating model object
                 vehicle_inspection = vehicleInspection.from_doc(vehicle_inspection)
-                inspection_vehicle = vehicle_collection.document(vehicle_inspection.vehicleID).get()
-                inspection_vehicle = Vehicle.from_doc(inspection_vehicle)
+                vehicle = vehicle_collection.document(vehicle_inspection.vehicleID).get()
+                vehicle = Vehicle.from_doc(vehicle)
                 print(f"Identified inspection walkthrough for train {vehicle_inspection.vehicleID}")
 
                 # processing inspection walkthrough
-                processInspectionWalkthrough(vehicle_inspection, inspection_vehicle)
+                processInspectionWalkthrough(vehicle_inspection, vehicle)
 
             print("All trains processed!")
 
@@ -47,20 +47,21 @@ def runServer():
     @return: N/A
     @authors: Benjamin Sanati, Charlie Powell
 """
-def processInspectionWalkthrough(vehicle_inspection, inspection_vehicle):
+def processInspectionWalkthrough(vehicle_inspection, vehicle):
     # ############################################### #
     # STEP 1: UPDATE STATUS OF INSPECTION WALKTHROUGH #
     # ############################################### #
 
     print("-----------------------")
     print(f"Processing train {vehicle_inspection.vehicleID}...")
-    vehicle_inspection.conformanceStatus = "processing"
-    vehicle_inspection.update(db)
-    inspection_vehicle.conformanceStatus = "processing"  # TODO: Remove when done in app
-    inspection_vehicle.update(db)
 
+    # update processing status of the vehicle inspection object
+    vehicle_inspection.processingStatus = "processing"
+    vehicle_inspection.update(db)
+
+    # initialize conformance status of the vehicle inspection
     vehicle_inspection.conformanceStatus = "conforming"
-    inspection_vehicle.conformanceStatus = "conforming"
+    vehicle.conformanceStatus = "conforming"
 
     new_checkpoints = vehicle_inspection.checkpoints
 
@@ -145,7 +146,7 @@ def processInspectionWalkthrough(vehicle_inspection, inspection_vehicle):
                 # setting checkpoint conformance
                 new_checkpoint_conformance = "non-conforming"
                 vehicle_inspection.conformanceStatus = "non-conforming"
-                inspection_vehicle.conformanceStatus = "non-conforming"
+                vehicle.conformanceStatus = "non-conforming"
 
                 checkpoint.lastVehicleInspectionResult = "non-conforming"
 
@@ -167,10 +168,11 @@ def processInspectionWalkthrough(vehicle_inspection, inspection_vehicle):
         new_checkpoints[vehicle_checkpoint.id] = new_checkpoint_conformance
 
     vehicle_inspection.checkpoints = new_checkpoints
+    vehicle_inspection.processingStatus = "processed"
     vehicle_inspection.update(db)
 
     # updating inspection vehicle object
-    inspection_vehicle.update(db)
+    vehicle.update(db)
 
     print(f"\tConformance status uploaded.")
 

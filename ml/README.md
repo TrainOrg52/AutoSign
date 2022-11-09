@@ -15,7 +15,7 @@
 |   |   ↪ Configuration files for firebase firestore and storage
 |   +-- object_detector
 |   |   +-- finetuned_models
-|   |   |   ↪ Fine-tuned YOLOv7 model for sign detection 
+|   |   |   ↪ Fine-tuned .pt YOLOv7 model for sign detection (see google drive)
 |   |   +-- yolov7
 |   |   |   ↪ YOLOv7 dependencies
 |   |   +-- inference.py
@@ -37,3 +37,12 @@
 |   +-- server.py
 |   |   ↪ Root script for server and processing
 ```
+
+## Editing
+Code editing should be limited to the following directories as all other directories are static:
+- `ml/server.py`
+- `ml/model.py`
+- `ml/object_detector/inference.py`
+- `ml/tools`
+
+Please do not edit the `ml/object_detector/yolov7` directory.

@@ -18,15 +18,6 @@ from utils.general import check_img_size, check_requirements, check_imshow, non_
 from utils.torch_utils import select_device, load_classifier, time_synchronized, TracedModel
 
 
-# Disable printing
-def blockPrint():
-    sys.stdout = open(os.devnull, 'w')
-
-
-# Enable printing
-def enablePrint():
-    sys.stdout = sys.__stdout__
-
 
 class ObjectDetector(nn.Module):
     """
@@ -56,6 +47,8 @@ class ObjectDetector(nn.Module):
         """
         super(ObjectDetector, self).__init__()
 
+        sys.stdout = open(os.devnull, 'w')  # block printing momentarily
+
         # Initialize data and hyperparameters (to be made into argparse arguments)
         self.device = select_device('cuda' if torch.cuda.is_available() else 'cpu')
         self.weights = r"object_detector\finetuned_models\best_e6_50_epochs.pt"
@@ -67,7 +60,6 @@ class ObjectDetector(nn.Module):
         self.view_img = view_img
 
         # Load model
-        blockPrint()
         self.model = attempt_load(self.weights, map_location=self.device).half()  # load FP32 model
         self.stride = int(self.model.stride.max())  # model stride
         self.image_size = check_img_size(self.image_size, s=self.stride)  # check img_size
@@ -77,13 +69,14 @@ class ObjectDetector(nn.Module):
                       'In Emergency Pull To Operate', 'First Aid Equipment', 'Fire Extinguisher Beneath The Seats',
                       'Emergency Exit Forwards', 'Priority Space For Wheelchair Users',
                       'Train-To-Track Evacuation Instructions',
-                      'Please Give Up This Seat For Someone Less Able To Stand Than You']  # self.model.module.names if hasattr(self.model, 'module') else self.model.names
-        self.colours = [[random.randint(0, 255) for _ in range(3)] for _ in self.names]
+                      'Please Give Up This Seat For Someone Less Able To Stand Than You']
+        self.colours = [[random.randint(0, 255) for _ in range(3)] for _ in self.names]  # define random colours for each label in the dataset
 
-        # warmup
+        # model warmup
         self.model(
             torch.zeros(1, 3, self.image_size, self.image_size).to(self.device).type_as(next(self.model.parameters())))
-        enablePrint()
+        
+        sys.stdout = sys.__stdout__  # enable printing
 
     def forward(self, data_src, processed_destination, storage, storage_roots):
         """
