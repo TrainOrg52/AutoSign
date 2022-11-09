@@ -10,6 +10,7 @@ class CheckpointInspection extends ModelObject {
   String vehicleInspectionID; // id of the inspection
   String checkpointID; // id of the corresponding checkpoint
   String title; // title of the checkpoint
+  int index; // index o f checkpoint in vehicle
   ConformanceStatus conformanceStatus; // conformance status of checkpoint
   Map<String, ConformanceStatus> signs; // map of signs to conformance status
   String capturePath; // path to captured image (DO NOT SEND TO FIRESTORE)
@@ -25,6 +26,7 @@ class CheckpointInspection extends ModelObject {
     this.vehicleInspectionID = "",
     this.checkpointID = "",
     this.title = "",
+    this.index = 0,
     ConformanceStatus? conformanceStatus,
     Map<String, ConformanceStatus>? signs,
     this.capturePath = "",
@@ -46,6 +48,7 @@ class CheckpointInspection extends ModelObject {
       vehicleInspectionID: vehicleInspectionID,
       checkpointID: checkpoint.id,
       title: checkpoint.title,
+      index: checkpoint.index,
       conformanceStatus: ConformanceStatus.pending,
       signs: {
         for (String signID in checkpoint.signs)
@@ -73,6 +76,7 @@ class CheckpointInspection extends ModelObject {
       vehicleInspectionID: data?["vehicleInspectionID"],
       checkpointID: data?["checkpointID"],
       title: data?["title"],
+      index: data?["index"],
       conformanceStatus:
           ConformanceStatus.fromString(data?["conformanceStatus"]),
       signs: data?["signs"],
@@ -89,6 +93,7 @@ class CheckpointInspection extends ModelObject {
       "vehicleInspectionID": vehicleInspectionID,
       "checkpointID": checkpointID,
       "title": title,
+      "index": index,
       "conformanceStatus": conformanceStatus,
       "signs": signs,
     };
