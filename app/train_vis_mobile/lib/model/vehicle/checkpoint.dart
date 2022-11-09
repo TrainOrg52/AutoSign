@@ -5,17 +5,15 @@ import 'package:train_vis_mobile/model/status/conformance_status.dart';
 /// A checkpoint within the gold standard walkthrough of a given train vehicle.
 class Checkpoint extends ModelObject {
   // MEMBERS //
-  String vehicleID; // id of this checkpoints associated vehicle
+  String vehicleID; // id of the checkpoints vehicle
   String title; // title of the checkpoint
   String prompt; // prompt shown when capturing the checkpoint
-  int index; // index for the checkpoint
+  int index; // index for the checkpoint within the vehicle
   List<String> signs; // list of signs expected within the checkpoint
-  ConformanceStatus conformanceStatus; // current conformance status of CP
-  String lastVehicleInspectionID; // most recent inspection
-  ConformanceStatus
-      lastVehicleInspectionResult; // ID of most recent inspection walkthrough
-  String?
-      lastVehicleRemediationID; // ID of most recent remediation (if there is one)
+  ConformanceStatus conformanceStatus; // current status of the checkpoint
+  String lastVehicleInspectionID; // last inspection
+  ConformanceStatus lastVehicleInspectionResult; // result of last inspection
+  String? lastVehicleRemediationID; // last remediation (if exists)
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -49,7 +47,7 @@ class Checkpoint extends ModelObject {
     // getting snapshot data
     final data = snapshot.data();
 
-    // cocnverting document data to an [Checkpoint]
+    // cocnverting document data to an object
     return Checkpoint(
       id: snapshot.id,
       timestamp: data?["timestamp"],
@@ -72,7 +70,7 @@ class Checkpoint extends ModelObject {
   /// Converts the [Walkthrough] into a [Map] that can be published to firestore.
   @override
   Map<String, dynamic> toFirestore() {
-    // converting to a map
+    // converting object to a map
     return {
       "timestamp": timestamp,
       "vehicleID": vehicleID,

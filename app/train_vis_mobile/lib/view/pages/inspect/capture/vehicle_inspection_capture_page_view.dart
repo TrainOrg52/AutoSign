@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:train_vis_mobile/controller/checkpoint_controller.dart';
+import 'package:train_vis_mobile/controller/vehicle_controller.dart';
 import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:train_vis_mobile/model/vehicle/checkpoint.dart';
 import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
@@ -73,7 +73,7 @@ class _VehicleInspectionCapturePageViewState
   @override
   Widget build(BuildContext context) {
     return CustomStreamBuilder<List<Checkpoint>>(
-      stream: CheckpointController.instance
+      stream: VehicleController.instance
           .getCheckpointsWhereVehicleIs(widget.vehicle.id),
       builder: (context, checkpoints) {
         return PageView(

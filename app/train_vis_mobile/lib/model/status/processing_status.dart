@@ -5,10 +5,9 @@ import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 /// Defines the processing status of a vehicle inspection.
 class ProcessingStatus {
   // MEMBER VARIABLES //
-  final String title; // the title for the conformance status
-  final Color color; // the color associated with the conformances status
-  final Color
-      accentColor; // acccent color associated with the conformance status
+  final String title; // title of the status
+  final Color color; // color associated with the status
+  final Color accentColor; // acccent color associated with the status
   final IconData iconData; // icon to be displayed for this status
 
   // ///////////////// //
@@ -32,7 +31,7 @@ class ProcessingStatus {
 
   /// Creates a [ProcessingStatus] based on the given string.
   static ProcessingStatus? fromString(String status) {
-    // returning priority based on string
+    // returning based on string value
     if (status == pending.title) {
       return pending;
     } else if (status == processing.title) {
@@ -45,7 +44,7 @@ class ProcessingStatus {
       return error;
     }
 
-    // no matching status -> return null
+    // no matching value -> return null
     else {
       return null;
     }
@@ -54,7 +53,7 @@ class ProcessingStatus {
   /// Converts the [ProcessingStatus] object to a string representation.
   @override
   String toString() {
-    // returning the title of the status
+    // returning title
     return title;
   }
 
@@ -63,7 +62,7 @@ class ProcessingStatus {
   // ///////// //
 
   // all instances
-  static const List<ProcessingStatus> statuses = [
+  static const List<ProcessingStatus> values = [
     pending,
     processing,
     processed,

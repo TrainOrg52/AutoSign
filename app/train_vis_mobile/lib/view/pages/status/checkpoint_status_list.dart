@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:train_vis_mobile/controller/checkpoint_controller.dart';
+import 'package:train_vis_mobile/controller/vehicle_controller.dart';
 import 'package:train_vis_mobile/model/vehicle/checkpoint.dart';
 import 'package:train_vis_mobile/view/pages/status/checkpoint_status_container.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
@@ -52,7 +52,7 @@ class _CheckpointStatusListState extends State<CheckpointStatusList> {
   @override
   Widget build(BuildContext context) {
     return CustomStreamBuilder<List<Checkpoint>>(
-        stream: CheckpointController.instance
+        stream: VehicleController.instance
             .getCheckpointsWhereVehicleIs(widget.vehicleID),
         builder: (context, checkpoints) {
           return ListView.builder(

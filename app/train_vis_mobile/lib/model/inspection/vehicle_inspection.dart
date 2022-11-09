@@ -35,7 +35,7 @@ class VehicleInspection extends ModelObject {
     // getting snapshot data
     final data = snapshot.data();
 
-    // cocnverting document data to an [InspectionWalkthrough]
+    // converting the document to an object
     return VehicleInspection(
       id: snapshot.id,
       timestamp: data?["timestamp"],

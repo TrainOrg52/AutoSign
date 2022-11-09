@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:train_vis_mobile/controller/checkpoint_controller.dart';
+import 'package:train_vis_mobile/controller/vehicle_controller.dart';
 import 'package:train_vis_mobile/model/vehicle/checkpoint.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
@@ -154,7 +154,7 @@ class _CheckpointInspectionCapturePageViewState
           backgroundColor: Colors.transparent,
           padding: const EdgeInsets.all(MySizes.paddingValue),
           child: CustomFutureBuilder(
-            future: CheckpointController.instance.getCheckpointImageDownloadURL(
+            future: VehicleController.instance.getCheckpointImageDownloadURL(
               widget.checkpoint.vehicleID,
               widget.checkpoint.id,
             ),

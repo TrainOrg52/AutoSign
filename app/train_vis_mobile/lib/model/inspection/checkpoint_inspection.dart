@@ -6,7 +6,7 @@ import 'package:train_vis_mobile/model/vehicle/checkpoint.dart';
 /// A checkpoint within the inspection walkthrough of a given train vehicle.
 class CheckpointInspection extends ModelObject {
   // MEMBERS //
-  String vehicleID;
+  String vehicleID; // id of the vehicle being inspected
   String vehicleInspectionID; // id of the inspection
   String checkpointID; // id of the corresponding checkpoint
   String title; // title of the checkpoint
@@ -68,7 +68,7 @@ class CheckpointInspection extends ModelObject {
     // getting snapshot data
     final data = snapshot.data();
 
-    // cocnverting document data to an [Checkpoint]
+    // cocnverting document data to an object
     return CheckpointInspection(
       id: snapshot.id,
       timestamp: data?["timestamp"],
@@ -86,7 +86,7 @@ class CheckpointInspection extends ModelObject {
   /// Converts the [Walkthrough] into a [Map] that can be published to firestore.
   @override
   Map<String, dynamic> toFirestore() {
-    // converting the walkthrough into a map
+    // converting the object to a map
     return {
       "timestamp": timestamp,
       "vehicleID": vehicleID,

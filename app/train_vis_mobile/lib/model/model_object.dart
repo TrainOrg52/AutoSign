@@ -3,7 +3,7 @@
 abstract class ModelObject {
   // MEMBERS //
   String id; // firestore document ID
-  int timestamp; // timestamp of original object creation
+  int timestamp; // timestamp at time of object creation
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //

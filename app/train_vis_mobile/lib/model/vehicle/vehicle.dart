@@ -5,8 +5,8 @@ import 'package:train_vis_mobile/model/status/conformance_status.dart';
 /// A single train vehicle.
 class Vehicle extends ModelObject {
   // MEMBERS //
-  String title; // title for the vehicle
-  String location; // current location of vehicle
+  String title; // title of the vehicle
+  String location; // current location of the vehicle
   ConformanceStatus conformanceStatus; // current conformance status of vehicle
   String lastVehicleInspectionID; // ID of last inspection done on vehicle
 
@@ -35,7 +35,7 @@ class Vehicle extends ModelObject {
     // getting snapshot data
     final data = snapshot.data();
 
-    // cocnverting document data to an [Vehicle]
+    // cocnverting document data to an object
     return Vehicle(
       id: snapshot.id,
       timestamp: data?["timestamp"],
@@ -50,7 +50,7 @@ class Vehicle extends ModelObject {
   /// Converts the [Vehicle] into a [Map] that can be published to firestore.
   @override
   Map<String, dynamic> toFirestore() {
-    // converting the module into a map
+    // converting the object into a map
     return {
       "timestamp": timestamp,
       "title": title,
