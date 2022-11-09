@@ -34,9 +34,10 @@ class Vehicle:
 
 
 class Checkpoint:
-    def __init__(self, id, timestamp, vehicleID, title, prompt, signs, conformanceStatus, lastVehicleInspectionID, lastVehicleInspectionResult, lastVehicleRemediationID):
+    def __init__(self, id, timestamp, index, vehicleID, title, prompt, signs, conformanceStatus, lastVehicleInspectionID, lastVehicleInspectionResult, lastVehicleRemediationID):
         self.id = id
         self.timestamp = timestamp
+        self.index = index
         self.vehicleID = vehicleID
         self.title = title
         self.prompt = prompt
@@ -53,6 +54,7 @@ class Checkpoint:
         return Checkpoint(
             doc.id,
             data["timestamp"],
+            data["index"],
             data["vehicleID"],
             data["title"],
             data["prompt"],
@@ -67,6 +69,7 @@ class Checkpoint:
         return {
             "timestamp": self.timestamp,
             "vehicleID": self.vehicleID,
+            "index": self.index,
             "title": self.title,
             "prompt": self.prompt,
             "conformanceStatus": self.conformanceStatus,
