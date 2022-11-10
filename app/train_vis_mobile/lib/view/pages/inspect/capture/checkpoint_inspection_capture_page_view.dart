@@ -101,7 +101,7 @@ class _CheckpointInspectionCapturePageViewState
               // INSTRUCTIONS //
               // //////////// //
 
-              _buildInstructionsContainer(pageController),
+              _buildInstructionsContainer(),
 
               // /////// //
               // CAPTURE //
@@ -119,7 +119,7 @@ class _CheckpointInspectionCapturePageViewState
               // REVIEW //
               // ////// //
 
-              _buildReviewContainer(pageController),
+              _buildReviewContainer(),
             ],
           ),
         ),
@@ -132,7 +132,7 @@ class _CheckpointInspectionCapturePageViewState
   // ////////////////////// //
 
   /// TODO
-  Widget _buildInstructionsContainer(PageController pageController) {
+  Widget _buildInstructionsContainer() {
     return Column(
       children: [
         // //////////////// //
@@ -178,7 +178,7 @@ class _CheckpointInspectionCapturePageViewState
   }
 
   /// TODO
-  Widget _buildReviewContainer(PageController pageController) {
+  Widget _buildReviewContainer() {
     return Column(
       children: [
         const Spacer(),
@@ -244,6 +244,18 @@ class _CheckpointInspectionCapturePageViewState
   // ////////////// //
   // HELPER METHODS //
   // ////////////// //
+
+  /// TODO
+  void _handleBackPressed() {
+    // handling based on current page
+    if (pageController.page == 0) {
+      // at first page -> passing back to parent page
+      // TODO
+    } else {
+      // at other page -> moving page back
+      //pageController.animateToPage(pageController.page-1, duration: duration, curve: curve)
+    }
+  }
 
   /// TODO
   void _handleCaptured(String capturePath) {

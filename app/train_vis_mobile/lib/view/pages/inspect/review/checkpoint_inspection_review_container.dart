@@ -11,6 +11,7 @@ import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 class CheckpointInspectionReviewContainer extends StatefulWidget {
   // MEMBER VARIABLES //
   final CheckpointInspection checkpointInspection; // checkpoing being reviewed
+  final Function() onReviewPressed; // call back when review is pressed
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -19,6 +20,7 @@ class CheckpointInspectionReviewContainer extends StatefulWidget {
   const CheckpointInspectionReviewContainer({
     super.key,
     required this.checkpointInspection,
+    required this.onReviewPressed,
   });
 
   // //////////// //
@@ -140,7 +142,7 @@ class _CheckpointInspectionReviewContainerState
             text: "Review",
             onPressed: () {
               // performing review
-              // TODO
+              widget.onReviewPressed();
             },
           ),
         ],
