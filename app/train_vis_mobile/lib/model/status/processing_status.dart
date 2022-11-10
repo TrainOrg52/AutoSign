@@ -32,7 +32,9 @@ class ProcessingStatus {
   /// Creates a [ProcessingStatus] based on the given string.
   static ProcessingStatus? fromString(String status) {
     // returning based on string value
-    if (status == pending.title) {
+    if (status == uploading.title) {
+      return uploading;
+    } else if (status == pending.title) {
       return pending;
     } else if (status == processing.title) {
       return processing;
@@ -63,11 +65,20 @@ class ProcessingStatus {
 
   // all instances
   static const List<ProcessingStatus> values = [
+    uploading,
     pending,
     processing,
     processed,
     error,
   ];
+
+  // uploading
+  static const ProcessingStatus uploading = ProcessingStatus._(
+    title: "uploading",
+    color: MyColors.amber,
+    accentColor: MyColors.amberAccent,
+    iconData: FontAwesomeIcons.arrowUp,
+  );
 
   // pending
   static const ProcessingStatus pending = ProcessingStatus._(

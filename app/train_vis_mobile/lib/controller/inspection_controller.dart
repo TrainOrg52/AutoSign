@@ -6,6 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:train_vis_mobile/controller/vehicle_controller.dart';
 import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:train_vis_mobile/model/inspection/vehicle_inspection.dart';
+import 'package:train_vis_mobile/model/status/processing_status.dart';
 
 /// Controller that manages the application's list of [VehicleInspection]
 /// objects.
@@ -89,6 +90,11 @@ class InspectionController {
         vehicleInspection.id,
       );
     }
+
+    // updating the proessing status on the vehicle inspection
+    await _vehicleInspectionsRef.doc(vehicleInspection.id).update({
+      "processingStatus": ProcessingStatus.pending,
+    });
   }
 
   /// TODO

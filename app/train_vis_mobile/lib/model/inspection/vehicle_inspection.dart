@@ -21,7 +21,7 @@ class VehicleInspection extends ModelObject {
     ProcessingStatus? processingStatus,
     ConformanceStatus? conformanceStatus,
     Map<String, ConformanceStatus>? checkpoints,
-  })  : processingStatus = processingStatus ?? ProcessingStatus.pending,
+  })  : processingStatus = processingStatus ?? ProcessingStatus.uploading,
         conformanceStatus = conformanceStatus ?? ConformanceStatus.pending,
         super(id: id, timestamp: timestamp);
 

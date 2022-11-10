@@ -43,9 +43,9 @@ class InspectPage extends StatefulWidget {
 class _InspectPageState extends State<InspectPage> {
   // STATE VARIABLES //
   late PageController pageController; // controller for pageview
-  late VehicleInspection vehicleInspection; // TODO
   late List<CheckpointInspection> checkpointInspections; // TODO
-  late bool isSubmitted; // submission status of vehicle inspection
+  late bool isSubmitted; // if the inspection is being submitted
+  late bool isOnSubmitPage; // if current page is submit
 
   // ////////// //
   // INIT STATE //
@@ -57,9 +57,9 @@ class _InspectPageState extends State<InspectPage> {
 
     // initializing state
     pageController = PageController();
-    vehicleInspection = VehicleInspection();
     checkpointInspections = [];
     isSubmitted = false;
+    isOnSubmitPage = false;
   }
 
   // //////////// //
@@ -80,14 +80,17 @@ class _InspectPageState extends State<InspectPage> {
       // /////// //
 
       appBar: AppBar(
-        leading: MyIconButton.secondary(
-          iconData: FontAwesomeIcons.xmark,
-          iconSize: MySizes.largeIconSize,
-          onPressed: () {
-            // handling the close
-            _handleClose(context);
-          },
-        ),
+        leading: !isSubmitted
+            ? MyIconButton.secondary(
+                iconData: FontAwesomeIcons.xmark,
+                iconSize: MySizes.largeIconSize,
+                onPressed: () {
+                  // handling the close
+                  _handleClose(context);
+                },
+              )
+            : null,
+        automaticallyImplyLeading: false,
         title: const Text("Inspect", style: MyTextStyles.headerText1),
       ),
 
@@ -221,6 +224,7 @@ class _InspectPageState extends State<InspectPage> {
   ) async {
     // updating state
     setState(() {
+      isSubmitted = true;
       checkpointInspections = reviewedCheckpointInspections;
     });
 
@@ -234,6 +238,11 @@ class _InspectPageState extends State<InspectPage> {
       duration: const Duration(milliseconds: 500),
       curve: Curves.ease,
     );
+
+    // updating state
+    setState(() {
+      isOnSubmitPage = true;
+    });
 
     // adding the vehicle inspection to firestore
     await InspectionController.instance.addVehicleInspection(
