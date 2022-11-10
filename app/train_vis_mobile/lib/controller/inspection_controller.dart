@@ -147,4 +147,79 @@ class InspectionController {
       await _checkpointInspectionsRef.doc(checkpointInspection.id).delete();
     }
   }
+
+  // /////////////// //
+  // GETTING OBJECTS //
+  // /////////////// //
+
+  /// Returns a [Stream] of the [List] of [VehicleInspection]s associated with
+  /// the given [vehicleID].
+  ///
+  /// This [VehicleInspections] are sorted based on their [timestamp].
+  Stream<List<VehicleInspection>> getVehicleInspectionsWhereVehicleIs(
+    String vehicleID,
+  ) {
+    return _checkpointInspectionsRef
+        .where("vehicleID", isEqualTo: vehicleID)
+        .orderBy("timestamp")
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => VehicleInspection.fromFirestore(doc))
+              .toList(),
+        );
+  }
+
+  /// Returns a [Stream] of the [List] of [CheckpointInspection]s associated
+  /// with the given [vehicleInspectionID].
+  ///
+  /// This [CheckpointInspection]s are sorted based on their [index] property.
+  Stream<List<CheckpointInspection>>
+      getCheckpointInspectionsWhereVehicleInspectionIs(
+    String vehicleInspectionID,
+  ) {
+    return _checkpointInspectionsRef
+        .where("vehicleInspectionID", isEqualTo: vehicleInspectionID)
+        .orderBy("index")
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => CheckpointInspection.fromFirestore(doc))
+              .toList(),
+        );
+  }
+
+  // ////////////// //
+  // GETTING IMAGES //
+  // ////////////// //
+
+  /// Returns the download URL for the unprocessed image of an
+  /// [InspectionCheckpoint].
+  Stream<String> getUnprocessedCheckpointInspectionImageDownloadURL(
+    String vehicleID,
+    String vehicleInspectionID,
+    String checkpointInspectionID,
+  ) {
+    // defining reference to Storage
+    Reference reference = FirebaseStorage.instance.ref(
+        "$vehicleID/vehicleInspections/$vehicleInspectionID/checkpointInspectionID/unprocessed.png");
+
+    // returning download URL
+    return reference.getDownloadURL().asStream();
+  }
+
+  /// Returns the download URL for the processed image of an
+  /// [InspectionCheckpoint].
+  Stream<String> getProcessedCheckpointInspectionImageDownloadURL(
+    String vehicleID,
+    String vehicleInspectionID,
+    String checkpointInspectionID,
+  ) {
+    // defining reference to Storage
+    Reference reference = FirebaseStorage.instance.ref(
+        "$vehicleID/vehicleInspections/$vehicleInspectionID/checkpointInspectionID/processed.png");
+
+    // returning download URL
+    return reference.getDownloadURL().asStream();
+  }
 }

@@ -34,9 +34,9 @@ class VehicleController {
   // single instance of controller
   static final VehicleController instance = VehicleController._();
 
-  // /////// //
-  // GETTING //
-  // /////// //
+  // /////////////// //
+  // GETTING OBJECTS //
+  // /////////////// //
 
   /// Returns a [Stream] for the [Vehicle] matching the given [vehicleID].
   Stream<Vehicle> getVehicle(String vehicleID) {
@@ -58,6 +58,8 @@ class VehicleController {
 
   /// Returns a [Stream] for the [List] of [Checkpoint]s associated with the
   /// given [vehcileID].
+  ///
+  /// The [Checkpoint]s are sorted based on their [index] property.
   Stream<List<Checkpoint>> getCheckpointsWhereVehicleIs(String vehicleID) {
     return _checkpointsRef
         .where("vehicleID", isEqualTo: vehicleID)
