@@ -76,7 +76,7 @@ class InspectionController {
   /// each checkpoint is added to the system (see [_addCheckpointInspection]).
   ///
   /// 4 - The [processingStatus] of the [VehicleInspection] is updated to [pending]
-  /// to reflec that the inspection is ready to be processed.
+  /// to reflect that the inspection is ready to be processed.
   Future<void> addVehicleInspection(
     VehicleInspection vehicleInspection,
     List<CheckpointInspection> checkpointInspections,
@@ -114,7 +114,7 @@ class InspectionController {
     });
   }
 
-  /// Adds a given [CheckpointInspection] object to the system.
+  /// Adds a [CheckpointInspection] object to the system.
   ///
   /// 1 - The [CheckpointInspection] object is uploaded to Firestore, and it's [id]
   /// property is updated using the [id] of the document that was created.
@@ -159,7 +159,7 @@ class InspectionController {
   Stream<List<VehicleInspection>> getVehicleInspectionsWhereVehicleIs(
     String vehicleID,
   ) {
-    return _checkpointInspectionsRef
+    return _vehicleInspectionsRef
         .where("vehicleID", isEqualTo: vehicleID)
         .orderBy("timestamp")
         .snapshots()
