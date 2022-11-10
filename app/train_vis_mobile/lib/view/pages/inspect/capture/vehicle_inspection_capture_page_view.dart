@@ -5,7 +5,13 @@ import 'package:train_vis_mobile/model/vehicle/checkpoint.dart';
 import 'package:train_vis_mobile/view/pages/inspect/capture/checkpoint_inspection_capture_page_view.dart';
 import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 
-/// TODO
+/// A custom [PageView] for capturing an inspection of a [Vehicle].
+///
+/// The [PageView] consists of one page for each [Checkpoint] in the vehicle.
+/// Each of these pages is a [CheckpointInspectionCapturePageView], which allow
+/// for inspection of the each vehicle's [Checkpoint]s to be captured.
+///
+/// Each [CheckpointInspectionPageView]
 class VehicleInspectionCapturePageView extends StatefulWidget {
   // MEMBER VARIABLES //
   final String vehicleID; // TODO
@@ -83,12 +89,11 @@ class _VehicleInspectionCapturePageViewState
             for (Checkpoint checkpoint in checkpoints)
               CheckpointInspectionCapturePageView(
                 checkpoint: checkpoint,
-                onCheckpointInspectionCaptured: (capturePath) {
+                onCheckpointInspectionCaptured: (checkpointInspection) {
                   // handling capture
                   _handleCheckpointInspectionCaptured(
                     checkpoints,
-                    checkpoint,
-                    capturePath,
+                    checkpointInspection,
                   );
                 },
               )
@@ -105,19 +110,13 @@ class _VehicleInspectionCapturePageViewState
   /// TODO
   void _handleCheckpointInspectionCaptured(
     List<Checkpoint> checkpoints,
-    Checkpoint checkpoint,
-    String capturePath,
+    CheckpointInspection checkpointInspection,
   ) {
     // updating current page number
     currentPage = currentPage + 1;
 
-    // creating new inspection checkpoint for capture
-    checkpointInspections.add(
-      CheckpointInspection.fromCheckpoint(
-        checkpoint: checkpoint,
-        capturePath: capturePath,
-      ),
-    );
+    // adding the checkpoint inspection to the list of checkpoint inspections
+    checkpointInspections.add(checkpointInspection);
 
     // checking if all checkpoints have been captured
     if (currentPage < checkpoints.length) {

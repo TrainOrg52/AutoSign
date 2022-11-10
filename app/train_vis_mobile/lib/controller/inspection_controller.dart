@@ -9,12 +9,17 @@ import 'package:train_vis_mobile/model/inspection/vehicle_inspection.dart';
 import 'package:train_vis_mobile/model/status/processing_status.dart';
 
 /// Controller that manages the application's list of [VehicleInspection]
-/// objects.
+/// and [CheckpointInspection] objects.
+///
+/// Providess methods to access the data from Firebase Firestore and Storage as
+/// [Stream]s or [Future]s.
 class InspectionController {
   // MEMBER VARIABLES //
+
   // vehicle inspections reference
   final CollectionReference<Map<String, dynamic>> _vehicleInspectionsRef =
       FirebaseFirestore.instance.collection("vehicleInspections");
+
   // checkpoint inspections reference
   final CollectionReference<Map<String, dynamic>> _checkpointInspectionsRef =
       FirebaseFirestore.instance.collection("checkpointInspections");
@@ -59,7 +64,19 @@ class InspectionController {
   // ADDING //
   // ////// //
 
-  /// TODO
+  /// Adds a [VehicleInspection] and its corresponding list of [CheckpointInspection]
+  /// objects into the system.
+  ///
+  /// 1 - The [VehicleInspection] object is pushed to Firestore.
+  ///
+  /// 2 - The [conformanceStatus] of the [Vehicle] associated with the inspection
+  /// is updated to reflect a new inspection has taken place.
+  ///
+  /// 3 - The list of [CheckpointInspection] objects is iterated over, and for
+  /// each checkpoint is added to the system (see [_addCheckpointInspection]).
+  ///
+  /// 4 - The [processingStatus] of the [VehicleInspection] is updated to [pending]
+  /// to reflec that the inspection is ready to be processed.
   Future<void> addVehicleInspection(
     VehicleInspection vehicleInspection,
     List<CheckpointInspection> checkpointInspections,
@@ -97,7 +114,13 @@ class InspectionController {
     });
   }
 
-  /// TODO
+  /// Adds a given [CheckpointInspection] object to the system.
+  ///
+  /// 1 - The [CheckpointInspection] object is uploaded to Firestore, and it's [id]
+  /// property is updated using the [id] of the document that was created.
+  ///
+  /// 2 - The image associated with the [CheckpointInspection] is uploaded to
+  /// Storage under the ID of the Firestore document.
   Future<void> _addCheckpointInspection(
     CheckpointInspection checkpointInspection,
   ) async {

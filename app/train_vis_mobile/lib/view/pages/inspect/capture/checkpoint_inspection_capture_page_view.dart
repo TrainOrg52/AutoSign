@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:train_vis_mobile/controller/vehicle_controller.dart';
+import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:train_vis_mobile/model/vehicle/checkpoint.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
@@ -10,12 +11,26 @@ import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 import 'package:train_vis_mobile/view/widgets/camera_container.dart';
 import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 
-/// TODO
+/// A custom [PageView] for capturing an inspection of a [Checkpoint]. The title
+/// of the checkpoint and its prompt are displayed as a title above the view
+/// which consists of three pages that allow the user to preview, capture and review
+/// the inspection. Once reviewed, an [CheckpointInspection] is returned using the
+/// [onCheckpointInspectionCaptured] method that contains inspection of the given
+/// [Checkpoint].
+///
+/// Page 1 - A page to display a preview for the checkpoint. This is an
+/// example image of the checkpoint (i.e., the gold standard).
+///
+/// Page 2 - A page to allow the user to capture an image of the checkpoint. This
+/// includes a camera preview.
+///
+/// Page 3 - A page to display the image of the checkpoint the user captured in
+/// page 2, and retake/confirm this capture.
 class CheckpointInspectionCapturePageView extends StatefulWidget {
   // MEMBER VARIABLES //
   final Checkpoint checkpoint; // checkpoint being displayed
-  final Function(String)
-      onCheckpointInspectionCaptured; //  ran when checkpoint is captured.
+  final Function(CheckpointInspection)
+      onCheckpointInspectionCaptured; // callback ran when checkpoint is captured.
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -36,7 +51,7 @@ class CheckpointInspectionCapturePageView extends StatefulWidget {
       _CheckpointInspectionCapturePageViewState();
 }
 
-/// TODO
+/// State class for [CheckpointInspectionCapturePageView].
 class _CheckpointInspectionCapturePageViewState
     extends State<CheckpointInspectionCapturePageView> {
   // STATE VARIABLES //
@@ -101,25 +116,19 @@ class _CheckpointInspectionCapturePageViewState
               // INSTRUCTIONS //
               // //////////// //
 
-              _buildInstructionsContainer(),
+              _buildPreviewPage(),
 
               // /////// //
               // CAPTURE //
               // /////// //
 
-              CameraContainer(
-                onCaptured: (capturePath) {
-                  // handling capture
-
-                  _handleCaptured(capturePath);
-                },
-              ),
+              _buildCapturePage(),
 
               // ////// //
               // REVIEW //
               // ////// //
 
-              _buildReviewContainer(),
+              _buildReviewPage(),
             ],
           ),
         ),
@@ -131,13 +140,15 @@ class _CheckpointInspectionCapturePageViewState
   // HELPER BUILDER METHODS //
   // ////////////////////// //
 
-  /// TODO
-  Widget _buildInstructionsContainer() {
+  /// Builds the page that shows the user a preview for the checkpoint.
+  ///
+  /// This is the gold-standard image of the checkpoint.
+  Widget _buildPreviewPage() {
     return Column(
       children: [
-        // //////////////// //
-        // CHECKPOINT IMAGE //
-        // //////////////// //
+        // ///////////// //
+        // PREVIEW IMAGE //
+        // ///////////// //
 
         const Spacer(),
 
@@ -177,15 +188,37 @@ class _CheckpointInspectionCapturePageViewState
     );
   }
 
-  /// TODO
-  Widget _buildReviewContainer() {
+  /// Builds the page that allows the user to capture an image of the checkpoing.
+  Widget _buildCapturePage() {
+    return CameraContainer(
+      onCaptured: (capturePath) {
+        // handling capture
+
+        // updating photo data
+        setState(() {
+          this.capturePath = capturePath;
+        });
+
+        // navigating to review page
+        pageController.animateToPage(
+          2,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.ease,
+        );
+      },
+    );
+  }
+
+  /// Builds the page that allows the user to review the image of the checkpoint
+  /// that they have captured and retake/confirm it.
+  Widget _buildReviewPage() {
     return Column(
       children: [
         const Spacer(),
 
-        // //////////////// //
-        // CHECKPOINT IMAGE //
-        // //////////////// //
+        // ////////////// //
+        // CAPTURED IMAGE //
+        // ////////////// //
 
         Expanded(
           flex: 12,
@@ -231,44 +264,18 @@ class _CheckpointInspectionCapturePageViewState
             MyTextButton.primary(
               text: "Next",
               onPressed: () {
-                // submitting the checkpoint inspection
-                widget.onCheckpointInspectionCaptured(capturePath);
+                // submitting the checkpoint inspection to the callback
+                widget.onCheckpointInspectionCaptured(
+                  CheckpointInspection.fromCheckpoint(
+                    checkpoint: widget.checkpoint,
+                    capturePath: capturePath,
+                  ),
+                );
               },
             )
           ],
         ),
       ],
-    );
-  }
-
-  // ////////////// //
-  // HELPER METHODS //
-  // ////////////// //
-
-  /// TODO
-  void _handleBackPressed() {
-    // handling based on current page
-    if (pageController.page == 0) {
-      // at first page -> passing back to parent page
-      // TODO
-    } else {
-      // at other page -> moving page back
-      //pageController.animateToPage(pageController.page-1, duration: duration, curve: curve)
-    }
-  }
-
-  /// TODO
-  void _handleCaptured(String capturePath) {
-    // updating photo data
-    setState(() {
-      this.capturePath = capturePath;
-    });
-
-    // navigating to review page
-    pageController.animateToPage(
-      2,
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.ease,
     );
   }
 }

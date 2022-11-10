@@ -4,12 +4,19 @@ import 'package:train_vis_mobile/model/status/conformance_status.dart';
 import 'package:train_vis_mobile/model/vehicle/checkpoint.dart';
 import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
 
-/// Controller that manages the application's list of [Vehicle] objects.
+/// Controller that manages the application's list of [Vehicle] and
+/// [CheckpointInspection] objects.
+///
+/// Providess methods to access the data from Firebase Firestore and Storage as
+/// [Stream]s or [Future]s.
 class VehicleController {
   // MEMBER VARIABLES //
-  // reference to Firestore collection
+
+  // reference to vehicles Firestore collection
   final CollectionReference<Map<String, dynamic>> _vehiclesRef =
       FirebaseFirestore.instance.collection("vehicles");
+
+  // reference to checkpoints Firestore collection
   final CollectionReference<Map<String, dynamic>> _checkpointsRef =
       FirebaseFirestore.instance.collection("checkpoints");
 
@@ -49,7 +56,8 @@ class VehicleController {
         .map((snapshot) => Checkpoint.fromFirestore(snapshot));
   }
 
-  /// TODO
+  /// Returns a [Stream] for the [List] of [Checkpoint]s associated with the
+  /// given [vehcileID].
   Stream<List<Checkpoint>> getCheckpointsWhereVehicleIs(String vehicleID) {
     return _checkpointsRef
         .where("vehicleID", isEqualTo: vehicleID)
@@ -93,7 +101,11 @@ class VehicleController {
   // RESETTING CONFORMANCE STATUS //
   // //////////////////////////// //
 
-  /// TODO
+  /// Resets the conformance status of the given vehicle following an inspection.
+  ///
+  /// 1 - Sets the [conformanceStatus] of the vehicle to [pending].
+  ///
+  /// 2 - Sets the [lastVehicleInspectionID] to the given [lastVehicleInspectionID].
   Future<void> resetVehicleConformanceStatus(
     String vehicleID,
     String lastVehicleInspectionID,
@@ -107,13 +119,22 @@ class VehicleController {
     );
   }
 
-  /// TODO
+  /// Resets the conformance status of the given [Checkpoint] following an
+  /// inspection.
+  ///
+  /// 1 - Sets the [conformanceStatus] of the checkpoint to [pending].
+  ///
+  /// 2 - Sets the [lastVehicleInspectionID] to the given [lastVehicleInspectionID].
+  ///
+  /// 3 - Sets the [lastVehicleInspectionResult] to the [pending].
+  ///
+  /// 4 - Sets the [lastVehicleRemediationID] to null.
   Future<void> resetCheckpointConformanceStatus(
-    String vehicleID,
+    String checkpointID,
     String lastVehicleInspectionID,
   ) async {
     // updating checkpoint properties
-    await _checkpointsRef.doc(vehicleID).update(
+    await _checkpointsRef.doc(checkpointID).update(
       {
         "conformanceStatus": ConformanceStatus.pending.toString(),
         "lastVehicleInspectionID": lastVehicleInspectionID,

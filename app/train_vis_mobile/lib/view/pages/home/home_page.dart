@@ -10,7 +10,8 @@ import 'package:train_vis_mobile/view/widgets/padded_custom_scroll_view.dart';
 
 /// The home page of the application.
 ///
-/// TODO
+/// Displays a single container that allows the user to enter the ID of a train
+/// vehicle and view the inforrmation for this train.
 class HomePage extends StatefulWidget {
   // THEME-ING //
   // sizes
