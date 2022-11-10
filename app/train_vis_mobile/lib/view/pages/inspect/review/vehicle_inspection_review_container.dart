@@ -9,7 +9,7 @@ import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
 class VehicleInspectionReviewContainer extends StatefulWidget {
   // MEMBER VARIABLES //
   final List<CheckpointInspection> checkpointInspections; // TODO
-  final Function(List<CheckpointInspection>) onSubmit; // TODO
+  final Function(List<CheckpointInspection>) onSubmitted; // TODO
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -18,7 +18,7 @@ class VehicleInspectionReviewContainer extends StatefulWidget {
   const VehicleInspectionReviewContainer({
     super.key,
     required this.checkpointInspections,
-    required this.onSubmit,
+    required this.onSubmitted,
   });
 
   // //////////// //
@@ -97,7 +97,7 @@ class _VehicleInspectionReviewContainerState
           text: "Submit",
           onPressed: () {
             // handling the submit
-            widget.onSubmit(widget.checkpointInspections);
+            widget.onSubmitted(widget.checkpointInspections);
           },
         ),
       ],

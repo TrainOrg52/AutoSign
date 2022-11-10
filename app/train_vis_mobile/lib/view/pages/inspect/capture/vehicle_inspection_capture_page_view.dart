@@ -85,38 +85,54 @@ class _VehicleInspectionCapturePageViewState
                 checkpoint: checkpoint,
                 onCheckpointInspectionCaptured: (capturePath) {
                   // handling capture
-
-                  // updating current page number
-                  currentPage = currentPage + 1;
-
-                  // creating new inspection checkpoint for capture
-                  checkpointInspections.add(
-                    CheckpointInspection.fromCheckpoint(
-                      checkpoint: checkpoint,
-                      capturePath: capturePath,
-                    ),
+                  _handleCheckpointInspectionCaptured(
+                    checkpoints,
+                    checkpoint,
+                    capturePath,
                   );
-
-                  // checking if all checkpoints have been captured
-                  if (currentPage < checkpoints.length) {
-                    // not all checkpoints captured -> move to next checkpoint
-
-                    // navigating to next page
-                    pageController.nextPage(
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.ease,
-                    );
-                  } else {
-                    // all checkpoints captured -> calling on inspection captured
-
-                    // calling on vehicle inspection captured
-                    widget.onCaptured(checkpointInspections);
-                  }
                 },
               )
           ],
         );
       },
     );
+  }
+
+  // ////////////// //
+  // HELPER METHODS //
+  // ////////////// //
+
+  /// TODO
+  void _handleCheckpointInspectionCaptured(
+    List<Checkpoint> checkpoints,
+    Checkpoint checkpoint,
+    String capturePath,
+  ) {
+    // updating current page number
+    currentPage = currentPage + 1;
+
+    // creating new inspection checkpoint for capture
+    checkpointInspections.add(
+      CheckpointInspection.fromCheckpoint(
+        checkpoint: checkpoint,
+        capturePath: capturePath,
+      ),
+    );
+
+    // checking if all checkpoints have been captured
+    if (currentPage < checkpoints.length) {
+      // not all checkpoints captured -> move to next checkpoint
+
+      // navigating to next page
+      pageController.nextPage(
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.ease,
+      );
+    } else {
+      // all checkpoints captured -> calling on inspection captured
+
+      // calling on vehicle inspection captured
+      widget.onCaptured(checkpointInspections);
+    }
   }
 }

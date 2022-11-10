@@ -132,16 +132,8 @@ class _InspectPageState extends State<InspectPage> {
                       VehicleInspectionCapturePageView(
                         vehicle: vehicle,
                         onCaptured: (checkpointInspections) {
-                          // updating state
-                          setState(() {
-                            this.checkpointInspections = checkpointInspections;
-                          });
-
-                          // navigating to review container
-                          pageController.nextPage(
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.ease,
-                          );
+                          // handling the capture
+                          _handleCaptured(checkpointInspections);
                         },
                       ),
 
@@ -151,21 +143,9 @@ class _InspectPageState extends State<InspectPage> {
 
                       VehicleInspectionReviewContainer(
                         checkpointInspections: checkpointInspections,
-                        onSubmit: (reviewedCheckpointInspections) {
-                          // updating state
-                          setState(() {
-                            checkpointInspections =
-                                reviewedCheckpointInspections;
-                          });
-
-                          // starting the submission process
-                          _handleSubmit();
-
-                          // navigating to submit container
-                          pageController.nextPage(
-                            duration: const Duration(milliseconds: 500),
-                            curve: Curves.ease,
-                          );
+                        onSubmitted: (reviewedCheckpointInspections) {
+                          // handing the submission
+                          _handleSubmitted(reviewedCheckpointInspections);
                         },
                       ),
 
@@ -223,10 +203,39 @@ class _InspectPageState extends State<InspectPage> {
   }
 
   /// TODO
-  Future<void> _handleSubmit() async {
+  Future<void> _handleCaptured(
+    List<CheckpointInspection> checkpointInspections,
+  ) async {
+    // updating state
+    setState(() {
+      this.checkpointInspections = checkpointInspections;
+    });
+
+    // navigating to review container
+    pageController.nextPage(
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.ease,
+    );
+  }
+
+  /// TODO
+  Future<void> _handleSubmitted(
+    List<CheckpointInspection> reviewedCheckpointInspections,
+  ) async {
+    // updating state
+    setState(() {
+      checkpointInspections = reviewedCheckpointInspections;
+    });
+
     // creating the vehicle inspection object
     VehicleInspection vehicleInspection = VehicleInspection(
       vehicleID: widget.vehicleID,
+    );
+
+    // navigating to submit page
+    pageController.nextPage(
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.ease,
     );
 
     // adding the vehicle inspection to firestore

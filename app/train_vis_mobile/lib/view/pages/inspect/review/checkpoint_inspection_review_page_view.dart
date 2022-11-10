@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
@@ -6,12 +9,18 @@ import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 import 'package:train_vis_mobile/view/widgets/camera_container.dart';
 
 /// TODO
-class CheckpointInspectionCapturePageView extends StatelessWidget {
+class CheckpointInspectionReviewPageView extends StatelessWidget {
+  // MEMBER VARIABLES //
+  final CheckpointInspection checkpointInspection; // checkpoint being reviewed
+
   // ///////////////// //
   // CLASS CONSTRUCTOR //
   // ///////////////// //
 
-  const CheckpointInspectionCapturePageView({super.key});
+  const CheckpointInspectionReviewPageView({
+    super.key,
+    required this.checkpointInspection,
+  });
 
   // //////////// //
   // BUILD METHOD //
@@ -67,11 +76,18 @@ class CheckpointInspectionCapturePageView extends StatelessWidget {
               // /////// //
 
               CameraContainer(
-                onCapture: (photoData) {
+                onCaptured: (capturePath) {
                   // handling capture
+
                   // TODO
                 },
               ),
+
+              // ////// //
+              // REVIEW //
+              // ////// //
+
+              _buildCheckpointInspectionReview(pageController),
             ],
           ),
         ),
@@ -87,9 +103,9 @@ class CheckpointInspectionCapturePageView extends StatelessWidget {
   Widget _buildCheckpointInspectionPreview(PageController pageController) {
     return Column(
       children: [
-        // //////////////// //
-        // CHECKPOINT IMAGE //
-        // //////////////// //
+        // /////////////////////////// //
+        // CHECKPOINT INSPECTION IMAGE //
+        // /////////////////////////// //
 
         const Spacer(),
 
@@ -97,7 +113,7 @@ class CheckpointInspectionCapturePageView extends StatelessWidget {
           isDense: true,
           backgroundColor: Colors.transparent,
           padding: const EdgeInsets.all(MySizes.paddingValue),
-          child: Image.asset("resources/images/checkpoint 1.png"),
+          child: Image.asset(checkpointInspection.capturePath),
         ),
 
         const Spacer(),
@@ -115,7 +131,7 @@ class CheckpointInspectionCapturePageView extends StatelessWidget {
             MyTextButton.secondary(
               text: "Retake",
               onPressed: () {
-                // navigating to the capture page
+                // navigating to the (re) capture page
                 pageController.animateToPage(
                   1,
                   duration: const Duration(milliseconds: 500),
@@ -131,12 +147,72 @@ class CheckpointInspectionCapturePageView extends StatelessWidget {
             MyTextButton.secondary(
               text: "Confirm",
               onPressed: () {
-                // navigating to the capture page
+                // navigating back to review page
+                // TODO
+              },
+            )
+          ],
+        ),
+      ],
+    );
+  }
+
+  /// TODO
+  Widget _buildCheckpointInspectionReview(PageController pageController) {
+    return Column(
+      children: [
+        const Spacer(),
+
+        // //////////////// //
+        // CHECKPOINT IMAGE //
+        // //////////////// //
+
+        Expanded(
+          flex: 12,
+          child: BorderedContainer(
+            isDense: true,
+            backgroundColor: Colors.transparent,
+            padding: const EdgeInsets.all(MySizes.paddingValue),
+            child: Image.file(File(checkpointInspection.capturePath)),
+          ),
+        ),
+
+        const Spacer(),
+
+        // /////// //
+        // ACTIONS //
+        // /////// //
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // ////// //
+            // RETAKE //
+            // ////// //
+
+            MyTextButton.secondary(
+              text: "Retake",
+              onPressed: () {
+                // navigating back to the capture page
                 pageController.animateToPage(
                   1,
                   duration: const Duration(milliseconds: 500),
                   curve: Curves.ease,
                 );
+              },
+            ),
+
+            const SizedBox(width: MySizes.spacing),
+
+            // //// //
+            // NEXT //
+            // //// //
+
+            MyTextButton.primary(
+              text: "Next",
+              onPressed: () {
+                // submitting the checkpoint inspection
+                // TODO
               },
             )
           ],

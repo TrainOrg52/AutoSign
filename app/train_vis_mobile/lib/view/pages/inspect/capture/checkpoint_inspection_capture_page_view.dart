@@ -108,18 +108,10 @@ class _CheckpointInspectionCapturePageViewState
               // /////// //
 
               CameraContainer(
-                onCapture: (capturePath) {
-                  // updating photo data
-                  setState(() {
-                    this.capturePath = capturePath;
-                  });
+                onCaptured: (capturePath) {
+                  // handling capture
 
-                  // navigating to review page
-                  pageController.animateToPage(
-                    2,
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.ease,
-                  );
+                  _handleCaptured(capturePath);
                 },
               ),
 
@@ -246,6 +238,25 @@ class _CheckpointInspectionCapturePageViewState
           ],
         ),
       ],
+    );
+  }
+
+  // ////////////// //
+  // HELPER METHODS //
+  // ////////////// //
+
+  /// TODO
+  void _handleCaptured(String capturePath) {
+    // updating photo data
+    setState(() {
+      this.capturePath = capturePath;
+    });
+
+    // navigating to review page
+    pageController.animateToPage(
+      2,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.ease,
     );
   }
 }

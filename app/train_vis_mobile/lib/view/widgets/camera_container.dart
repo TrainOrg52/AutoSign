@@ -12,7 +12,7 @@ import 'package:train_vis_mobile/view/widgets/custom_future_builder.dart';
 /// TODO
 class CameraContainer extends StatelessWidget {
   // MEMBER VARIABLES //
-  final Function(String) onCapture;
+  final Function(String) onCaptured;
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -20,7 +20,7 @@ class CameraContainer extends StatelessWidget {
 
   const CameraContainer({
     super.key,
-    required this.onCapture,
+    required this.onCaptured,
   });
 
   // //////////// //
@@ -34,7 +34,7 @@ class CameraContainer extends StatelessWidget {
       builder: (context, cameras) {
         return CameraContainerAux(
           cameras: cameras,
-          onCapture: onCapture,
+          onCapture: onCaptured,
         );
       },
     );
