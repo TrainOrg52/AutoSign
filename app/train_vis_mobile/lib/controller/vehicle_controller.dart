@@ -96,12 +96,13 @@ class VehicleController {
   /// TODO
   Future<void> resetVehicleConformanceStatus(
     String vehicleID,
+    String lastVehicleInspectionID,
   ) async {
     // updating vehicle properties
     await _vehiclesRef.doc(vehicleID).update(
       {
         "conformanceStatus": ConformanceStatus.pending.toString(),
-        "lastVehicleInspectionID": "",
+        "lastVehicleInspectionID": lastVehicleInspectionID,
       },
     );
   }
@@ -109,13 +110,14 @@ class VehicleController {
   /// TODO
   Future<void> resetCheckpointConformanceStatus(
     String vehicleID,
+    String lastVehicleInspectionID,
   ) async {
     // updating checkpoint properties
     await _checkpointsRef.doc(vehicleID).update(
       {
         "conformanceStatus": ConformanceStatus.pending.toString(),
-        "lastVehicleInspectionID": "",
-        "lastVehicleInspectionResult": "",
+        "lastVehicleInspectionID": lastVehicleInspectionID,
+        "lastVehicleInspectionResult": ConformanceStatus.pending.toString(),
         "lastVehicleRemediationID": "",
       },
     );
