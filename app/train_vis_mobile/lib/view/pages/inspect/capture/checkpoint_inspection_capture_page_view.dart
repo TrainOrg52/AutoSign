@@ -8,7 +8,7 @@ import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
 import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 import 'package:train_vis_mobile/view/widgets/camera_container.dart';
-import 'package:train_vis_mobile/view/widgets/custom_future_builder.dart';
+import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 
 /// TODO
 class CheckpointInspectionCapturePageView extends StatefulWidget {
@@ -101,7 +101,7 @@ class _CheckpointInspectionCapturePageViewState
               // INSTRUCTIONS //
               // //////////// //
 
-              _buildCheckpointInspectionInstructions(pageController),
+              _buildInstructionsContainer(pageController),
 
               // /////// //
               // CAPTURE //
@@ -119,7 +119,7 @@ class _CheckpointInspectionCapturePageViewState
               // REVIEW //
               // ////// //
 
-              _buildCheckpointInspectionReview(pageController),
+              _buildReviewContainer(pageController),
             ],
           ),
         ),
@@ -132,7 +132,7 @@ class _CheckpointInspectionCapturePageViewState
   // ////////////////////// //
 
   /// TODO
-  Widget _buildCheckpointInspectionInstructions(PageController pageController) {
+  Widget _buildInstructionsContainer(PageController pageController) {
     return Column(
       children: [
         // //////////////// //
@@ -145,8 +145,8 @@ class _CheckpointInspectionCapturePageViewState
           isDense: true,
           backgroundColor: Colors.transparent,
           padding: const EdgeInsets.all(MySizes.paddingValue),
-          child: CustomFutureBuilder(
-            future: VehicleController.instance.getCheckpointImageDownloadURL(
+          child: CustomStreamBuilder(
+            stream: VehicleController.instance.getCheckpointImageDownloadURL(
               widget.checkpoint.vehicleID,
               widget.checkpoint.id,
             ),
@@ -178,7 +178,7 @@ class _CheckpointInspectionCapturePageViewState
   }
 
   /// TODO
-  Widget _buildCheckpointInspectionReview(PageController pageController) {
+  Widget _buildReviewContainer(PageController pageController) {
     return Column(
       children: [
         const Spacer(),

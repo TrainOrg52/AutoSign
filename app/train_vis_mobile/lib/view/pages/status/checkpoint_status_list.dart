@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:train_vis_mobile/controller/vehicle_controller.dart';
 import 'package:train_vis_mobile/model/vehicle/checkpoint.dart';
+import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
 import 'package:train_vis_mobile/view/pages/status/checkpoint_status_container.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
@@ -9,7 +10,7 @@ import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 /// checkpoints within a given vehicle.
 class CheckpointStatusList extends StatefulWidget {
   // MEMBER VARIABLES //
-  final String vehicleID; // ID of the vehicle the status is being displayed for
+  final Vehicle vehicle; // vehicle the status is being displayed for
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -17,7 +18,7 @@ class CheckpointStatusList extends StatefulWidget {
 
   const CheckpointStatusList({
     super.key,
-    required this.vehicleID,
+    required this.vehicle,
   });
 
   // //////////// //
@@ -53,7 +54,7 @@ class _CheckpointStatusListState extends State<CheckpointStatusList> {
   Widget build(BuildContext context) {
     return CustomStreamBuilder<List<Checkpoint>>(
         stream: VehicleController.instance
-            .getCheckpointsWhereVehicleIs(widget.vehicleID),
+            .getCheckpointsWhereVehicleIs(widget.vehicle.id),
         builder: (context, checkpoints) {
           return ListView.builder(
             shrinkWrap: true,

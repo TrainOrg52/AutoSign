@@ -27,10 +27,10 @@ class VehicleInspectionSubmitContainer extends StatelessWidget {
     // building based on submission status
     if (isSubmitted) {
       // inspection submitted -> build submitted container
-      return _buildInspectionSubmittedContainer(context);
+      return _buildSubmittedContainer(context);
     } else {
       // inspection not submitted -> build submitting container
-      return _buildInspectionSubmittingContainer();
+      return _buildSubmittingContainer();
     }
   }
 
@@ -39,7 +39,7 @@ class VehicleInspectionSubmitContainer extends StatelessWidget {
   // ////////////////////// //
 
   /// TODO
-  Widget _buildInspectionSubmittingContainer() {
+  Widget _buildSubmittingContainer() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: const [
@@ -84,7 +84,7 @@ class VehicleInspectionSubmitContainer extends StatelessWidget {
   }
 
   /// TODO
-  Widget _buildInspectionSubmittedContainer(BuildContext context) {
+  Widget _buildSubmittedContainer(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [

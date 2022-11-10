@@ -69,7 +69,7 @@ class CheckpointInspectionReviewPageView extends StatelessWidget {
               // INSTRUCTIONS //
               // //////////// //
 
-              _buildCheckpointInspectionPreview(pageController),
+              _buildInstructionsContainer(pageController),
 
               // /////// //
               // CAPTURE //
@@ -87,7 +87,7 @@ class CheckpointInspectionReviewPageView extends StatelessWidget {
               // REVIEW //
               // ////// //
 
-              _buildCheckpointInspectionReview(pageController),
+              _buildReviewContainer(pageController),
             ],
           ),
         ),
@@ -100,7 +100,7 @@ class CheckpointInspectionReviewPageView extends StatelessWidget {
   // ////////////////////// //
 
   /// TODO
-  Widget _buildCheckpointInspectionPreview(PageController pageController) {
+  Widget _buildInstructionsContainer(PageController pageController) {
     return Column(
       children: [
         // /////////////////////////// //
@@ -158,7 +158,7 @@ class CheckpointInspectionReviewPageView extends StatelessWidget {
   }
 
   /// TODO
-  Widget _buildCheckpointInspectionReview(PageController pageController) {
+  Widget _buildReviewContainer(PageController pageController) {
     return Column(
       children: [
         const Spacer(),

@@ -13,7 +13,9 @@ class CheckpointInspection extends ModelObject {
   int index; // index o f checkpoint in vehicle
   ConformanceStatus conformanceStatus; // conformance status of checkpoint
   Map<String, ConformanceStatus> signs; // map of signs to conformance status
-  String capturePath; // path to captured image (DO NOT SEND TO FIRESTORE)
+
+  // helper (NOT TO BE SENT TO FIRESTORE)
+  String capturePath;
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //

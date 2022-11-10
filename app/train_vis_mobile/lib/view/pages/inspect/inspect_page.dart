@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:train_vis_mobile/controller/inspection_controller.dart';
-import 'package:train_vis_mobile/controller/vehicle_controller.dart';
 import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:train_vis_mobile/model/inspection/vehicle_inspection.dart';
-import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
 import 'package:train_vis_mobile/view/pages/inspect/capture/vehicle_inspection_capture_page_view.dart';
 import 'package:train_vis_mobile/view/pages/inspect/inspect_progress_bar.dart';
 import 'package:train_vis_mobile/view/pages/inspect/review/vehicle_inspection_review_container.dart';
@@ -15,7 +13,6 @@ import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_icon_button.dart';
 import 'package:train_vis_mobile/view/widgets/confirmation_dialog.dart';
-import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:train_vis_mobile/view/widgets/padded_custom_scroll_view.dart';
 
 /// Page to carry out inspection of a train vehicle.
@@ -99,69 +96,69 @@ class _InspectPageState extends State<InspectPage> {
       // //// //
 
       body: SafeArea(
-        child: PaddedCustomScrollView(
-          scrollPhysics: const NeverScrollableScrollPhysics(),
-          topPadding: MySizes.paddingValue / 4,
-          slivers: [
-            // //////////// //
-            // PROGRESS BAR //
-            // //////////// //
+        child: WillPopScope(
+          // disabling swipe to go back
+          onWillPop: () async => false,
+          child: PaddedCustomScrollView(
+            scrollPhysics: const NeverScrollableScrollPhysics(),
+            topPadding: MySizes.paddingValue / 4,
+            slivers: [
+              // //////////// //
+              // PROGRESS BAR //
+              // //////////// //
 
-            const SliverToBoxAdapter(
-              child: InspectProgressBar(progress: 0.1),
-            ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: MySizes.spacing)),
-
-            // ///////////////// //
-            // INSPECT PAGE VIEW //
-            // ///////////////// //
-
-            SliverFillRemaining(
-              child: CustomStreamBuilder<Vehicle>(
-                stream: VehicleController.instance.getVehicle(widget.vehicleID),
-                builder: (context, vehicle) {
-                  return PageView(
-                    controller: pageController,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: [
-                      // //////////////////////////// //
-                      // VEHICLE INSPECTION PAGE VIEW //
-                      // //////////////////////////// //
-
-                      VehicleInspectionCapturePageView(
-                        vehicle: vehicle,
-                        onCaptured: (checkpointInspections) {
-                          // handling the capture
-                          _handleCaptured(checkpointInspections);
-                        },
-                      ),
-
-                      // ////// //
-                      // REVIEW //
-                      // ////// //
-
-                      VehicleInspectionReviewContainer(
-                        checkpointInspections: checkpointInspections,
-                        onSubmitted: (reviewedCheckpointInspections) {
-                          // handing the submission
-                          _handleSubmitted(reviewedCheckpointInspections);
-                        },
-                      ),
-
-                      // ////// //
-                      // SUBMIT //
-                      // ////// //
-
-                      VehicleInspectionSubmitContainer(
-                        isSubmitted: isSubmitted,
-                      ),
-                    ],
-                  );
-                },
+              const SliverToBoxAdapter(
+                child: InspectProgressBar(progress: 0.1),
               ),
-            ),
-          ],
+
+              const SliverToBoxAdapter(
+                  child: SizedBox(height: MySizes.spacing)),
+
+              // ///////////////// //
+              // INSPECT PAGE VIEW //
+              // ///////////////// //
+
+              SliverFillRemaining(
+                child: PageView(
+                  controller: pageController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    // //////////////////////////// //
+                    // VEHICLE INSPECTION PAGE VIEW //
+                    // //////////////////////////// //
+
+                    VehicleInspectionCapturePageView(
+                      vehicleID: widget.vehicleID,
+                      onCaptured: (checkpointInspections) {
+                        // handling the capture
+                        _handleCaptured(checkpointInspections);
+                      },
+                    ),
+
+                    // ////// //
+                    // REVIEW //
+                    // ////// //
+
+                    VehicleInspectionReviewContainer(
+                      checkpointInspections: checkpointInspections,
+                      onSubmitted: (reviewedCheckpointInspections) {
+                        // handing the submission
+                        _handleSubmitted(reviewedCheckpointInspections);
+                      },
+                    ),
+
+                    // ////// //
+                    // SUBMIT //
+                    // ////// //
+
+                    VehicleInspectionSubmitContainer(
+                      isSubmitted: isSubmitted,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -190,7 +187,7 @@ class _InspectPageState extends State<InspectPage> {
     );
 
     // acting based on result of dialog
-    if (result) {
+    if (result && mounted) {
       // result true -> navigate to inspect
 
       // navigating to inspect page

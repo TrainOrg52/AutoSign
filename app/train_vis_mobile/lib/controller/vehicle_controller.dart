@@ -77,7 +77,7 @@ class VehicleController {
   }
 
   /// Returns the download URL for the image of the [Checkpoint].
-  Future<String> getCheckpointImageDownloadURL(
+  Stream<String> getCheckpointImageDownloadURL(
     String vehicleID,
     String checkpointID,
   ) {
@@ -86,7 +86,7 @@ class VehicleController {
         .ref("$vehicleID/checkpoints/$checkpointID.png");
 
     // returning download URL
-    return reference.getDownloadURL();
+    return reference.getDownloadURL().asStream();
   }
 
   // //////////////////////////// //

@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:train_vis_mobile/controller/vehicle_controller.dart';
 import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:train_vis_mobile/model/vehicle/checkpoint.dart';
-import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
 import 'package:train_vis_mobile/view/pages/inspect/capture/checkpoint_inspection_capture_page_view.dart';
 import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 
 /// TODO
 class VehicleInspectionCapturePageView extends StatefulWidget {
   // MEMBER VARIABLES //
-  final Vehicle vehicle;
+  final String vehicleID;
   final Function(List<CheckpointInspection>) onCaptured;
 
   // ///////////////// //
@@ -19,7 +18,7 @@ class VehicleInspectionCapturePageView extends StatefulWidget {
   /// TODO
   const VehicleInspectionCapturePageView({
     super.key,
-    required this.vehicle,
+    required this.vehicleID,
     required this.onCaptured,
   });
 
@@ -74,7 +73,7 @@ class _VehicleInspectionCapturePageViewState
   Widget build(BuildContext context) {
     return CustomStreamBuilder<List<Checkpoint>>(
       stream: VehicleController.instance
-          .getCheckpointsWhereVehicleIs(widget.vehicle.id),
+          .getCheckpointsWhereVehicleIs(widget.vehicleID),
       builder: (context, checkpoints) {
         return PageView(
           controller: pageController,

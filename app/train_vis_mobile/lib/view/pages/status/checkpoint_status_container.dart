@@ -11,7 +11,7 @@ import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_icon_button.dart';
 import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 import 'package:train_vis_mobile/view/widgets/colored_container.dart';
-import 'package:train_vis_mobile/view/widgets/custom_future_builder.dart';
+import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 
 /// Container that stores information on the status of a particular checkpoint
 /// within a vehicle.
@@ -85,8 +85,8 @@ class CheckpointStatusContainer extends StatelessWidget {
             isDense: true,
             backgroundColor: Colors.transparent,
             padding: const EdgeInsets.all(MySizes.paddingValue / 2),
-            child: CustomFutureBuilder(
-              future: VehicleController.instance.getCheckpointImageDownloadURL(
+            child: CustomStreamBuilder(
+              stream: VehicleController.instance.getCheckpointImageDownloadURL(
                 checkpoint.vehicleID,
                 checkpoint.id,
               ),

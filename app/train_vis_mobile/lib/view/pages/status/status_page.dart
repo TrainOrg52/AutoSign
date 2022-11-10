@@ -56,6 +56,11 @@ class StatusPage extends StatelessWidget {
         builder: (context, vehicle) {
           return PaddedCustomScrollView(
             slivers: [
+              // ///////////// //
+              // STATUS ACTION //
+              // ///////////// //
+
+              // displaying status action based on conformance status
               if (vehicle.conformanceStatus ==
                   ConformanceStatus.nonConforming) ...[
                 SliverToBoxAdapter(
@@ -64,16 +69,13 @@ class StatusPage extends StatelessWidget {
                 const SliverToBoxAdapter(
                     child: SizedBox(height: MySizes.spacing)),
               ],
-              // ///////////// //
-              // STATUS ACTION //
-              // ///////////// //
 
               // /////////// //
               // CHECKPOINTS //
               // /////////// //
 
               SliverToBoxAdapter(
-                child: CheckpointStatusList(vehicleID: vehicleID),
+                child: CheckpointStatusList(vehicle: vehicle),
               ),
             ],
           );
