@@ -74,6 +74,7 @@ class _CameraContainerAuxState extends State<CameraContainerAux> {
   // STATE VARIABLES //
   late CameraController controller; // controller for camera
   late bool isInitialized; // initialization state of camera
+  late bool photoCaptured; // if a photo has been captured or not
 
   // THEME-ING
   // sizes
@@ -91,6 +92,7 @@ class _CameraContainerAuxState extends State<CameraContainerAux> {
 
     // initializing state
     isInitialized = false;
+    photoCaptured = false;
 
     // initializing controller
     controller = CameraController(
@@ -182,9 +184,11 @@ class _CameraContainerAuxState extends State<CameraContainerAux> {
                       color: MyColors.backgroundSecondary,
                     ),
                   ),
-                  onPressed: () async {
-                    await _capturePhoto();
-                  },
+                  onPressed: !photoCaptured
+                      ? () async {
+                          await _capturePhoto();
+                        }
+                      : null,
                   child: SizedBox(
                     height: captureButtonRadius * 2,
                     width: captureButtonRadius * 2,
@@ -207,10 +211,20 @@ class _CameraContainerAuxState extends State<CameraContainerAux> {
   /// Takes a photo using the camera controller and passes it on to the handling
   /// method.
   Future<void> _capturePhoto() async {
+    // updating state
+    setState(() {
+      photoCaptured = true;
+    });
+
     // capturing the photo
     XFile? photoFile = await controller.takePicture();
 
     // handling the capture
     widget.onCapture(photoFile.path);
+
+    // resetting state
+    setState(() {
+      photoCaptured = false;
+    });
   }
 }

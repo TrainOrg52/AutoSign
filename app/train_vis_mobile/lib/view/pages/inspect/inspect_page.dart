@@ -43,6 +43,7 @@ class InspectPage extends StatefulWidget {
 class _InspectPageState extends State<InspectPage> {
   // STATE VARIABLES //
   late PageController pageController; // controller for pageview
+  late double inspectionProgress; // progress value of the inspection
   late List<CheckpointInspection> checkpointInspections; // TODO
   late bool isSubmitted; // if the inspection is being submitted
   late bool isOnSubmitPage; // if current page is submit
@@ -57,6 +58,7 @@ class _InspectPageState extends State<InspectPage> {
 
     // initializing state
     pageController = PageController();
+    inspectionProgress = 0.05;
     checkpointInspections = [];
     isSubmitted = false;
     isOnSubmitPage = false;
@@ -110,8 +112,8 @@ class _InspectPageState extends State<InspectPage> {
               // PROGRESS BAR //
               // //////////// //
 
-              const SliverToBoxAdapter(
-                child: InspectProgressBar(progress: 0.1),
+              SliverToBoxAdapter(
+                child: InspectProgressBar(progress: inspectionProgress),
               ),
 
               const SliverToBoxAdapter(
@@ -132,9 +134,9 @@ class _InspectPageState extends State<InspectPage> {
 
                     VehicleInspectionCapturePageView(
                       vehicleID: widget.vehicleID,
-                      onCaptured: (checkpointInspections) {
+                      onVehicleInspectionCaptured: (checkpointInspections) {
                         // handling the capture
-                        _handleCaptured(checkpointInspections);
+                        _handleVehicleInspectionCaptured(checkpointInspections);
                       },
                     ),
 
@@ -203,12 +205,13 @@ class _InspectPageState extends State<InspectPage> {
   }
 
   /// TODO
-  Future<void> _handleCaptured(
+  Future<void> _handleVehicleInspectionCaptured(
     List<CheckpointInspection> checkpointInspections,
   ) async {
     // updating state
     setState(() {
       this.checkpointInspections = checkpointInspections;
+      inspectionProgress = 0.75; // TODO define better
     });
 
     // navigating to review container
@@ -226,6 +229,7 @@ class _InspectPageState extends State<InspectPage> {
     setState(() {
       isSubmitted = true;
       checkpointInspections = reviewedCheckpointInspections;
+      inspectionProgress = 1.0;
     });
 
     // creating the vehicle inspection object

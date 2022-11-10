@@ -8,8 +8,9 @@ import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 /// TODO
 class VehicleInspectionCapturePageView extends StatefulWidget {
   // MEMBER VARIABLES //
-  final String vehicleID;
-  final Function(List<CheckpointInspection>) onCaptured;
+  final String vehicleID; // TODO
+  final Function(List<CheckpointInspection>)
+      onVehicleInspectionCaptured; // TODO
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -19,7 +20,7 @@ class VehicleInspectionCapturePageView extends StatefulWidget {
   const VehicleInspectionCapturePageView({
     super.key,
     required this.vehicleID,
-    required this.onCaptured,
+    required this.onVehicleInspectionCaptured,
   });
 
   // //////////// //
@@ -131,7 +132,7 @@ class _VehicleInspectionCapturePageViewState
       // all checkpoints captured -> calling on inspection captured
 
       // calling on vehicle inspection captured
-      widget.onCaptured(checkpointInspections);
+      widget.onVehicleInspectionCaptured(checkpointInspections);
     }
   }
 }

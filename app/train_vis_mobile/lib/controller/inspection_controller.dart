@@ -93,7 +93,7 @@ class InspectionController {
 
     // updating the proessing status on the vehicle inspection
     await _vehicleInspectionsRef.doc(vehicleInspection.id).update({
-      "processingStatus": ProcessingStatus.pending,
+      "processingStatus": ProcessingStatus.pending.toString(),
     });
   }
 

@@ -36,15 +36,15 @@ class InspectProgressBar extends StatelessWidget {
                 style: MyTextStyles.bodyText2,
               ),
             ),
-            Flexible(
-              flex: 6,
+            Expanded(
+              flex: 3,
               child: Text(
                 "Review",
                 style: MyTextStyles.bodyText2,
               ),
             ),
             Flexible(
-              flex: 3,
+              flex: 2,
               child: Text(
                 "Submit",
                 style: MyTextStyles.bodyText2,
