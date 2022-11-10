@@ -1,13 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:train_vis_mobile/model/model_object.dart';
 import 'package:train_vis_mobile/model/status/conformance_status.dart';
+import 'package:train_vis_mobile/model/status/processing_status.dart';
 
 /// An inspection of a given train vehicle.
 class VehicleInspection extends ModelObject {
   // MEMBERS //
-  ConformanceStatus conformanceStatus; // conformance status of the walkthrough
-  Map<String, ConformanceStatus>
-      checkpoints; // map of inspection checkpoint IDs to conformance status
+  String vehicleID; // ID of vehicle being inspected
+  ProcessingStatus processingStatus; // processing status of inspection
+  ConformanceStatus conformanceStatus; // conformance status of inspection
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -16,10 +17,12 @@ class VehicleInspection extends ModelObject {
   VehicleInspection({
     String id = "",
     int? timestamp,
+    this.vehicleID = "",
+    ProcessingStatus? processingStatus,
     ConformanceStatus? conformanceStatus,
     Map<String, ConformanceStatus>? checkpoints,
-  })  : conformanceStatus = conformanceStatus ?? ConformanceStatus.pending,
-        checkpoints = checkpoints ?? {},
+  })  : processingStatus = processingStatus ?? ProcessingStatus.uploading,
+        conformanceStatus = conformanceStatus ?? ConformanceStatus.pending,
         super(id: id, timestamp: timestamp);
 
   // ///////// //
@@ -32,13 +35,14 @@ class VehicleInspection extends ModelObject {
     // getting snapshot data
     final data = snapshot.data();
 
-    // cocnverting document data to an [InspectionWalkthrough]
+    // converting the document to an object
     return VehicleInspection(
       id: snapshot.id,
       timestamp: data?["timestamp"],
+      vehicleID: data?["vehicleID"],
+      processingStatus: ProcessingStatus.fromString(data?["processingStatus"]),
       conformanceStatus:
           ConformanceStatus.fromString(data?["conformanceStatus"]),
-      checkpoints: data?["checkpoints"],
     );
   }
 
@@ -49,8 +53,9 @@ class VehicleInspection extends ModelObject {
     // converting to a map
     return {
       "timestamp": timestamp,
+      "vehicleID": vehicleID,
+      "processingStatus": processingStatus.toString(),
       "conformanceStatus": conformanceStatus.toString(),
-      "checkpoints": checkpoints,
     };
   }
 }

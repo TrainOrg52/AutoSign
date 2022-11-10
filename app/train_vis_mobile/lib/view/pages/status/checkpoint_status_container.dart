@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:train_vis_mobile/controller/checkpoint_controller.dart';
+import 'package:train_vis_mobile/controller/vehicle_controller.dart';
 import 'package:train_vis_mobile/main.dart';
 import 'package:train_vis_mobile/model/vehicle/checkpoint.dart';
 import 'package:train_vis_mobile/view/routes/routes.dart';
@@ -11,7 +11,7 @@ import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_icon_button.dart';
 import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 import 'package:train_vis_mobile/view/widgets/colored_container.dart';
-import 'package:train_vis_mobile/view/widgets/custom_future_builder.dart';
+import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 
 /// Container that stores information on the status of a particular checkpoint
 /// within a vehicle.
@@ -85,9 +85,8 @@ class CheckpointStatusContainer extends StatelessWidget {
             isDense: true,
             backgroundColor: Colors.transparent,
             padding: const EdgeInsets.all(MySizes.paddingValue / 2),
-            child: CustomFutureBuilder(
-              future:
-                  CheckpointController.instance.getCheckpointImageDownloadURL(
+            child: CustomStreamBuilder(
+              stream: VehicleController.instance.getCheckpointImageDownloadURL(
                 checkpoint.vehicleID,
                 checkpoint.id,
               ),

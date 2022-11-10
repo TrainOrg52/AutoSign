@@ -5,10 +5,9 @@ import 'package:train_vis_mobile/model/status/conformance_status.dart';
 /// A single train vehicle.
 class Vehicle extends ModelObject {
   // MEMBERS //
-  String title; // title for the vehicle
-  String location; // current location of vehicle
+  String title; // title of the vehicle
+  String location; // current location of the vehicle
   ConformanceStatus conformanceStatus; // current conformance status of vehicle
-  List<String> checkpoints; // checkpoints in the vehicle
   String lastVehicleInspectionID; // ID of last inspection done on vehicle
 
   // ///////////////// //
@@ -24,7 +23,6 @@ class Vehicle extends ModelObject {
     List<String>? checkpoints,
     this.lastVehicleInspectionID = "",
   })  : conformanceStatus = conformanceStatus ?? ConformanceStatus.pending,
-        checkpoints = checkpoints ?? [],
         super(id: id, timestamp: timestamp);
 
   // ///////// //
@@ -37,7 +35,7 @@ class Vehicle extends ModelObject {
     // getting snapshot data
     final data = snapshot.data();
 
-    // cocnverting document data to an [Vehicle]
+    // cocnverting document data to an object
     return Vehicle(
       id: snapshot.id,
       timestamp: data?["timestamp"],
@@ -45,7 +43,6 @@ class Vehicle extends ModelObject {
       location: data?["location"],
       conformanceStatus:
           ConformanceStatus.fromString(data?["conformanceStatus"]),
-      checkpoints: List.from(data?["checkpoints"]),
       lastVehicleInspectionID: data?["lastVehicleInspectionID"],
     );
   }
@@ -53,13 +50,12 @@ class Vehicle extends ModelObject {
   /// Converts the [Vehicle] into a [Map] that can be published to firestore.
   @override
   Map<String, dynamic> toFirestore() {
-    // converting the module into a map
+    // converting the object into a map
     return {
       "timestamp": timestamp,
       "title": title,
       "location": location,
       "conformanceStatus": conformanceStatus.toString(),
-      "checkpoints": checkpoints,
       "lastVehicleInspectionID": lastVehicleInspectionID,
     };
   }

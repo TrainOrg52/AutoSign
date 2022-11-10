@@ -3,7 +3,7 @@ import 'package:train_vis_mobile/controller/vehicle_controller.dart';
 import 'package:train_vis_mobile/model/status/conformance_status.dart';
 import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
 import 'package:train_vis_mobile/view/pages/status/checkpoint_status_list.dart';
-import 'package:train_vis_mobile/view/pages/status/status_action_container.dart';
+import 'package:train_vis_mobile/view/pages/status/vehicle_status_action_container.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_icon_button.dart';
@@ -56,23 +56,26 @@ class StatusPage extends StatelessWidget {
         builder: (context, vehicle) {
           return PaddedCustomScrollView(
             slivers: [
-              if (vehicle.conformanceStatus == ConformanceStatus.nonConforming)
-                SliverToBoxAdapter(
-                  child: StatusActionContainer(vehicle: vehicle),
-                ),
               // ///////////// //
               // STATUS ACTION //
               // ///////////// //
 
-              const SliverToBoxAdapter(
-                  child: SizedBox(height: MySizes.spacing)),
+              // displaying status action based on conformance status
+              if (vehicle.conformanceStatus ==
+                  ConformanceStatus.nonConforming) ...[
+                SliverToBoxAdapter(
+                  child: VehicleStatusActionContainer(vehicle: vehicle),
+                ),
+                const SliverToBoxAdapter(
+                    child: SizedBox(height: MySizes.spacing)),
+              ],
 
               // /////////// //
               // CHECKPOINTS //
               // /////////// //
 
               SliverToBoxAdapter(
-                child: CheckpointStatusList(checkpoints: vehicle.checkpoints),
+                child: CheckpointStatusList(vehicle: vehicle),
               ),
             ],
           );

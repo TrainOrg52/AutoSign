@@ -52,60 +52,62 @@ class ProfilePage extends StatelessWidget {
       // BODY //
       // //// //
 
-      body: CustomStreamBuilder(
-        stream: VehicleController.instance.getVehicle(vehicleID),
-        builder: (context, vehicle) {
-          return PaddedCustomScrollView(
-            slivers: [
-              // //////////////// //
-              // VEHICLE OVERVIEW //
-              // //////////////// //
+      body: SafeArea(
+        child: CustomStreamBuilder(
+          stream: VehicleController.instance.getVehicle(vehicleID),
+          builder: (context, vehicle) {
+            return PaddedCustomScrollView(
+              slivers: [
+                // //////////////// //
+                // VEHICLE OVERVIEW //
+                // //////////////// //
 
-              SliverToBoxAdapter(
-                child: VehicleOverviewContainer(vehicle: vehicle),
-              ),
-
-              const SliverToBoxAdapter(
-                  child: SizedBox(height: MySizes.spacing)),
-
-              // /////////////////////////// //
-              // CONFORMANCE STATUS OVERVIEW //
-              // /////////////////////////// //
-
-              SliverToBoxAdapter(
-                child: VehicleStatusContainer(
-                  vehicle: vehicle,
+                SliverToBoxAdapter(
+                  child: VehicleOverviewContainer(vehicle: vehicle),
                 ),
-              ),
 
-              const SliverToBoxAdapter(
-                  child: SizedBox(height: MySizes.spacing)),
+                const SliverToBoxAdapter(
+                    child: SizedBox(height: MySizes.spacing)),
 
-              // ////// //
-              // ACTION //
-              // ////// //
+                // /////////////////////////// //
+                // CONFORMANCE STATUS OVERVIEW //
+                // /////////////////////////// //
 
-              SliverToBoxAdapter(
-                child: VehicleActionContainer(
-                  vehicleID: vehicleID,
+                SliverToBoxAdapter(
+                  child: VehicleStatusContainer(
+                    vehicle: vehicle,
+                  ),
                 ),
-              ),
 
-              const SliverToBoxAdapter(
-                  child: SizedBox(height: MySizes.spacing)),
+                const SliverToBoxAdapter(
+                    child: SizedBox(height: MySizes.spacing)),
 
-              // //////// //
-              // ACTIVITY //
-              // //////// //
+                // ////// //
+                // ACTION //
+                // ////// //
 
-              SliverToBoxAdapter(
-                child: VehicleActivityContainer(
-                  vehicleID: vehicleID,
+                SliverToBoxAdapter(
+                  child: VehicleActionContainer(
+                    vehicleID: vehicleID,
+                  ),
                 ),
-              ),
-            ],
-          );
-        },
+
+                const SliverToBoxAdapter(
+                    child: SizedBox(height: MySizes.spacing)),
+
+                // //////// //
+                // ACTIVITY //
+                // //////// //
+
+                SliverToBoxAdapter(
+                  child: VehicleActivityContainer(
+                    vehicleID: vehicleID,
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

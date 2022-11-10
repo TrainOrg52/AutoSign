@@ -85,9 +85,7 @@ class VehicleStatusContainer extends StatelessWidget {
                 text: "View",
                 onPressed: () {
                   // navigating based on conformance status
-                  if (vehicle.conformanceStatus == ConformanceStatus.pending ||
-                      vehicle.conformanceStatus ==
-                          ConformanceStatus.processing) {
+                  if (vehicle.conformanceStatus == ConformanceStatus.pending) {
                     // conformance status pending -> go to most recent inspection
 
                     // navigating to inspection page

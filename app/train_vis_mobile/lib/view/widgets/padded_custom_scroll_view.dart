@@ -7,6 +7,8 @@ class PaddedCustomScrollView extends StatelessWidget {
   // MEMBER VARIABLES //
   // slivers
   final List<Widget> slivers; // the slivers to go into the scroll view
+  // configuration
+  final ScrollPhysics? scrollPhysics;
   // sizing information
   final double topPadding; // padding at the top of the scroll view
   final double bottomPadding; // padding at the bottom of the scroll view
@@ -21,6 +23,8 @@ class PaddedCustomScrollView extends StatelessWidget {
     Key? key,
     // member variables
     required this.slivers,
+    // configuration
+    this.scrollPhysics,
     // sizing
     this.topPadding = MySizes.paddingValue * 2,
     this.bottomPadding = MySizes.paddingValue * 3,
@@ -55,6 +59,7 @@ class PaddedCustomScrollView extends StatelessWidget {
     // building the custom scroll view using the sliver.
     return CustomScrollView(
       controller: ScrollController(),
+      physics: scrollPhysics,
       slivers: [
         SliverPadding(
           padding: EdgeInsets.only(
@@ -78,6 +83,7 @@ class PaddedCustomScrollView extends StatelessWidget {
     // building the custom scroll view using the slivers
     return CustomScrollView(
       controller: ScrollController(),
+      physics: scrollPhysics,
       slivers: [
         // top sliver
         SliverPadding(
@@ -113,6 +119,7 @@ class PaddedCustomScrollView extends StatelessWidget {
     // building the custom scroll view using the slivers
     return CustomScrollView(
       controller: ScrollController(),
+      physics: scrollPhysics,
       slivers: [
         // top sliver
         SliverPadding(

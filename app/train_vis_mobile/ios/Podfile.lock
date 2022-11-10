@@ -1,5 +1,7 @@
 PODS:
-  - cloud_firestore (4.0.3):
+  - camera_avfoundation (0.0.1):
+    - Flutter
+  - cloud_firestore (4.0.4):
     - Firebase/Firestore (= 10.0.0)
     - firebase_core
     - Flutter
@@ -15,7 +17,7 @@ PODS:
   - firebase_core (2.1.1):
     - Firebase/CoreOnly (= 10.0.0)
     - Flutter
-  - firebase_storage (11.0.3):
+  - firebase_storage (11.0.4):
     - Firebase/Storage (= 10.0.0)
     - firebase_core
     - Flutter
@@ -58,6 +60,7 @@ PODS:
   - PromisesObjC (2.1.1)
 
 DEPENDENCIES:
+  - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
@@ -79,6 +82,8 @@ SPEC REPOS:
     - PromisesObjC
 
 EXTERNAL SOURCES:
+  camera_avfoundation:
+    :path: ".symlinks/plugins/camera_avfoundation/ios"
   cloud_firestore:
     :path: ".symlinks/plugins/cloud_firestore/ios"
   firebase_core:
@@ -97,10 +102,11 @@ CHECKOUT OPTIONS:
     :tag: 10.0.0
 
 SPEC CHECKSUMS:
-  cloud_firestore: 1efcf26ee1fe576dc695389683695230d60680f5
+  camera_avfoundation: 07c77549ea54ad95d8581be86617c094a46280d9
+  cloud_firestore: 62c5fa0e5ce5373be25d6233e8edbbe991fa973d
   Firebase: 1b810f3d0c0532e27a48f1961f8c0400a668a2cf
   firebase_core: 5c0bb0ca7d0e70480a68a6e9ad9bf55d1edd5305
-  firebase_storage: 0e84174eaa45056b3bf9c09659f1c8706acaec7d
+  firebase_storage: 5cf5e677fd9793e26ec5d006100c25e28cd21c05
   FirebaseAppCheckInterop: 53eec3c354a95f8fe6ff947dd9518ea17f624914
   FirebaseAuthInterop: 15b2c717321d5e46a60562e388c4d1b039ea7e28
   FirebaseCore: 97f48a3a567a72b8d4daa0f03c3aadb78df4e995

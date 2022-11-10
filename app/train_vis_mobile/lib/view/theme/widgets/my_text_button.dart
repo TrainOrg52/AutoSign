@@ -144,6 +144,39 @@ class MyTextButton extends StatelessWidget {
   }
 
   // //////// //
+  // POSITIVE //
+  // //////// //
+
+  /// Positive tet button.
+  static MyTextButton positive({
+    // member variables
+    required String text,
+    required Function() onPressed,
+    // MySizes
+    double? height,
+    double? width,
+    EdgeInsetsGeometry? padding,
+    double? borderWidth,
+    // text style
+    TextStyle? textStyle,
+  }) {
+    return MyTextButton._(
+      // member variables
+      text: text,
+      onPressed: onPressed,
+      // MySizes
+      height: height,
+      width: width,
+      padding: padding,
+      borderWidth: borderWidth,
+      // colors
+      primaryColor: MyColors.antiPrimary,
+      backgroundColor: MyColors.green,
+      borderColor: MyColors.green,
+    );
+  }
+
+  // //////// //
   // NEGATIVE //
   // //////// //
 

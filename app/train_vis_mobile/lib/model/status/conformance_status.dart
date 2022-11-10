@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 
-/// Defines the conformance status of an inspection walkthrough, checkpoint or
-/// sign.
+/// The conformance status of a vehicle, checkpoint, or sign.
 class ConformanceStatus {
   // MEMBER VARIABLES //
-  final String title; // the title for the conformance status
+  final String title; // title for the status
   final String description; // description of the status
-  final Color color; // the color associated with the conformances status
-  final Color
-      accentColor; // acccent color associated with the conformance status
+  final Color color; // color associated with the status
+  final Color accentColor; // acccent color associated with the status
   final IconData iconData; // icon to be displayed for this status
 
   // ///////////////// //
@@ -35,11 +33,9 @@ class ConformanceStatus {
 
   /// Creates a [ConformanceStatus] based on the given string.
   static ConformanceStatus? fromString(String status) {
-    // returning priority based on string
+    // returning value based on string
     if (status == pending.title) {
       return pending;
-    } else if (status == processing.title) {
-      return processing;
     } else if (status == conforming.title) {
       return conforming;
     } else if (status == nonConforming.title) {
@@ -48,7 +44,7 @@ class ConformanceStatus {
       return error;
     }
 
-    // no matching status -> return null
+    // no matching value -> return null
     else {
       return null;
     }
@@ -66,9 +62,8 @@ class ConformanceStatus {
   // ///////// //
 
   // all instances
-  static const List<ConformanceStatus> statuses = [
+  static const List<ConformanceStatus> values = [
     pending,
-    processing,
     conforming,
     nonConforming,
     error,
@@ -78,15 +73,6 @@ class ConformanceStatus {
   static const ConformanceStatus pending = ConformanceStatus._(
     title: "pending",
     description: "Inspectiton Pending",
-    color: MyColors.amber,
-    accentColor: MyColors.amberAccent,
-    iconData: FontAwesomeIcons.solidClock,
-  );
-
-  // processing
-  static const ConformanceStatus processing = ConformanceStatus._(
-    title: "processing",
-    description: "Inspectiton Processing",
     color: MyColors.amber,
     accentColor: MyColors.amberAccent,
     iconData: FontAwesomeIcons.solidClock,
