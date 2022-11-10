@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:train_vis_mobile/view/routes/routes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import "package:train_vis_mobile/view/theme/widgets/my_icon_button.dart";
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
@@ -39,14 +41,15 @@ ListView _buildCheckpointList(BuildContext context, Remediation remediation) {
       itemCount: 7,
       itemBuilder: (_, index) {
         if (index == 0) {
-          return remediationTile(remediation);
+          return remediationTile(remediation, context);
         } else if (index == 1) {
           return Text(
             "Inspection",
             style: MyTextStyles.headerText1,
           );
         } else if (index == 2) {
-          return reportTile(Report("22/06/22", "Reading", false, true, []));
+          return reportTile(
+              Report("22/06/22", "Reading", false, true, []), context);
         } else if (index == 3) {
           return Text(
             "Report",
@@ -57,15 +60,16 @@ ListView _buildCheckpointList(BuildContext context, Remediation remediation) {
         return remediationCheckpoint(
             remediation.sectionNames[index - 4],
             "https://upload.wikimedia.org/wikipedia/commons/4/4a/100x100_logo.png",
-            remediation.descriptions[index - 4]);
+            remediation.descriptions[index - 4],
+            context);
       });
 }
 
-Widget remediationCheckpoint(
-    String sectionName, String imageURL, String issueDescription) {
+Widget remediationCheckpoint(String sectionName, String imageURL,
+    String issueDescription, BuildContext context) {
   return BorderedContainer(
       padding: EdgeInsets.all(0),
-      height: 220,
+      height: 230,
       borderRadius: 10,
       borderColor: MyColors.backgroundPrimary,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -85,7 +89,18 @@ Widget remediationCheckpoint(
         ]),
         spacing(10),
         Center(
-          child: MyTextButton.secondary(text: "View", onPressed: () {}),
+          child: MyTextButton.secondary(
+              text: "View",
+              onPressed: () {
+                context.pushNamed(
+                  Routes.remediationCheckpoint,
+                  params: {
+                    "remediationWalkthroughID": "2",
+                    "vehicleID": "707-008",
+                    "remediationCheckpointID": "2"
+                  },
+                );
+              }),
         ),
       ]));
 }
@@ -107,7 +122,7 @@ Widget issueAction(String issueDescription) {
 
 Widget issue(String issueDescription) {
   return BorderedContainer(
-      width: 240,
+      width: 250,
       height: 45,
       backgroundColor: MyColors.negativeAccent,
       borderColor: MyColors.negative,

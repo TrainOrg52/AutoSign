@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:train_vis_mobile/view/routes/routes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
@@ -6,12 +8,16 @@ import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 ///Page for showing the list of reports associated with a train
 ///Currently contains dummy data just to demonstrate the UI
 class ReportsPage extends StatelessWidget {
+  String vehicleID;
+
+  ReportsPage(this.vehicleID);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "Inspections",
+        title: Text(
+          "Inspections - $vehicleID",
           style: MyTextStyles.headerText1,
         ),
         backgroundColor: MyColors.antiPrimary,
@@ -42,12 +48,12 @@ ListView _buildReportList(BuildContext context) {
             height: 8,
           );
         }
-        return reportTile(reports[index ~/ 2]);
+        return reportTile(reports[index ~/ 2], context);
       });
 }
 
 /// Widget which generates a tile for a given report object
-Widget reportTile(Report report) {
+Widget reportTile(Report report, BuildContext context) {
   return BorderedContainer(
       padding: const EdgeInsets.all(0),
       height: 70,
@@ -72,11 +78,21 @@ Widget reportTile(Report report) {
                 Icons.search,
                 size: 40,
               ),
-              trailing: const Icon(
-                Icons.navigate_next_sharp,
-                color: Colors.black,
-                size: 40,
-              ))));
+              trailing: IconButton(
+                  icon: Icon(
+                    Icons.navigate_next_sharp,
+                    color: Colors.black,
+                    size: 40,
+                  ),
+                  onPressed: () {
+                    context.pushNamed(
+                      Routes.vehicleInspection,
+                      params: {
+                        "vehicleInspectionID": "2",
+                        "vehicleID": "707-008"
+                      },
+                    );
+                  }))));
 }
 
 ///Shows location icon followed by name of the location

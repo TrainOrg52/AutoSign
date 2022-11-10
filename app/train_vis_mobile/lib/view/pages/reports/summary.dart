@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:train_vis_mobile/view/pages/reports/reports.dart';
+import 'package:train_vis_mobile/view/routes/routes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
@@ -46,12 +48,13 @@ ListView _buildReportSummary(BuildContext context) {
 
         CheckPoint currentPoint = checkpoints[index - 1];
 
-        return checkpointViewWidget(currentPoint, pending);
+        return checkpointViewWidget(currentPoint, pending, context);
       });
 }
 
 ///Widget for building a list item for each checkpoint
-Widget checkpointViewWidget(CheckPoint currentPoint, bool pending) {
+Widget checkpointViewWidget(
+    CheckPoint currentPoint, bool pending, BuildContext context) {
   return ColoredContainer(
       color: MyColors.backgroundPrimary,
       child: Column(
@@ -70,7 +73,18 @@ Widget checkpointViewWidget(CheckPoint currentPoint, bool pending) {
                       ? conforming()
                       : nonconforming()
                   : notProcessedWidget(),
-              MyTextButton.secondary(text: "View", onPressed: () {})
+              MyTextButton.secondary(
+                  text: "View",
+                  onPressed: () {
+                    context.pushNamed(
+                      Routes.checkpointInspection,
+                      params: {
+                        "vehicleInspectionID": "2",
+                        "vehicleID": "707-008",
+                        "checkpointInspectionID": "3"
+                      },
+                    );
+                  })
             ],
           )
         ],
@@ -104,7 +118,7 @@ Widget notProcessedWidget() {
 ///Widget for showing that a checkpoint is non-conforming
 Widget nonconforming() {
   return BorderedContainer(
-      width: 180,
+      width: 190,
       height: 45,
       backgroundColor: MyColors.negativeAccent,
       borderColor: MyColors.negative,

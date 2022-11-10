@@ -4,9 +4,15 @@ import 'package:train_vis_mobile/view/pages/home/home_page.dart';
 import 'package:train_vis_mobile/view/pages/inspect/inspect_page.dart';
 import 'package:train_vis_mobile/view/pages/profile/profile_page.dart';
 import 'package:train_vis_mobile/view/pages/remediate/remediate_page.dart';
+import 'package:train_vis_mobile/view/pages/remediations/remediation_fix.dart';
+import 'package:train_vis_mobile/view/pages/remediations/remediation_summary.dart';
+import 'package:train_vis_mobile/view/pages/remediations/remediations.dart';
 import 'package:train_vis_mobile/view/pages/remediations/remediation_checkpoint_page.dart';
 import 'package:train_vis_mobile/view/pages/remediations/remediation_walkthrough_page.dart';
 import 'package:train_vis_mobile/view/pages/remediations/remediations_page.dart';
+import 'package:train_vis_mobile/view/pages/reports/image_view.dart';
+import 'package:train_vis_mobile/view/pages/reports/reports.dart';
+import 'package:train_vis_mobile/view/pages/reports/summary.dart';
 import 'package:train_vis_mobile/view/pages/status/status_page.dart';
 
 /// TODO
@@ -117,10 +123,8 @@ class Routes {
             name: Routes.reports,
             path: "reports",
             builder: (context, state) {
-              // TODO displaying filler page
-              return Center(
-                child: Text("Reports for ${state.params["vehicleID"]}."),
-              );
+              String vehicleID = state.params["vehicleID"]!;
+              return ReportsPage(vehicleID);
             },
             routes: [
               // ////////////////// //
@@ -132,11 +136,7 @@ class Routes {
                 path: ":vehicleInspectionID",
                 builder: (context, state) {
                   // TODO displaying filler page
-                  return Center(
-                    child: Text(
-                      "Inspection: ${state.params["vehicleInspectionID"]}.",
-                    ),
-                  );
+                  return ReportSummary();
                 },
                 routes: [
                   // ///////////////////// //
@@ -147,12 +147,7 @@ class Routes {
                     name: Routes.checkpointInspection,
                     path: ":checkpointInspectionID",
                     builder: (context, state) {
-                      // TODO displaying filler page
-                      return Center(
-                        child: Text(
-                          "Checkpoint inspection: ${state.params["checkpointInspectionID"]}.",
-                        ),
-                      );
+                      return ImageView();
                     },
                   )
                 ],
@@ -172,7 +167,7 @@ class Routes {
               String vehicleID = state.params["vehicleID"]!;
 
               // displaying remediate page
-              return RemediationsPage(vehicleID: vehicleID);
+              return RemediationsList();
             },
             routes: [
               // /////////////////////// //
@@ -188,8 +183,7 @@ class Routes {
                       state.params["remediationWalkthroughID"]!;
 
                   // displaying remediate page
-                  return RemediationWalkthroughPage(
-                      remediationWalkthroughID: remediationWalkthroughID);
+                  return RemediationSummary();
                 },
 
                 // ////////////////////// //
@@ -206,8 +200,7 @@ class Routes {
                           state.params["remediationCheckpointID"]!;
 
                       // displaying remediate page
-                      return RemediationCheckpointPage(
-                          remediationCheckpointID: remediationCheckpointID);
+                      return RemediationFix();
                     },
                   )
                 ],
