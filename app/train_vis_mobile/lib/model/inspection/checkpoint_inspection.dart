@@ -81,7 +81,9 @@ class CheckpointInspection extends ModelObject {
       index: data?["index"],
       conformanceStatus:
           ConformanceStatus.fromString(data?["conformanceStatus"]),
-      signs: data?["signs"],
+      signs: (data?["signs"]).entries.forEach((sign) {
+        return {sign.key: ConformanceStatus.fromString(sign.value)};
+      }),
     );
   }
 

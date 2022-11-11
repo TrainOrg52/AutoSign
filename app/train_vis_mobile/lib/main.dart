@@ -52,9 +52,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // setting preferred application orientation
-
-    // building app
     return MaterialApp.router(
       // CONFIGURATION //
       debugShowCheckedModeBanner: false,
