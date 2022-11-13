@@ -6,7 +6,7 @@ import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:train_vis_mobile/model/inspection/vehicle_inspection.dart';
 import 'package:train_vis_mobile/view/pages/inspect/capture/vehicle_inspection_capture_page_view.dart';
 import 'package:train_vis_mobile/view/pages/inspect/inspect_progress_bar.dart';
-import 'package:train_vis_mobile/view/pages/inspect/review/vehicle_inspection_review_container.dart';
+import 'package:train_vis_mobile/view/pages/inspect/review/vehicle_inspection_review_page_view.dart';
 import 'package:train_vis_mobile/view/pages/inspect/submit/vehicle_inspection_submit_container.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
@@ -152,7 +152,7 @@ class _InspectPageState extends State<InspectPage> {
                     // REVIEW //
                     // ////// //
 
-                    VehicleInspectionReviewContainer(
+                    VehicleInspectionReviewPageView(
                       checkpointInspections: checkpointInspections,
                       onReviewed: (reviewedCheckpointInspections) {
                         // handing the submission

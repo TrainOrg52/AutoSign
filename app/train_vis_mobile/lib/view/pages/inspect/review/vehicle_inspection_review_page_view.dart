@@ -6,17 +6,15 @@ import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
 
-/// A custom [Container] for reviewing a [VehicleInspection].
-///
-/// The container is actually a [PageView] that has two pages (page 2 shown
-/// by default):
+/// A custom [PageView] for reviewing a [VehicleInspection]. It has two pages, with
+/// Page 2 being shown by default.
 ///
 /// Page 2: The main review page, which contains a [CheckpointInspectionRewviewContainer]
 /// for each [Checkpoint] in the vehicle, and a button to submit the inspection.
 ///
 /// Page 1: A [CheckpointInspectionReviewPageView], which is displayed for a given
 /// [CheckpointInspection] when the user reviews it.
-class VehicleInspectionReviewContainer extends StatefulWidget {
+class VehicleInspectionReviewPageView extends StatefulWidget {
   // MEMBER VARIABLES //
   final List<CheckpointInspection>
       checkpointInspections; // the list of checkpoint inspections being reviewed
@@ -27,7 +25,7 @@ class VehicleInspectionReviewContainer extends StatefulWidget {
   // CLASS CONSTRUCTOR //
   // ///////////////// //
 
-  const VehicleInspectionReviewContainer({
+  const VehicleInspectionReviewPageView({
     super.key,
     required this.checkpointInspections,
     required this.onReviewed,
@@ -38,13 +36,13 @@ class VehicleInspectionReviewContainer extends StatefulWidget {
   // //////////// //
 
   @override
-  State<VehicleInspectionReviewContainer> createState() =>
-      _VehicleInspectionReviewContainerState();
+  State<VehicleInspectionReviewPageView> createState() =>
+      _VehicleInspectionReviewPageViewState();
 }
 
-/// State class for [VehicleInspectionReviewContainer].
-class _VehicleInspectionReviewContainerState
-    extends State<VehicleInspectionReviewContainer> {
+/// State class for [VehicleInspectionReviewPageView].
+class _VehicleInspectionReviewPageViewState
+    extends State<VehicleInspectionReviewPageView> {
   // STATE VARIABLES //
   late PageController pageController;
   late CheckpointInspection

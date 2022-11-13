@@ -10,6 +10,9 @@ import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
 import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 
 /// Widget that displays an overview of the status of a given train vehicle.
+///
+/// A custom [Container] that displays an overview of the status of a [Vehicle],
+/// and a button to navigate to the [StatusPage].
 class VehicleStatusContainer extends StatelessWidget {
   // MEMBER VARIABLES //
   final Vehicle vehicle; // vehicle being displayed

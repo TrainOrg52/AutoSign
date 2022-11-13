@@ -12,9 +12,9 @@ import 'package:train_vis_mobile/view/widgets/padded_custom_scroll_view.dart';
 
 /// Page to display the profile of a train vehicle.
 ///
-/// Displays an overview of information about the train, buttons to allow for
-/// inspection and remediation, and buttons to view a log of activity on the
-/// train.
+/// Displays an overview of information about the train, a description of the
+/// train's current status, controls to allow for inspection and remediation,
+/// and controls to view a log of activity on the train.
 class ProfilePage extends StatelessWidget {
   // MEMBERS //
   final String vehicleID; // ID of vehicle
