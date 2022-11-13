@@ -202,7 +202,7 @@ class InspectionController {
   ) {
     // defining reference to Storage
     Reference reference = FirebaseStorage.instance.ref(
-        "$vehicleID/vehicleInspections/$vehicleInspectionID/checkpointInspectionID/unprocessed.png");
+        "$vehicleID/vehicleInspections/$vehicleInspectionID/$checkpointInspectionID/unprocessed.png");
 
     // returning download URL
     return reference.getDownloadURL().asStream();
@@ -217,7 +217,7 @@ class InspectionController {
   ) {
     // defining reference to Storage
     Reference reference = FirebaseStorage.instance.ref(
-        "$vehicleID/vehicleInspections/$vehicleInspectionID/checkpointInspectionID/processed.png");
+        "$vehicleID/vehicleInspections/$vehicleInspectionID/$checkpointInspectionID/processed.png");
 
     // returning download URL
     return reference.getDownloadURL().asStream();
