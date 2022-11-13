@@ -6,11 +6,22 @@ import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
 
-/// TODO
+/// A custom [Container] for reviewing a [VehicleInspection].
+///
+/// The container is actually a [PageView] that has two pages (page 2 shown
+/// by default):
+///
+/// Page 2: The main review page, which contains a [CheckpointInspectionRewviewContainer]
+/// for each [Checkpoint] in the vehicle, and a button to submit the inspection.
+///
+/// Page 1: A [CheckpointInspectionReviewPageView], which is displayed for a given
+/// [CheckpointInspection] when the user reviews it.
 class VehicleInspectionReviewContainer extends StatefulWidget {
   // MEMBER VARIABLES //
-  final List<CheckpointInspection> checkpointInspections; // TODO
-  final Function(List<CheckpointInspection>) onSubmitted; // TODO
+  final List<CheckpointInspection>
+      checkpointInspections; // the list of checkpoint inspections being reviewed
+  final Function(List<CheckpointInspection>)
+      onReviewed; // call back for when the user submits the inspections
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -19,7 +30,7 @@ class VehicleInspectionReviewContainer extends StatefulWidget {
   const VehicleInspectionReviewContainer({
     super.key,
     required this.checkpointInspections,
-    required this.onSubmitted,
+    required this.onReviewed,
   });
 
   // //////////// //
@@ -31,7 +42,7 @@ class VehicleInspectionReviewContainer extends StatefulWidget {
       _VehicleInspectionReviewContainerState();
 }
 
-/// TODO
+/// State class for [VehicleInspectionReviewContainer].
 class _VehicleInspectionReviewContainerState
     extends State<VehicleInspectionReviewContainer> {
   // STATE VARIABLES //
@@ -65,115 +76,122 @@ class _VehicleInspectionReviewContainerState
         // CHECKPOINT REVIEW PAGE //
         // ////////////////////// //
 
-        CheckpointInspectionReviewPageView(
-          checkpointInspection: reviewCheckpointInspection,
-          onConfirmed: () {
-            // navigating to main review page
-            pageController.nextPage(
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.ease,
-            );
-          },
-          onReCaptured: (checkpointInspection) {
-            // updating the checkpoint inspection
-            // TODO
-
-            // navigating to main review page
-            pageController.nextPage(
-              duration: const Duration(milliseconds: 500),
-              curve: Curves.ease,
-            );
-          },
-        ),
+        _buildCheckpointInspectionReviewPage(),
 
         // //////////////// //
         // MAIN REVIEW PAGE //
         // //////////////// //
 
-        Column(
-          children: [
-            // ///// //
-            // TITLE //
-            // ///// //
-            const Text(
-              "Review",
-              style: MyTextStyles.headerText1,
-              textAlign: TextAlign.center,
-            ),
-
-            const SizedBox(height: MySizes.spacing),
-
-            // ////// //
-            // PROMPT //
-            // ////// //
-
-            const Text(
-              "Please review and submit your inspection",
-              style: MyTextStyles.bodyText1,
-              textAlign: TextAlign.center,
-            ),
-
-            const SizedBox(height: MySizes.spacing * 2),
-
-            // //////////////////////////// //
-            // CHECKPOINT REVIEW CONTAINERS //
-            // //////////////////////////// //
-
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: widget.checkpointInspections.length,
-              itemBuilder: (context, index) {
-                return Column(
-                  children: [
-                    CheckpointInspectionReviewContainer(
-                      checkpointInspection: widget.checkpointInspections[index],
-                      onReviewPressed: () {
-                        // handling review
-                        _onReviewPressed(widget.checkpointInspections[index]);
-                      },
-                    ),
-                    if (index != widget.checkpointInspections.length - 1)
-                      const SizedBox(height: MySizes.spacing * 2)
-                  ],
-                );
-              },
-            ),
-
-            const SizedBox(height: MySizes.spacing * 2),
-
-            // ///////////// //
-            // SUBMIT BUTTON //
-            // ///////////// //
-
-            MyTextButton.primary(
-              text: "Submit",
-              onPressed: () {
-                // handling the submit
-                widget.onSubmitted(widget.checkpointInspections);
-              },
-            ),
-          ],
-        ),
+        _buildVehicleInspectionReviewPage(),
       ],
     );
   }
 
-  // ////////////// //
-  // HELPER METHODS //
-  // ////////////// //
+  // ////////////////////// //
+  // HELPER BUILDER METHODS //
+  // ////////////////////// //
 
-  /// TODO
-  void _onReviewPressed(CheckpointInspection checkpointInspection) {
-    // updating the review checkpoint inspection
-    setState(() {
-      reviewCheckpointInspection = checkpointInspection;
-    });
+  /// Builds the page for reviewing a single [CheckpointInspection].
+  Widget _buildCheckpointInspectionReviewPage() {
+    return CheckpointInspectionReviewPageView(
+      checkpointInspection: reviewCheckpointInspection,
+      onConfirmed: () {
+        // navigating to main review page
+        pageController.nextPage(
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.ease,
+        );
+      },
+      onReCaptured: (capturePath) {
+        // updating the checkpoint inspection
+        reviewCheckpointInspection.capturePath = capturePath;
 
-    // navigating to checkpoint inspection review page
-    pageController.animateToPage(
-      0,
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.ease,
+        // navigating to main review page
+        pageController.nextPage(
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.ease,
+        );
+      },
+    );
+  }
+
+  /// Builds the page for reviewing the whole [VehicleInspection].
+  Widget _buildVehicleInspectionReviewPage() {
+    return Column(
+      children: [
+        // ///// //
+        // TITLE //
+        // ///// //
+        const Text(
+          "Review",
+          style: MyTextStyles.headerText1,
+          textAlign: TextAlign.center,
+        ),
+
+        const SizedBox(height: MySizes.spacing),
+
+        // ////// //
+        // PROMPT //
+        // ////// //
+
+        const Text(
+          "Please review and submit your inspection",
+          style: MyTextStyles.bodyText1,
+          textAlign: TextAlign.center,
+        ),
+
+        const SizedBox(height: MySizes.spacing * 2),
+
+        // //////////////////////////// //
+        // CHECKPOINT REVIEW CONTAINERS //
+        // //////////////////////////// //
+
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: widget.checkpointInspections.length,
+          itemBuilder: (context, index) {
+            return Column(
+              children: [
+                CheckpointInspectionReviewContainer(
+                  checkpointInspection: widget.checkpointInspections[index],
+                  onReviewPressed: () {
+                    // handling review
+
+                    // updating the review checkpoint inspection
+                    setState(() {
+                      reviewCheckpointInspection =
+                          widget.checkpointInspections[index];
+                    });
+
+                    // navigating to checkpoint inspection review page
+                    pageController.animateToPage(
+                      0,
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.ease,
+                    );
+                  },
+                ),
+                if (index != widget.checkpointInspections.length - 1)
+                  const SizedBox(height: MySizes.spacing * 2)
+              ],
+            );
+          },
+        ),
+
+        const SizedBox(height: MySizes.spacing * 2),
+
+        // ///////////// //
+        // SUBMIT BUTTON //
+        // ///////////// //
+
+        MyTextButton.primary(
+          text: "Submit",
+          onPressed: () {
+            // handling the submit
+            widget.onReviewed(widget.checkpointInspections);
+          },
+        ),
+      ],
     );
   }
 }

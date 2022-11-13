@@ -87,7 +87,7 @@ class InspectionController {
         .then((doc) => vehicleInspection.id = doc.id);
 
     // resetting the conformance status of the vehicle
-    VehicleController.instance.resetVehicleConformanceStatus(
+    await VehicleController.instance.resetVehicleConformanceStatus(
       vehicleInspection.vehicleID,
       vehicleInspection.id,
     );
@@ -102,7 +102,7 @@ class InspectionController {
           ._addCheckpointInspection(checkpointInspection);
 
       // updating the information on the checkpoint object
-      VehicleController.instance.resetCheckpointConformanceStatus(
+      await VehicleController.instance.resetCheckpointConformanceStatus(
         checkpointInspection.checkpointID,
         vehicleInspection.id,
       );

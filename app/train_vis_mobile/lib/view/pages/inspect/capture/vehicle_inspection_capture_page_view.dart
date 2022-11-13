@@ -8,21 +8,28 @@ import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 /// A custom [PageView] for capturing an inspection of a [Vehicle].
 ///
 /// The [PageView] consists of one page for each [Checkpoint] in the vehicle.
-/// Each of these pages is a [CheckpointInspectionCapturePageView], which allow
-/// for inspection of the each vehicle's [Checkpoint]s to be captured.
+/// Each of these pages is a [CheckpointInspectionCapturePageView], which allows
+/// for each [Checkpoint] in the [Vehicle] to be captured.
 ///
-/// Each [CheckpointInspectionPageView]
+/// Each [CheckpointInspectionCapturePageView] returns a [CheckpointInspection]
+/// object when the checkpoint is captured successfully. The list of
+/// [CheckpointInspection]s for the [Vehicle] are maintained within this class.
+///
+/// The [VehicleInspectionCapturePageView] will iterate throught the [Checkpoint]s
+/// for the [Vehicle], displaying a [CheckpointInspectionCapturePageView] and
+/// gathering a [CheckpointInspection] for each. After all [CheckpointInspection]s
+/// have been gathered, the [onVehicleInspectionCaptured] call back is run, with
+/// the list of [CheckpointInspections] passed on.
 class VehicleInspectionCapturePageView extends StatefulWidget {
   // MEMBER VARIABLES //
-  final String vehicleID; // TODO
+  final String vehicleID; // ID of vehicle being captured
   final Function(List<CheckpointInspection>)
-      onVehicleInspectionCaptured; // TODO
+      onVehicleInspectionCaptured; // callback when capture of vehicle complete
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
   // ///////////////// //
 
-  /// TODO
   const VehicleInspectionCapturePageView({
     super.key,
     required this.vehicleID,
@@ -38,7 +45,7 @@ class VehicleInspectionCapturePageView extends StatefulWidget {
       _VehicleInspectionCapturePageViewState();
 }
 
-/// TODO
+/// State class for [VehicleInspectionCapturePageView]
 class _VehicleInspectionCapturePageViewState
     extends State<VehicleInspectionCapturePageView> {
   // STATE VARIABLES //
@@ -89,11 +96,12 @@ class _VehicleInspectionCapturePageViewState
             for (Checkpoint checkpoint in checkpoints)
               CheckpointInspectionCapturePageView(
                 checkpoint: checkpoint,
-                onCheckpointInspectionCaptured: (checkpointInspection) {
+                onCheckpointInspectionCaptured: (capturePath) {
                   // handling capture
                   _handleCheckpointInspectionCaptured(
                     checkpoints,
-                    checkpointInspection,
+                    checkpoint,
+                    capturePath,
                   );
                 },
               )
@@ -107,13 +115,25 @@ class _VehicleInspectionCapturePageViewState
   // HELPER METHODS //
   // ////////////// //
 
-  /// TODO
+  /// Handles the capturing of a [CheckpointInspection] from the
+  /// [CheckpointInspectionCapturePageView].
+  ///
+  /// The [CheckpointInspection] returned by the [CheckpointInspectionCapturePageView]
+  /// is added to the class's list of [CheckpointInspection]s, and the next page
+  /// is shown. The next page is either a [CheckpointInspectionCapturePageView] for
+  /// the next [Checkpoint] in the [Vehicle], or the [onVehicleInspectionCaptured]
+  /// callback is run with the gathered list of [VehicleInspection]s.
   void _handleCheckpointInspectionCaptured(
     List<Checkpoint> checkpoints,
-    CheckpointInspection checkpointInspection,
+    Checkpoint checkpoint,
+    String capturePath,
   ) {
-    // updating current page number
-    currentPage = currentPage + 1;
+    // creating a new checkpoint inspection object
+    CheckpointInspection checkpointInspection =
+        CheckpointInspection.fromCheckpoint(
+      checkpoint: checkpoint,
+      capturePath: capturePath,
+    );
 
     // adding the checkpoint inspection to the list of checkpoint inspections
     checkpointInspections.add(checkpointInspection);
@@ -127,6 +147,9 @@ class _VehicleInspectionCapturePageViewState
         duration: const Duration(milliseconds: 500),
         curve: Curves.ease,
       );
+
+      // updating current page number (doesnt need to be in set state )
+      currentPage = currentPage + 1;
     } else {
       // all checkpoints captured -> calling on inspection captured
 

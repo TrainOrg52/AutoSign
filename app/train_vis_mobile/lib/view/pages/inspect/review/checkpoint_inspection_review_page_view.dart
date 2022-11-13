@@ -8,12 +8,24 @@ import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
 import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 import 'package:train_vis_mobile/view/widgets/camera_container.dart';
 
-/// TODO
+/// A custom [PageView] for reviewing a single [CheckpointInspection]. The
+/// [PageView] consists of three pages:
+///
+/// Page 1: A page to preview the current capture of the [CheckpointInspection].
+/// From this page, the user can chose to 're-take' the inspection, which takes
+/// them to Page 2, or confirm thee inspection, which takes theme back to the
+/// main review page.
+///
+/// Page 2: A page to re-capture an image of the [CheckpointInspection]. Following
+/// the capture, the user is taken to Page 3.
+///
+/// Page 3: A page to review the re-capture of the [CheckpointInspection]. The user
+/// can chose to either re-take the image which takes them back to Page 2, or accept
+/// the re-capture.
 class CheckpointInspectionReviewPageView extends StatefulWidget {
   // MEMBER VARIABLES //
   final CheckpointInspection checkpointInspection; // checkpoint being reviewed
-  final Function(CheckpointInspection)
-      onReCaptured; // called when checkpoint re-captured
+  final Function(String) onReCaptured; // called when checkpoint is re-captured
   final Function() onConfirmed; // called when CI confirmed
 
   // ///////////////// //
@@ -32,12 +44,12 @@ class CheckpointInspectionReviewPageView extends StatefulWidget {
       _CheckpointInspectionReviewPageViewState();
 }
 
-/// TODO
+/// State class for [_CheckpointInspectionReviewPageViewState].
 class _CheckpointInspectionReviewPageViewState
     extends State<CheckpointInspectionReviewPageView> {
   // STATE VARIABLES //
-  late PageController pageController; // TODO
-  late CheckpointInspection checkpointInspection; // TODO
+  late PageController pageController; // page controller
+  late String capturePath; // capture path for checkpoint inspection
 
   // ////////// //
   // INIT STATE //
@@ -49,7 +61,7 @@ class _CheckpointInspectionReviewPageViewState
 
     // initializing state
     pageController = PageController();
-    checkpointInspection = widget.checkpointInspection;
+    capturePath = widget.checkpointInspection.capturePath;
   }
 
   // //////////// //
@@ -64,7 +76,7 @@ class _CheckpointInspectionReviewPageViewState
         // CHECKPOINT TITLE //
         // //////////////// //
         Text(
-          checkpointInspection.title,
+          widget.checkpointInspection.title,
           style: MyTextStyles.headerText1,
           textAlign: TextAlign.center,
         ),
@@ -92,29 +104,23 @@ class _CheckpointInspectionReviewPageViewState
             controller: pageController,
             physics: const NeverScrollableScrollPhysics(),
             children: [
-              // //////////// //
-              // INSTRUCTIONS //
-              // //////////// //
+              // /////// //
+              // PREVIEW //
+              // /////// //
 
-              _buildInstructionsContainer(pageController),
+              _buildPreviewPage(),
 
               // /////// //
               // CAPTURE //
               // /////// //
 
-              CameraContainer(
-                onCaptured: (capturePath) {
-                  // handling capture
-
-                  _handleCaptured(capturePath);
-                },
-              ),
+              _buildCapturePage(),
 
               // ////// //
               // REVIEW //
               // ////// //
 
-              _buildReviewContainer(pageController),
+              _buildeviewPage(),
             ],
           ),
         ),
@@ -122,8 +128,9 @@ class _CheckpointInspectionReviewPageViewState
     );
   }
 
-  /// TODO
-  Widget _buildInstructionsContainer(PageController pageController) {
+  /// Builds a page that allows the user to preview their current capture for
+  /// the [CheckpointInspection], and either re-take or confirm this capture.
+  Widget _buildPreviewPage() {
     return Column(
       children: [
         // /////////////////////////// //
@@ -138,7 +145,7 @@ class _CheckpointInspectionReviewPageViewState
             isDense: true,
             backgroundColor: Colors.transparent,
             padding: const EdgeInsets.all(MySizes.paddingValue),
-            child: Image.asset(checkpointInspection.capturePath),
+            child: Image.asset(capturePath),
           ),
         ),
 
@@ -173,7 +180,7 @@ class _CheckpointInspectionReviewPageViewState
             // CONFIRM //
             // /////// //
 
-            MyTextButton.secondary(
+            MyTextButton.primary(
               text: "Confirm",
               onPressed: () {
                 // handling the confirm (navigating back to main review page)
@@ -186,8 +193,31 @@ class _CheckpointInspectionReviewPageViewState
     );
   }
 
-  /// TODO
-  Widget _buildReviewContainer(PageController pageController) {
+  /// Builds a page that allows for the user to re-capture the image for the
+  /// [CheckpointInspection].
+  Widget _buildCapturePage() {
+    return CameraContainer(
+      onCaptured: (capturePath) {
+        // handling capture
+
+        // updating checkpoint inspection
+        setState(() {
+          this.capturePath = capturePath;
+        });
+
+        // navigating to review page
+        pageController.animateToPage(
+          2,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.ease,
+        );
+      },
+    );
+  }
+
+  /// Builds a page that allows the user to review the image they have re-captured
+  /// for the checkpoint inspection.
+  Widget _buildeviewPage() {
     return Column(
       children: [
         const Spacer(),
@@ -202,7 +232,7 @@ class _CheckpointInspectionReviewPageViewState
             isDense: true,
             backgroundColor: Colors.transparent,
             padding: const EdgeInsets.all(MySizes.paddingValue),
-            child: Image.file(File(checkpointInspection.capturePath)),
+            child: Image.file(File(capturePath)),
           ),
         ),
 
@@ -241,27 +271,12 @@ class _CheckpointInspectionReviewPageViewState
               text: "Confirm",
               onPressed: () {
                 // handling the confirm
-                widget.onReCaptured(checkpointInspection);
+                widget.onReCaptured(capturePath);
               },
             )
           ],
         ),
       ],
-    );
-  }
-
-  /// TODO
-  void _handleCaptured(String capturePath) {
-    // updating checkpoint inspection
-    setState(() {
-      checkpointInspection.capturePath = capturePath;
-    });
-
-    // navigating to review page
-    pageController.animateToPage(
-      2,
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.ease,
     );
   }
 }

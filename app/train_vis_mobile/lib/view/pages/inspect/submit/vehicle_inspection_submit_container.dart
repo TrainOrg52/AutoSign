@@ -4,7 +4,15 @@ import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
 
-/// TODO
+/// A custom [Container] to be shown to the user when they are submitting
+/// a [VehilceInspection].
+///
+/// The container takes a [isSubmitted] parameter which represents the submission
+/// state of the inspection.
+///
+/// While submitting, an indeterminant progress indicator is shown. When submitted,
+/// an message is shown informing the user the inspection has completed, and
+/// a button is present that allows the user to return to the [ProfilePage].
 class VehicleInspectionSubmitContainer extends StatelessWidget {
   // MEMBER VARIABLES //
   final bool isSubmitted; // submission status of inspection
@@ -38,7 +46,9 @@ class VehicleInspectionSubmitContainer extends StatelessWidget {
   // HELPER BUILDER METHODS //
   // ////////////////////// //
 
-  /// TODO
+  /// Builds the container for when the inspection is being submitted.
+  ///
+  /// This container contains a title, and an indeterminant progress indicator.
   Widget _buildSubmittingContainer() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -83,7 +93,10 @@ class VehicleInspectionSubmitContainer extends StatelessWidget {
     );
   }
 
-  /// TODO
+  /// Builds the container shown when the inspection has submitted.
+  ///
+  /// This container includes a title message, and a button to return to the
+  /// [ProfilePage].
   Widget _buildSubmittedContainer(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,

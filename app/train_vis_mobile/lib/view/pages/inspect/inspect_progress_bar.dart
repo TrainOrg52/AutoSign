@@ -4,7 +4,7 @@ import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 
-/// TODO
+/// A custom progress bar for displaying the progress of a [VehicleInspection].
 class InspectProgressBar extends StatelessWidget {
   // MEMBER VARIABLES //
   final double progress; // the progress to be shown on the bar
