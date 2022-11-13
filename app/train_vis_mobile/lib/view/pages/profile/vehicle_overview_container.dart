@@ -9,16 +9,24 @@ import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/widgets/colored_container.dart';
 import 'package:train_vis_mobile/view/widgets/custom_future_builder.dart';
 
-/// Widget that contains an overview of information about a given train vehicle.
+/// A custom [Container] that displays an overview of key information for a
+/// [Vehicle]. This information includes:
+///
+/// - An image/avatar for the train, with a coloured border indicating the vehicle's
+/// status.
+/// - The ID of the train.
+/// - The title of the train.
+/// - The current location of the train.
+/// - An icon, indicating the status of the train.
 class VehicleOverviewContainer extends StatelessWidget {
   // MEMBER VARIABLES //
   final Vehicle vehicle; // ID of vehicle
 
   // THEME-ING //
   // sizes
-  final double avatarRadius = 50;
-  final double avatarImageRadius = 40;
-  final double avatarOutlineWidth = 5.0;
+  final double avatarBorderRadius = 50; // radius of avatar border
+  final double avatarImageRadius = 40; // radius of avatar image
+  final double avatarBorderWidth = 5.0; // width of avatar border
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -45,7 +53,7 @@ class VehicleOverviewContainer extends StatelessWidget {
           child: Column(
             children: [
               // spacing for off-centered avatar
-              SizedBox(height: avatarRadius),
+              SizedBox(height: avatarBorderRadius),
 
               ColoredContainer(
                 color: MyColors.backgroundSecondary,
@@ -70,7 +78,7 @@ class VehicleOverviewContainer extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         // spacing for off-centered avatar
-                        SizedBox(height: avatarRadius),
+                        SizedBox(height: avatarBorderRadius),
 
                         // ////////// //
                         // VEHICLE ID //
@@ -131,8 +139,8 @@ class VehicleOverviewContainer extends StatelessWidget {
         Align(
           alignment: Alignment.topCenter,
           child: CircularPercentIndicator(
-            radius: avatarRadius,
-            lineWidth: avatarOutlineWidth,
+            radius: avatarBorderRadius,
+            lineWidth: avatarBorderWidth,
             percent: 1.0,
             progressColor: vehicle.conformanceStatus.color,
             center: CustomFutureBuilder(

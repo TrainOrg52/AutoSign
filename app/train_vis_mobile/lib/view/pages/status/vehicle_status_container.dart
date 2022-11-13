@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:train_vis_mobile/model/status/conformance_status.dart';
 import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
 import 'package:train_vis_mobile/view/routes/routes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
@@ -10,7 +11,10 @@ import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 
 /// Widget that displays the status of the vehicle along with any action that
 /// should be taken.
-class VehicleStatusActionContainer extends StatelessWidget {
+///
+/// A custom [Container] that displays a message detailing the [ConformanceStatus]
+/// of the [Vehicle], as well as a button to perform a remediation if needed.
+class VehicleStatusContainer extends StatelessWidget {
   // MEMBER VARIABLES //
   final Vehicle vehicle; // vehicle being displayed
 
@@ -18,7 +22,7 @@ class VehicleStatusActionContainer extends StatelessWidget {
   // CLASS CONSTRUCTOR //
   // ///////////////// //
 
-  const VehicleStatusActionContainer({
+  const VehicleStatusContainer({
     super.key,
     required this.vehicle,
   });
@@ -54,37 +58,26 @@ class VehicleStatusActionContainer extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: MySizes.spacing),
-
-          // // /////////////////////// //
-          // // CONFORMANCE DESCRIPTION //
-          // // /////////////////////// //
-
-          // const Text(
-          //   "There are currently 5 non-conformances present on this vehicle.",
-          //   style: MyTextStyles.bodyText1,
-          //   textAlign: TextAlign.center,
-          // ),
-
-          const SizedBox(height: MySizes.spacing),
-
           // //////////////////////// //
           // START REMEDIATION BUTTON //
           // //////////////////////// //
 
-          MyTextButton.custom(
-            backgroundColor: vehicle.conformanceStatus.color,
-            borderColor: vehicle.conformanceStatus.color,
-            textColor: MyColors.antiPrimary,
-            text: "Start Remediation",
-            onPressed: () {
-              // navigating to status
-              context.pushNamed(
-                Routes.remediate,
-                params: {"vehicleID": vehicle.id},
-              );
-            },
-          ),
+          if (vehicle.conformanceStatus == ConformanceStatus.nonConforming) ...[
+            const SizedBox(height: MySizes.spacing),
+            MyTextButton.custom(
+              backgroundColor: vehicle.conformanceStatus.color,
+              borderColor: vehicle.conformanceStatus.color,
+              textColor: MyColors.antiPrimary,
+              text: "Start Remediation",
+              onPressed: () {
+                // navigating to status
+                context.pushNamed(
+                  Routes.remediate,
+                  params: {"vehicleID": vehicle.id},
+                );
+              },
+            ),
+          ],
         ],
       ),
     );

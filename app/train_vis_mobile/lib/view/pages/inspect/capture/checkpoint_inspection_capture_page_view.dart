@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:train_vis_mobile/controller/vehicle_controller.dart';
-import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:train_vis_mobile/model/vehicle/checkpoint.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
@@ -14,9 +13,9 @@ import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 /// A custom [PageView] for capturing an inspection of a [Checkpoint]. The title
 /// of the checkpoint and its prompt are displayed as a title above the view
 /// which consists of three pages that allow the user to preview, capture and review
-/// the inspection. Once reviewed, an [CheckpointInspection] is returned using the
-/// [onCheckpointInspectionCaptured] method that contains inspection of the given
-/// [Checkpoint].
+/// the inspection. Once reviewed, an [String] is returned using the
+/// [onCheckpointInspectionCaptured] method that contains the path to the image
+/// captured of the [Checkpoint].
 ///
 /// Page 1 - A page to display a preview for the checkpoint. This is an
 /// example image of the checkpoint (i.e., the gold standard).
@@ -29,7 +28,7 @@ import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 class CheckpointInspectionCapturePageView extends StatefulWidget {
   // MEMBER VARIABLES //
   final Checkpoint checkpoint; // checkpoint being displayed
-  final Function(CheckpointInspection)
+  final Function(String)
       onCheckpointInspectionCaptured; // callback ran when checkpoint is captured.
 
   // ///////////////// //
@@ -266,10 +265,7 @@ class _CheckpointInspectionCapturePageViewState
               onPressed: () {
                 // submitting the checkpoint inspection to the callback
                 widget.onCheckpointInspectionCaptured(
-                  CheckpointInspection.fromCheckpoint(
-                    checkpoint: widget.checkpoint,
-                    capturePath: capturePath,
-                  ),
+                  capturePath,
                 );
               },
             )

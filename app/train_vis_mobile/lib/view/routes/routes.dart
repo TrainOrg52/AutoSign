@@ -15,10 +15,13 @@ import 'package:train_vis_mobile/view/pages/reports/reports.dart';
 import 'package:train_vis_mobile/view/pages/reports/summary.dart';
 import 'package:train_vis_mobile/view/pages/status/status_page.dart';
 
-/// TODO
+/// Contains definitions for the application's routing information.
+///
+/// - Identifiers/names for each of the routes.
+/// - The [GoRouter] object for the application.
 class Routes {
   // ///////////////// //
-  // ROUTE INFORMATION //
+  // ROUTE IDENTIFIERS //
   // ///////////////// //
 
   static const home = "home";

@@ -87,7 +87,7 @@ class InspectionController {
         .then((doc) => vehicleInspection.id = doc.id);
 
     // resetting the conformance status of the vehicle
-    VehicleController.instance.resetVehicleConformanceStatus(
+    await VehicleController.instance.resetVehicleConformanceStatus(
       vehicleInspection.vehicleID,
       vehicleInspection.id,
     );
@@ -102,7 +102,7 @@ class InspectionController {
           ._addCheckpointInspection(checkpointInspection);
 
       // updating the information on the checkpoint object
-      VehicleController.instance.resetCheckpointConformanceStatus(
+      await VehicleController.instance.resetCheckpointConformanceStatus(
         checkpointInspection.checkpointID,
         vehicleInspection.id,
       );
@@ -202,7 +202,7 @@ class InspectionController {
   ) {
     // defining reference to Storage
     Reference reference = FirebaseStorage.instance.ref(
-        "$vehicleID/vehicleInspections/$vehicleInspectionID/checkpointInspectionID/unprocessed.png");
+        "$vehicleID/vehicleInspections/$vehicleInspectionID/$checkpointInspectionID/unprocessed.png");
 
     // returning download URL
     return reference.getDownloadURL().asStream();
@@ -217,7 +217,7 @@ class InspectionController {
   ) {
     // defining reference to Storage
     Reference reference = FirebaseStorage.instance.ref(
-        "$vehicleID/vehicleInspections/$vehicleInspectionID/checkpointInspectionID/processed.png");
+        "$vehicleID/vehicleInspections/$vehicleInspectionID/$checkpointInspectionID/processed.png");
 
     // returning download URL
     return reference.getDownloadURL().asStream();

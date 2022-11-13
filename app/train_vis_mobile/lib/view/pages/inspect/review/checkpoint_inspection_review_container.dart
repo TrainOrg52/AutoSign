@@ -7,11 +7,19 @@ import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
 import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 
-/// TODO
-class CheckpointInspectionReviewContainer extends StatefulWidget {
+/// A custom [Container] that displays an overview of a [CheckpointInspection]
+/// within the main 'Review' page, and allows the user to review the capture.
+///
+/// If the user choses to review the [CheckpointInspection] by pressing the
+/// 'Review' button, the [onReviwePressed] callback is run.
+class CheckpointInspectionReviewContainer extends StatelessWidget {
   // MEMBER VARIABLES //
   final CheckpointInspection checkpointInspection; // checkpoing being reviewed
   final Function() onReviewPressed; // call back when review is pressed
+
+  // THEME-ING //
+  // sizing
+  final double containerHeight = 100; // height of the container
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -22,37 +30,6 @@ class CheckpointInspectionReviewContainer extends StatefulWidget {
     required this.checkpointInspection,
     required this.onReviewPressed,
   });
-
-  // //////////// //
-  // CREATE STATE //
-  // //////////// //
-
-  @override
-  State<CheckpointInspectionReviewContainer> createState() =>
-      _CheckpointInspectionReviewContainerState();
-}
-
-/// TODO
-class _CheckpointInspectionReviewContainerState
-    extends State<CheckpointInspectionReviewContainer> {
-  // STATE VARIABLES //
-  late bool isReviewed; // review state of the checkpoint.
-
-  // THEME-ING //
-  // sizing
-  final double containerHeight = 100; // height of the container
-
-  // ////////// //
-  // INIT STATE //
-  // ////////// //
-
-  @override
-  void initState() {
-    super.initState();
-
-    // initializing state
-    isReviewed = false;
-  }
 
   // //////////// //
   // BUILD METHOD //
@@ -73,7 +50,7 @@ class _CheckpointInspectionReviewContainerState
             isDense: true,
             backgroundColor: Colors.transparent,
             padding: const EdgeInsets.all(MySizes.paddingValue / 2),
-            child: Image.file(File(widget.checkpointInspection.capturePath)),
+            child: Image.file(File(checkpointInspection.capturePath)),
           ),
 
           const SizedBox(width: MySizes.spacing),
@@ -87,66 +64,28 @@ class _CheckpointInspectionReviewContainerState
                 // //////////////// //
 
                 Text(
-                  widget.checkpointInspection.title,
+                  checkpointInspection.title,
                   style: MyTextStyles.headerText3,
                 ),
 
                 const Spacer(),
 
-                // ////////////// //
-                // REVIEW ACTIONS //
-                // ////////////// //
+                // ///////////// //
+                // REVIEW BUTTON //
+                // ///////////// //
 
-                _buildActionsContainer(),
+                MyTextButton.secondary(
+                  text: "Review",
+                  onPressed: () {
+                    // performing review
+                    onReviewPressed();
+                  },
+                ),
               ],
             ),
           ),
         ],
       ),
     );
-  }
-
-  // ////////////////////// //
-  // HELPER BUILDER METHODS //
-  // ////////////////////// //
-
-  /// TODO
-  Widget _buildActionsContainer() {
-    // building based on review status of checkpoint
-    if (isReviewed) {
-      // checkpoint reviewed -> display checkpoint reviewed button
-
-      // /////////////// //
-      // REVIEWED BUTTON //
-      // /////////////// //
-
-      return MyTextButton.primary(
-        text: "Reviewed",
-        onPressed: () {
-          // undoing the review confirmation
-          setState(() {
-            isReviewed = false;
-          });
-        },
-      );
-    } else {
-      // checkpoint not reviewed -> display buttons to review or confirm
-
-      return Row(
-        children: [
-          // ///////////// //
-          // REVIEW BUTTON //
-          // ///////////// //
-
-          MyTextButton.secondary(
-            text: "Review",
-            onPressed: () {
-              // performing review
-              widget.onReviewPressed();
-            },
-          ),
-        ],
-      );
-    }
   }
 }

@@ -6,7 +6,7 @@ import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:train_vis_mobile/model/inspection/vehicle_inspection.dart';
 import 'package:train_vis_mobile/view/pages/inspect/capture/vehicle_inspection_capture_page_view.dart';
 import 'package:train_vis_mobile/view/pages/inspect/inspect_progress_bar.dart';
-import 'package:train_vis_mobile/view/pages/inspect/review/vehicle_inspection_review_container.dart';
+import 'package:train_vis_mobile/view/pages/inspect/review/vehicle_inspection_review_page_view.dart';
 import 'package:train_vis_mobile/view/pages/inspect/submit/vehicle_inspection_submit_container.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
@@ -17,10 +17,16 @@ import 'package:train_vis_mobile/view/widgets/padded_custom_scroll_view.dart';
 
 /// Page to carry out inspection of a train vehicle.
 ///
-/// TODO
+/// The page consists of two elements:
+///
+/// 1: A progress bar to indicate the status of the inspection. This progress
+/// bar is automatically updated during the inspection.
+///
+/// 2: A custom [PageView] that has one page for each of the stages of the inspection;
+/// capture, review and submit.
 class InspectPage extends StatefulWidget {
   // MEMBERS //
-  final String vehicleID;
+  final String vehicleID; // ID of vehicle being inspected
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -39,12 +45,13 @@ class InspectPage extends StatefulWidget {
   State<InspectPage> createState() => _InspectPageState();
 }
 
-/// TODO
+/// State class for [InspectPage].
 class _InspectPageState extends State<InspectPage> {
   // STATE VARIABLES //
   late PageController pageController; // controller for pageview
   late double inspectionProgress; // progress value of the inspection
-  late List<CheckpointInspection> checkpointInspections; // TODO
+  late List<CheckpointInspection>
+      checkpointInspections; // checkpoint inspections gathered during the inspection
   late bool isSubmitted; // if the inspection is being submitted
   late bool isOnSubmitPage; // if current page is submit
 
@@ -75,6 +82,7 @@ class _InspectPageState extends State<InspectPage> {
       // CONFIGURATION //
       // ///////////// //
 
+      // making the background all white (different to normal background)
       backgroundColor: MyColors.backgroundSecondary,
 
       // /////// //
@@ -128,9 +136,9 @@ class _InspectPageState extends State<InspectPage> {
                   controller: pageController,
                   physics: const NeverScrollableScrollPhysics(),
                   children: [
-                    // //////////////////////////// //
-                    // VEHICLE INSPECTION PAGE VIEW //
-                    // //////////////////////////// //
+                    // /////// //
+                    // CAPTURE //
+                    // /////// //
 
                     VehicleInspectionCapturePageView(
                       vehicleID: widget.vehicleID,
@@ -144,11 +152,11 @@ class _InspectPageState extends State<InspectPage> {
                     // REVIEW //
                     // ////// //
 
-                    VehicleInspectionReviewContainer(
+                    VehicleInspectionReviewPageView(
                       checkpointInspections: checkpointInspections,
-                      onSubmitted: (reviewedCheckpointInspections) {
+                      onReviewed: (reviewedCheckpointInspections) {
                         // handing the submission
-                        _handleSubmitted(reviewedCheckpointInspections);
+                        _handleReviewed(reviewedCheckpointInspections);
                       },
                     ),
 
@@ -173,7 +181,10 @@ class _InspectPageState extends State<InspectPage> {
   // HELPER METHODS //
   // ////////////// //
 
-  /// TODO
+  /// Handles the closing of the [InspectPage].
+  ///
+  /// Displays a confirmation dialog to ensure the user wants to close, and if
+  /// confirmed, returns the user to the [ProfilePage].
   Future<void> _handleClose(BuildContext context) async {
     // displaying confirmation dialog
     bool result = await showDialog(
@@ -204,7 +215,11 @@ class _InspectPageState extends State<InspectPage> {
     }
   }
 
-  /// TODO
+  /// Handles the capturing of the [VehicleInspection].
+  ///
+  /// Sets the [List] of [CheckpointInspection]s gathered from the
+  /// [VehicleInspectionCapturePageView] into the state, and navigates to the
+  /// next page (the review page).
   Future<void> _handleVehicleInspectionCaptured(
     List<CheckpointInspection> checkpointInspections,
   ) async {
@@ -221,8 +236,13 @@ class _InspectPageState extends State<InspectPage> {
     );
   }
 
-  /// TODO
-  Future<void> _handleSubmitted(
+  /// Handles the successful reviewing of the [VehicleInspection] within the
+  /// review page.
+  ///
+  /// Sets the updated [List] of [CheckpointInspection]s gathered from the
+  /// [VehicleInspectionReviewPageView] into the state, navigates to the submission
+  /// page, and adds a new [VehicleInspection] into the system.
+  Future<void> _handleReviewed(
     List<CheckpointInspection> reviewedCheckpointInspections,
   ) async {
     // updating state
