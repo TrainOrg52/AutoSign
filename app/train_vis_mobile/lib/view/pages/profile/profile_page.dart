@@ -3,7 +3,7 @@ import 'package:train_vis_mobile/controller/vehicle_controller.dart';
 import 'package:train_vis_mobile/view/pages/profile/vehicle_action_container.dart';
 import 'package:train_vis_mobile/view/pages/profile/vehicle_activity_container.dart';
 import 'package:train_vis_mobile/view/pages/profile/vehicle_overview_container.dart';
-import 'package:train_vis_mobile/view/pages/profile/vehicle_status_container.dart';
+import 'package:train_vis_mobile/view/pages/profile/vehicle_status_overview_container.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_icon_button.dart';
@@ -74,7 +74,7 @@ class ProfilePage extends StatelessWidget {
                 // /////////////////////////// //
 
                 SliverToBoxAdapter(
-                  child: VehicleStatusContainer(
+                  child: VehicleStatusOverviewContainer(
                     vehicle: vehicle,
                   ),
                 ),

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:train_vis_mobile/controller/vehicle_controller.dart';
-import 'package:train_vis_mobile/model/status/conformance_status.dart';
 import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
 import 'package:train_vis_mobile/view/pages/status/checkpoint_status_list.dart';
-import 'package:train_vis_mobile/view/pages/status/vehicle_status_action_container.dart';
+import 'package:train_vis_mobile/view/pages/status/vehicle_status_container.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_icon_button.dart';
@@ -13,7 +12,8 @@ import 'package:train_vis_mobile/view/widgets/padded_custom_scroll_view.dart';
 /// Page to display the status of a train vehicle.
 ///
 /// Provides a breakdown of the conformance status of each of the train vehicle's
-/// checkpoints.
+/// checkpoints. If the vehicle is non-confirming, an action button is also
+/// provided to perform a remediation.
 class StatusPage extends StatelessWidget {
   // MEMBERS //
   final String vehicleID; // ID of vehicle being displayed
@@ -56,23 +56,20 @@ class StatusPage extends StatelessWidget {
         builder: (context, vehicle) {
           return PaddedCustomScrollView(
             slivers: [
-              // ///////////// //
-              // STATUS ACTION //
-              // ///////////// //
+              // ////////////// //
+              // VEHICLE STATUS //
+              // ////////////// //
 
-              // displaying status action based on conformance status
-              if (vehicle.conformanceStatus ==
-                  ConformanceStatus.nonConforming) ...[
-                SliverToBoxAdapter(
-                  child: VehicleStatusActionContainer(vehicle: vehicle),
-                ),
-                const SliverToBoxAdapter(
-                    child: SizedBox(height: MySizes.spacing)),
-              ],
+              SliverToBoxAdapter(
+                child: VehicleStatusContainer(vehicle: vehicle),
+              ),
 
-              // /////////// //
-              // CHECKPOINTS //
-              // /////////// //
+              const SliverToBoxAdapter(
+                  child: SizedBox(height: MySizes.spacing)),
+
+              // ///////////////// //
+              // CHECKPOINT STATUS //
+              // ///////////////// //
 
               SliverToBoxAdapter(
                 child: CheckpointStatusList(vehicle: vehicle),

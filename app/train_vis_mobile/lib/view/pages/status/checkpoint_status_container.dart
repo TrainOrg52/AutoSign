@@ -13,13 +13,22 @@ import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 import 'package:train_vis_mobile/view/widgets/colored_container.dart';
 import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 
-/// Container that stores information on the status of a particular checkpoint
-/// within a vehicle.
+/// A custom [Container] that stores information on the status of a particular
+/// [Checkpoint] within a [Vehicle].
+///
+/// The container displays an image of the checkpoint, the checkpoints title, and
+/// a message that is either "conforming" or "non-conforming" depending on the
+/// status of the checkpoint. The container also has a drop down button, which
+/// reveals the result of the most recent inspection and remediation performed
+/// on the vehicle.
+///
+/// The container has an [onExpanded] call-back, which is used to ensure that
+/// only a single [CheckpointStatusContainer] can be expanded within a [CheckpointStatusList].
 class CheckpointStatusContainer extends StatelessWidget {
   // MEMBER VARIABLES //
   final Checkpoint checkpoint; // checkpoint being displayed
-  final bool isExpanded;
-  final Function() onExpanded;
+  final bool isExpanded; // expansion state of the checkpoint.
+  final Function() onExpanded; // call back for when container expanded
 
   // THEME-ING
   // sizes
@@ -70,7 +79,8 @@ class CheckpointStatusContainer extends StatelessWidget {
   // HELPER BUILDER METHODS //
   // ////////////////////// //
 
-  /// Information held within the main body of the container.
+  /// Builds the widget that holds the main body of information within the
+  /// container.
   Widget _buildContainerBody() {
     return SizedBox(
       height: containerHeight,
@@ -156,7 +166,8 @@ class CheckpointStatusContainer extends StatelessWidget {
     );
   }
 
-  /// Information held within the dropdown for the container.
+  /// Builds the container that holds the information shown when the container
+  /// is expanded.
   Widget _buildContainerDropDown(BuildContext context) {
     return Column(
       children: [
@@ -233,7 +244,7 @@ class CheckpointStatusContainer extends StatelessWidget {
                 const SizedBox(height: MySizes.spacing),
                 Row(
                   children: [
-                    if (checkpoint.lastVehicleRemediationID == null)
+                    if (checkpoint.lastVehicleRemediationID == "")
                       const BorderedContainer(
                         isDense: true,
                         borderColor: MyColors.lineColor,

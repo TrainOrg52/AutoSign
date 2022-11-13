@@ -6,8 +6,11 @@ import 'package:train_vis_mobile/view/pages/status/checkpoint_status_container.d
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 
-/// Widget that holds a list of [CheckpointStatusContainer] widgets for all of the
-/// checkpoints within a given vehicle.
+/// Widget that displays the [ConformanceStatus] for all of the [Checkpoint]s
+/// withini a given [Vehicle].
+///
+/// A [CheckpointStatusContainer] is used to display the [ConformanceStatus] of
+/// each [Checkpoint].
 class CheckpointStatusList extends StatefulWidget {
   // MEMBER VARIABLES //
   final Vehicle vehicle; // vehicle the status is being displayed for
@@ -53,34 +56,35 @@ class _CheckpointStatusListState extends State<CheckpointStatusList> {
   @override
   Widget build(BuildContext context) {
     return CustomStreamBuilder<List<Checkpoint>>(
-        stream: VehicleController.instance
-            .getCheckpointsWhereVehicleIs(widget.vehicle.id),
-        builder: (context, checkpoints) {
-          return ListView.builder(
-            shrinkWrap: true,
-            itemCount: checkpoints.length,
-            itemBuilder: ((context, index) {
-              return Column(
-                children: [
-                  CheckpointStatusContainer(
-                    checkpoint: checkpoints[index],
-                    isExpanded: expandedCheckpointIndex == index,
-                    onExpanded: () {
-                      setState(() {
-                        if (expandedCheckpointIndex == index) {
-                          expandedCheckpointIndex = -1;
-                        } else {
-                          expandedCheckpointIndex = index;
-                        }
-                      });
-                    },
-                  ),
-                  if (index != checkpoints.length - 1)
-                    const SizedBox(height: MySizes.spacing),
-                ],
-              );
-            }),
-          );
-        });
+      stream: VehicleController.instance
+          .getCheckpointsWhereVehicleIs(widget.vehicle.id),
+      builder: (context, checkpoints) {
+        return ListView.builder(
+          shrinkWrap: true,
+          itemCount: checkpoints.length,
+          itemBuilder: ((context, index) {
+            return Column(
+              children: [
+                CheckpointStatusContainer(
+                  checkpoint: checkpoints[index],
+                  isExpanded: expandedCheckpointIndex == index,
+                  onExpanded: () {
+                    setState(() {
+                      if (expandedCheckpointIndex == index) {
+                        expandedCheckpointIndex = -1;
+                      } else {
+                        expandedCheckpointIndex = index;
+                      }
+                    });
+                  },
+                ),
+                if (index != checkpoints.length - 1)
+                  const SizedBox(height: MySizes.spacing),
+              ],
+            );
+          }),
+        );
+      },
+    );
   }
 }
