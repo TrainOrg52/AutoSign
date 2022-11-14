@@ -1,4 +1,7 @@
 class Vehicle:
+    """
+    @authors: Charlie Powell, Benjamin Sanati
+    """
     def __init__(self, id, timestamp, title, conformanceStatus, location, lastVehicleInspectionID):
         self.id = id
         self.timestamp = timestamp
@@ -34,6 +37,9 @@ class Vehicle:
 
 
 class Checkpoint:
+    """
+    @authors: Charlie Powell, Benjamin Sanati
+    """
     def __init__(self, id, timestamp, index, vehicleID, title, prompt, signs, conformanceStatus, lastVehicleInspectionID, lastVehicleInspectionResult, lastVehicleRemediationID):
         self.id = id
         self.timestamp = timestamp
@@ -84,6 +90,9 @@ class Checkpoint:
 
 
 class vehicleInspection:
+    """
+    @authors: Charlie Powell, Benjamin Sanati
+    """
     def __init__(self, id, timestamp, vehicleID, processingStatus, conformanceStatus):
         self.id = id
         self.timestamp = timestamp
@@ -116,6 +125,9 @@ class vehicleInspection:
 
 
 class CheckpointInspection:
+    """
+    @authors: Charlie Powell, Benjamin Sanati
+    """
     def __init__(self, id, index, timestamp, vehicleID, title, conformanceStatus, signs, checkpointID, vehicleInspectionID):
         self.id = id
         self.index = index
