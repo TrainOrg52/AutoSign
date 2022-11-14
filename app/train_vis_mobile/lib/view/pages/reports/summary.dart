@@ -26,7 +26,7 @@ class ReportSummary extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           title: const Text(
-            "Reports",
+            "Inspection",
             style: MyTextStyles.headerText1,
           ),
           backgroundColor: MyColors.antiPrimary,

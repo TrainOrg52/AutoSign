@@ -38,7 +38,7 @@ class ImageViewState extends State<ImageView> {
     return Scaffold(
         appBar: AppBar(
           title: const Text(
-            "Report",
+            "Image View",
             style: MyTextStyles.headerText1,
           ),
           backgroundColor: MyColors.antiPrimary,
