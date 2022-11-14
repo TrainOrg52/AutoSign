@@ -1,9 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:train_vis_mobile/controller/inspection_controller.dart';
+import 'package:train_vis_mobile/controller/vehicle_controller.dart';
+import 'package:train_vis_mobile/model/inspection/vehicle_inspection.dart';
 import 'package:train_vis_mobile/view/routes/routes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
+import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
+import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 
 ///Page for showing the list of reports associated with a train
 ///Currently contains dummy data just to demonstrate the UI
@@ -15,21 +22,27 @@ class ReportsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Inspections - $vehicleID",
-          style: MyTextStyles.headerText1,
+        appBar: AppBar(
+          title: Text(
+            "Inspections - $vehicleID",
+            style: MyTextStyles.headerText1,
+          ),
+          backgroundColor: MyColors.antiPrimary,
+          centerTitle: true,
         ),
-        backgroundColor: MyColors.antiPrimary,
-        centerTitle: true,
-      ),
-      body: _buildReportList(context),
-    );
+        body: CustomStreamBuilder(
+          stream: InspectionController.instance
+              .getVehicleInspectionsWhereVehicleIs(vehicleID),
+          builder: (context, inspections) {
+            return _buildReportList(context, inspections, vehicleID);
+          },
+        ));
   }
 }
 
 ///Constructs a series of tiles for each report
-ListView _buildReportList(BuildContext context) {
+ListView _buildReportList(BuildContext context,
+    List<VehicleInspection> inspections, String vehicleID) {
   //Dummy reports to populate the UI
   List<Report> reports = [
     Report("22/06/22", "Reading", true, false, []),
@@ -41,19 +54,22 @@ ListView _buildReportList(BuildContext context) {
 
   return ListView.builder(
       padding: EdgeInsets.zero,
-      itemCount: reports.length * 2,
+      itemCount: inspections.length * 2,
       itemBuilder: (_, index) {
         if (index.isEven) {
           return const Divider(
             height: 8,
           );
         }
-        return reportTile(reports[index ~/ 2], context);
+        return reportTile(inspections[index ~/ 2], context, vehicleID);
       });
 }
 
 /// Widget which generates a tile for a given report object
-Widget reportTile(Report report, BuildContext context) {
+Widget reportTile(
+    VehicleInspection inspection, BuildContext context, String vehicleID) {
+  bool processed = inspection.processingStatus.title != "pending";
+
   return BorderedContainer(
       padding: const EdgeInsets.all(0),
       height: 70,
@@ -62,16 +78,16 @@ Widget reportTile(Report report, BuildContext context) {
           child: ListTile(
               horizontalTitleGap: 0,
               title: Text(
-                report.date,
+                "22/06/22",
                 style: MyTextStyles.headerText1,
               ),
               subtitle: Row(
                 children: [
-                  locationWidget(report.location),
+                  locationWidget("Reading"),
                   const SizedBox(
                     width: 16,
                   ),
-                  report.processed ? processedWidget() : pendingWidget()
+                  processed ? processedWidget() : pendingWidget()
                 ],
               ),
               leading: const Icon(
@@ -80,16 +96,16 @@ Widget reportTile(Report report, BuildContext context) {
               ),
               trailing: IconButton(
                   icon: Icon(
-                    Icons.navigate_next_sharp,
+                    FontAwesomeIcons.circleChevronRight,
                     color: Colors.black,
-                    size: 40,
+                    size: MySizes.mediumIconSize,
                   ),
                   onPressed: () {
                     context.pushNamed(
                       Routes.vehicleInspection,
                       params: {
-                        "vehicleInspectionID": "2",
-                        "vehicleID": "707-008"
+                        "vehicleInspectionID": inspection.id,
+                        "vehicleID": vehicleID
                       },
                     );
                   }))));

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:train_vis_mobile/controller/inspection_controller.dart';
+import 'package:train_vis_mobile/controller/vehicle_controller.dart';
+import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
+import 'package:train_vis_mobile/model/inspection/vehicle_inspection.dart';
 import 'package:train_vis_mobile/view/pages/reports/reports.dart';
 import 'package:train_vis_mobile/view/routes/routes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
@@ -7,81 +11,117 @@ import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
 import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 import 'package:train_vis_mobile/view/widgets/colored_container.dart';
+import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
 
 ///Page showing the summary of the checkpoints for a given report
 ///Currently contains dummy data just to demonstrate the UI
 class ReportSummary extends StatelessWidget {
+  String vehicleID;
+  String vehicleInspectionID;
+
+  ReportSummary(this.vehicleID, this.vehicleInspectionID);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Reports",
-          style: MyTextStyles.headerText1,
+        appBar: AppBar(
+          title: const Text(
+            "Reports",
+            style: MyTextStyles.headerText1,
+          ),
+          backgroundColor: MyColors.antiPrimary,
+          centerTitle: true,
         ),
-        backgroundColor: MyColors.antiPrimary,
-        centerTitle: true,
-      ),
-      body: _buildReportSummary(context),
-    );
+        body: CustomStreamBuilder(
+            stream: InspectionController.instance
+                .getCheckpointInspectionsWhereVehicleInspectionIs(
+                    vehicleInspectionID),
+            builder: (context, checkpoints) {
+              return _buildReportSummary(
+                  context, checkpoints, vehicleInspectionID);
+            }));
   }
 }
 
 ///Constructs a series of tiles for each of the checkpoints in the report
-ListView _buildReportSummary(BuildContext context) {
-  //Dummy checkpoints to populate the UI
-  List<CheckPoint> checkpoints = [
-    CheckPoint("Section 1", false),
-    CheckPoint("Section 2", true),
-    CheckPoint("Section 3", true),
-    CheckPoint("Section 4", false)
-  ];
-  bool pending = false;
-  bool current = false;
-
+ListView _buildReportSummary(BuildContext context,
+    List<CheckpointInspection> checkpoints, String vehicleInspectionID) {
   return ListView.builder(
       itemCount: checkpoints.length + 1,
       itemBuilder: (_, index) {
         if (index == 0) {
-          return reportTitleTile(pending, current);
+          return CustomStreamBuilder(
+              stream: InspectionController.instance
+                  .getVehicleInspection(vehicleInspectionID),
+              builder: (context, inspection) {
+                return reportTitleTile(inspection);
+              });
         }
 
-        CheckPoint currentPoint = checkpoints[index - 1];
+        CheckpointInspection currentPoint = checkpoints[index - 1];
 
-        return checkpointViewWidget(currentPoint, pending, context);
+        return checkpointViewWidget(currentPoint, context);
       });
 }
 
 ///Widget for building a list item for each checkpoint
 Widget checkpointViewWidget(
-    CheckPoint currentPoint, bool pending, BuildContext context) {
+    CheckpointInspection currentPoint, BuildContext context) {
   return ColoredContainer(
       color: MyColors.backgroundPrimary,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            currentPoint.name,
+            currentPoint.title,
             style: MyTextStyles.headerText2,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text("Image"),
-              !pending
-                  ? currentPoint.conforming
-                      ? conforming()
-                      : nonconforming()
-                  : notProcessedWidget(),
+              CustomStreamBuilder(
+                  stream: VehicleController.instance
+                      .getCheckpointImageDownloadURL(
+                          currentPoint.vehicleID, currentPoint.checkpointID),
+                  builder: (context, url) {
+                    return Container(
+                        width: 70,
+                        height: 100,
+                        child: Image(image: NetworkImage(url)));
+                  }),
+              BorderedContainer(
+                  width: currentPoint.conformanceStatus.title == "pending"
+                      ? 130
+                      : 190,
+                  height: 45,
+                  backgroundColor: currentPoint.conformanceStatus.accentColor,
+                  borderColor: currentPoint.conformanceStatus.color,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        currentPoint.conformanceStatus.iconData,
+                        color: currentPoint.conformanceStatus.color,
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Text(
+                        currentPoint.conformanceStatus.title,
+                        style: MyTextStyles.buttonTextStyle,
+                      )
+                    ],
+                  )),
               MyTextButton.secondary(
                   text: "View",
                   onPressed: () {
                     context.pushNamed(
                       Routes.checkpointInspection,
                       params: {
-                        "vehicleInspectionID": "2",
-                        "vehicleID": "707-008",
-                        "checkpointInspectionID": "3"
+                        "vehicleInspectionID": currentPoint.vehicleInspectionID,
+                        "vehicleID": currentPoint.vehicleID,
+                        "checkpointInspectionID": currentPoint.id,
+                        "checkpointID": currentPoint.checkpointID
                       },
                     );
                   })
@@ -165,7 +205,7 @@ Widget conforming() {
 }
 
 ///Widget for building the title of the page showing metadata about the report
-Widget reportTitleTile(bool pending, bool current) {
+Widget reportTitleTile(VehicleInspection inspection) {
   return BorderedContainer(
       backgroundColor: MyColors.grey500,
       padding: const EdgeInsets.all(0),
@@ -188,11 +228,22 @@ Widget reportTitleTile(bool pending, bool current) {
                   const SizedBox(
                     width: 16,
                   ),
-                  pending ? pendingWidget() : processedWidget(),
+                  Row(
+                    children: [
+                      Icon(
+                        inspection.processingStatus.iconData,
+                        color: inspection.processingStatus.accentColor,
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text(inspection.processingStatus.title)
+                    ],
+                  ),
                   const SizedBox(
                     width: 16,
                   ),
-                  current ? upToDateWidget() : outdatedWidget()
+                  true ? upToDateWidget() : outdatedWidget()
                 ],
               ),
               leading: const Icon(

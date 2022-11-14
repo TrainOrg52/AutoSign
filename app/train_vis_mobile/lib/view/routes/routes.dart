@@ -138,8 +138,10 @@ class Routes {
                 name: Routes.vehicleInspection,
                 path: ":vehicleInspectionID",
                 builder: (context, state) {
-                  // TODO displaying filler page
-                  return ReportSummary();
+                  String vehicleID = state.params["vehicleID"]!;
+                  String vehicleInspectionID =
+                      state.params["vehicleInspectionID"]!;
+                  return ReportSummary(vehicleID, vehicleInspectionID);
                 },
                 routes: [
                   // ///////////////////// //
@@ -148,9 +150,16 @@ class Routes {
 
                   GoRoute(
                     name: Routes.checkpointInspection,
-                    path: ":checkpointInspectionID",
+                    path: ":checkpointInspectionID/:checkpointID",
                     builder: (context, state) {
-                      return ImageView();
+                      String vehicleID = state.params["vehicleID"]!;
+                      String vehicleInspectionID =
+                          state.params["vehicleInspectionID"]!;
+                      String checkpointInspectionID =
+                          state.params["checkpointInspectionID"]!;
+                      String checkpointID = state.params["checkpointID"]!;
+                      return ImageView(vehicleID, vehicleInspectionID,
+                          checkpointInspectionID, checkpointID);
                     },
                   )
                 ],

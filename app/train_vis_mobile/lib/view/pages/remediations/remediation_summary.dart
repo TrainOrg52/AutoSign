@@ -48,8 +48,8 @@ ListView _buildCheckpointList(BuildContext context, Remediation remediation) {
             style: MyTextStyles.headerText1,
           );
         } else if (index == 2) {
-          return reportTile(
-              Report("22/06/22", "Reading", false, true, []), context);
+          //return reportTile(
+          //  Report("22/06/22", "Reading", false, true, []), context);
         } else if (index == 3) {
           return Text(
             "Report",

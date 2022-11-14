@@ -72,7 +72,7 @@ class ConformanceStatus {
   // pending
   static const ConformanceStatus pending = ConformanceStatus._(
     title: "pending",
-    description: "Inspectiton Pending",
+    description: "Inspection Pending",
     color: MyColors.amber,
     accentColor: MyColors.amberAccent,
     iconData: FontAwesomeIcons.solidClock,
