@@ -70,7 +70,7 @@ class ImageViewState extends State<ImageView> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(checkpoint.conformanceStatus.iconData),
-                                SizedBox(
+                                const SizedBox(
                                   width: 5,
                                 ),
                                 Text(checkpoint.conformanceStatus.description)
@@ -96,7 +96,7 @@ class ImageViewState extends State<ImageView> {
           fillColor: MyColors.primaryAccent,
           constraints: const BoxConstraints(
             minHeight: 40.0,
-            minWidth: 194.5,
+            minWidth: 150,
           ),
           children: const [
             Text(
@@ -137,7 +137,7 @@ CustomStreamBuilder expectedImage(vehicleID, checkpointID) {
     stream: VehicleController.instance
         .getCheckpointImageDownloadURL(vehicleID, checkpointID),
     builder: (context, url) {
-      return Container(
+      return SizedBox(
           width: 250,
           child: Image(
             image: NetworkImage(url),
@@ -154,7 +154,7 @@ CustomStreamBuilder actualImage(
         .getUnprocessedCheckpointInspectionImageDownloadURL(
             vehicleID, vehicleInspectionID, checkpointInspectionID),
     builder: (context, url) {
-      return Container(
+      return SizedBox(
           width: 250,
           child: Image(
             image: NetworkImage(url),
