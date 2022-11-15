@@ -2,11 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:train_vis_mobile/model/model_object.dart';
 import 'package:train_vis_mobile/model/status/conformance_status.dart';
 import 'package:train_vis_mobile/model/status/processing_status.dart';
+import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
 
 /// An inspection of a given train vehicle.
 class VehicleInspection extends ModelObject {
   // MEMBERS //
   String vehicleID; // ID of vehicle being inspected
+  String location; // location of the inspection
   ProcessingStatus processingStatus; // processing status of inspection
   ConformanceStatus conformanceStatus; // conformance status of inspection
 
@@ -18,12 +20,26 @@ class VehicleInspection extends ModelObject {
     String id = "",
     int? timestamp,
     this.vehicleID = "",
+    this.location = "",
     ProcessingStatus? processingStatus,
     ConformanceStatus? conformanceStatus,
     Map<String, ConformanceStatus>? checkpoints,
   })  : processingStatus = processingStatus ?? ProcessingStatus.uploading,
         conformanceStatus = conformanceStatus ?? ConformanceStatus.pending,
         super(id: id, timestamp: timestamp);
+
+  // //////////// //
+  // FROM VEHICLE //
+  // //////////// //
+
+  factory VehicleInspection.fromVehicle({
+    required Vehicle vehicle,
+  }) {
+    return VehicleInspection(
+      vehicleID: vehicle.id,
+      location: vehicle.location,
+    );
+  }
 
   // ///////// //
   // FIRESTORE //
@@ -40,6 +56,7 @@ class VehicleInspection extends ModelObject {
       id: snapshot.id,
       timestamp: data?["timestamp"],
       vehicleID: data?["vehicleID"],
+      location: data?["location"],
       processingStatus: ProcessingStatus.fromString(data?["processingStatus"]),
       conformanceStatus:
           ConformanceStatus.fromString(data?["conformanceStatus"]),
@@ -54,6 +71,7 @@ class VehicleInspection extends ModelObject {
     return {
       "timestamp": timestamp,
       "vehicleID": vehicleID,
+      "location": location,
       "processingStatus": processingStatus.toString(),
       "conformanceStatus": conformanceStatus.toString(),
     };

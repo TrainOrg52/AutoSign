@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:train_vis_mobile/view/routes/routes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 
@@ -93,4 +94,22 @@ extension StringCasingExtension on String {
       .split(' ')
       .map((str) => str.toCapitalized())
       .join(' ');
+}
+
+/// TODO
+extension TimestampExtension on int {
+  /// TODO
+  String toDate() {
+    // gathering date time object
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(this * 1000);
+
+    // defining format of date time object
+    DateFormat dateFormat = DateFormat('dd/MM/yy - HH:mm ');
+
+    // formatting date-time object
+    String formattedDate = dateFormat.format(date);
+
+    // returning formatted date
+    return formattedDate;
+  }
 }

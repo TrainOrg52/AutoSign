@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:train_vis_mobile/controller/inspection_controller.dart';
+import 'package:train_vis_mobile/controller/vehicle_controller.dart';
 import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:train_vis_mobile/model/inspection/vehicle_inspection.dart';
+import 'package:train_vis_mobile/model/vehicle/vehicle.dart';
 import 'package:train_vis_mobile/view/pages/inspect/capture/vehicle_inspection_capture_page_view.dart';
 import 'package:train_vis_mobile/view/pages/inspect/inspect_progress_bar.dart';
 import 'package:train_vis_mobile/view/pages/inspect/review/vehicle_inspection_review_page_view.dart';
@@ -247,14 +249,17 @@ class _InspectPageState extends State<InspectPage> {
   ) async {
     // updating state
     setState(() {
-      isSubmitted = true;
       checkpointInspections = reviewedCheckpointInspections;
       inspectionProgress = 1.0;
     });
 
+    // getting the vehicle object
+    Vehicle vehicle =
+        await VehicleController.instance.getVehicleAtInstant(widget.vehicleID);
+
     // creating the vehicle inspection object
-    VehicleInspection vehicleInspection = VehicleInspection(
-      vehicleID: widget.vehicleID,
+    VehicleInspection vehicleInspection = VehicleInspection.fromVehicle(
+      vehicle: vehicle,
     );
 
     // navigating to submit page

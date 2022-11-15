@@ -47,6 +47,11 @@ class VehicleController {
         .map((snapshot) => Vehicle.fromFirestore(snapshot));
   }
 
+  /// Returns the [Vehicle] matching the given [VehicleID].
+  Future<Vehicle> getVehicleAtInstant(String vehicleID) async {
+    return Vehicle.fromFirestore(await _vehiclesRef.doc(vehicleID).get());
+  }
+
   /// Returns a [Stream] of the [Checkpoint] with the given [checkpointID].
   Stream<Checkpoint> getCheckpoint(String checkpointID) {
     // returning the required checkpoint as a stream

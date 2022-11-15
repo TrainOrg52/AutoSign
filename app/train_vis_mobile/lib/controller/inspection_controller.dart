@@ -161,7 +161,7 @@ class InspectionController {
   ) {
     return _vehicleInspectionsRef
         .where("vehicleID", isEqualTo: vehicleID)
-        .orderBy("timestamp")
+        .orderBy("timestamp", descending: true)
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
