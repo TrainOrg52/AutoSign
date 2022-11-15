@@ -66,22 +66,22 @@ class VehicleActionContainer extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(width: MySizes.spacing),
+            // const SizedBox(width: MySizes.spacing),
 
             // ///////// //
             // REMEDIATE //
             // ///////// //
 
-            Expanded(
-              child: _buildActionButton(
-                text: "Remediate",
-                icon: FontAwesomeIcons.hammer,
-                onPressed: () {
-                  // handling the action
-                  _handleRemediate(context);
-                },
-              ),
-            ),
+            // Expanded(
+            //   child: _buildActionButton(
+            //     text: "Remediate",
+            //     icon: FontAwesomeIcons.hammer,
+            //     onPressed: () {
+            //       // handling the action
+            //       _handleRemediate(context);
+            //     },
+            //   ),
+            // ),
           ],
         ),
       ],

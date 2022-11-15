@@ -50,8 +50,8 @@ class VehicleActivityContainer extends StatelessWidget {
         // /////// //
 
         _buildActivityButton(
-          text: "Reports",
-          icon: FontAwesomeIcons.clipboardList,
+          text: "Inspections",
+          icon: FontAwesomeIcons.magnifyingGlass,
           onPressed: () {
             // navigating to reports page
             context.pushNamed(
@@ -67,17 +67,17 @@ class VehicleActivityContainer extends StatelessWidget {
         // REMEDIATIONS //
         // //////////// //
 
-        _buildActivityButton(
-          text: "Remediations",
-          icon: FontAwesomeIcons.hammer,
-          onPressed: () {
-            // navigating to remediationss page
-            context.pushNamed(
-              Routes.remediations,
-              params: {"vehicleID": vehicleID},
-            );
-          },
-        ),
+        // _buildActivityButton(
+        //   text: "Remediations",
+        //   icon: FontAwesomeIcons.hammer,
+        //   onPressed: () {
+        //     // navigating to remediationss page
+        //     context.pushNamed(
+        //       Routes.remediations,
+        //       params: {"vehicleID": vehicleID},
+        //     );
+        //   },
+        // ),
       ],
     );
   }
