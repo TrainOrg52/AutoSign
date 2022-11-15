@@ -139,7 +139,7 @@ class _VehicleInspectionCapturePageViewState
     checkpointInspections.add(checkpointInspection);
 
     // checking if all checkpoints have been captured
-    if (currentPage < checkpoints.length) {
+    if (currentPage < checkpoints.length - 1) {
       // not all checkpoints captured -> move to next checkpoint
 
       // navigating to next page
