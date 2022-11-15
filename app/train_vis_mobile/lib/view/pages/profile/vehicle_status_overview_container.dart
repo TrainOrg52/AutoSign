@@ -95,6 +95,7 @@ class VehicleStatusOverviewContainer extends StatelessWidget {
                     },
                   );
 
+                  // TODO removed for deliverable 1 (remediation)
                   // // navigating based on conformance status
                   // if (vehicle.conformanceStatus == ConformanceStatus.pending) {
                   //   // conformance status pending -> go to most recent inspection

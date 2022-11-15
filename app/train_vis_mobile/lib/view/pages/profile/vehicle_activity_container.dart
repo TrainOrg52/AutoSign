@@ -61,7 +61,8 @@ class VehicleActivityContainer extends StatelessWidget {
           },
         ),
 
-        const SizedBox(height: MySizes.spacing),
+        // TODO removed for deliverable 1 (remediation)
+        // const SizedBox(height: MySizes.spacing),
 
         // //////////// //
         // REMEDIATIONS //
