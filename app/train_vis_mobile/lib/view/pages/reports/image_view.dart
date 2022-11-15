@@ -5,6 +5,7 @@ import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
+import 'package:train_vis_mobile/view/widgets/padded_custom_scroll_view.dart';
 
 ///Class for showing an image within the app
 class ImageView extends StatefulWidget {
@@ -35,26 +36,33 @@ class ImageViewState extends State<ImageView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            "Image View",
-            style: MyTextStyles.headerText1,
+    return CustomStreamBuilder(
+      stream: InspectionController.instance
+          .getCheckpointInspection(checkpointInspectionID),
+      builder: (context, checkpointInspection) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(
+              checkpointInspection.title,
+              style: MyTextStyles.headerText1,
+            ),
+            backgroundColor: MyColors.antiPrimary,
+            centerTitle: true,
           ),
-          backgroundColor: MyColors.antiPrimary,
-          centerTitle: true,
-        ),
-        body: imageBuilder(context));
+          body: PaddedCustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(child: imageBuilder(context)),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Center imageBuilder(BuildContext context) {
     return Center(
         child: Column(
       children: [
-        const Text(
-          "22/06/22",
-          style: MyTextStyles.headerText1,
-        ),
         CustomStreamBuilder(
             stream: InspectionController.instance
                 .getCheckpointInspection(checkpointInspectionID),

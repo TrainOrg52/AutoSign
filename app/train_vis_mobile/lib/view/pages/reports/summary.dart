@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:train_vis_mobile/controller/inspection_controller.dart';
-import 'package:train_vis_mobile/controller/vehicle_controller.dart';
+import 'package:train_vis_mobile/main.dart';
 import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:train_vis_mobile/model/inspection/vehicle_inspection.dart';
 import 'package:train_vis_mobile/view/pages/reports/reports.dart';
 import 'package:train_vis_mobile/view/routes/routes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
+import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
-import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
+import 'package:train_vis_mobile/view/theme/widgets/my_icon_button.dart';
 import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
 import 'package:train_vis_mobile/view/widgets/colored_container.dart';
 import 'package:train_vis_mobile/view/widgets/custom_stream_builder.dart';
+import 'package:train_vis_mobile/view/widgets/padded_custom_scroll_view.dart';
 
 ///Page showing the summary of the checkpoints for a given report
 ///Currently contains dummy data just to demonstrate the UI
@@ -19,27 +22,82 @@ class ReportSummary extends StatelessWidget {
   String vehicleID;
   String vehicleInspectionID;
 
-  ReportSummary(this.vehicleID, this.vehicleInspectionID);
+  ReportSummary({
+    super.key,
+    required this.vehicleID,
+    required this.vehicleInspectionID,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            "Inspection",
-            style: MyTextStyles.headerText1,
-          ),
-          backgroundColor: MyColors.antiPrimary,
-          centerTitle: true,
+      appBar: AppBar(
+        title: const Text(
+          "Inspection",
+          style: MyTextStyles.headerText1,
         ),
-        body: CustomStreamBuilder(
-            stream: InspectionController.instance
-                .getCheckpointInspectionsWhereVehicleInspectionIs(
-                    vehicleInspectionID),
-            builder: (context, checkpoints) {
-              return _buildReportSummary(
-                  context, checkpoints, vehicleInspectionID);
-            }));
+        backgroundColor: MyColors.antiPrimary,
+        centerTitle: true,
+        leading: MyIconButton.back(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
+      body: CustomStreamBuilder(
+        stream: InspectionController.instance
+            .getCheckpointInspectionsWhereVehicleInspectionIs(
+                vehicleInspectionID),
+        builder: (context, checkpoints) {
+          return PaddedCustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: dateStatusWidget(true),
+              ),
+              const SliverToBoxAdapter(
+                child: SizedBox(height: MySizes.spacing),
+              ),
+              SliverToBoxAdapter(
+                child: CustomStreamBuilder(
+                  stream: InspectionController.instance
+                      .getVehicleInspection(vehicleInspectionID),
+                  builder: (context, inspection) {
+                    return reportTitleTile(inspection);
+                  },
+                ),
+              ),
+              const SliverToBoxAdapter(
+                child: SizedBox(height: MySizes.spacing),
+              ),
+              const SliverToBoxAdapter(
+                child: Text(
+                  "Report",
+                  style: MyTextStyles.headerText2,
+                ),
+              ),
+              const SliverToBoxAdapter(
+                child: SizedBox(height: MySizes.spacing),
+              ),
+              SliverToBoxAdapter(
+                child: CustomStreamBuilder(
+                    stream: InspectionController.instance
+                        .getVehicleInspection(vehicleInspectionID),
+                    builder: (context, vehicleInspection) {
+                      return inspectionStatusWidget(vehicleInspection);
+                    }),
+              ),
+              const SliverToBoxAdapter(
+                child: SizedBox(height: MySizes.spacing),
+              ),
+              SliverToBoxAdapter(
+                child: _buildReportSummary(
+                    context, checkpoints, vehicleInspectionID),
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 }
 
@@ -47,215 +105,238 @@ class ReportSummary extends StatelessWidget {
 ListView _buildReportSummary(BuildContext context,
     List<CheckpointInspection> checkpoints, String vehicleInspectionID) {
   return ListView.builder(
-      itemCount: checkpoints.length + 1,
-      itemBuilder: (_, index) {
-        if (index == 0) {
-          return CustomStreamBuilder(
-              stream: InspectionController.instance
-                  .getVehicleInspection(vehicleInspectionID),
-              builder: (context, inspection) {
-                return reportTitleTile(inspection);
-              });
-        }
-
-        CheckpointInspection currentPoint = checkpoints[index - 1];
-
-        return checkpointViewWidget(currentPoint, context);
-      });
-}
-
-///Widget for building a list item for each checkpoint
-Widget checkpointViewWidget(
-    CheckpointInspection currentPoint, BuildContext context) {
-  return ColoredContainer(
-      color: MyColors.backgroundPrimary,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    itemCount: checkpoints.length,
+    itemBuilder: (_, index) {
+      return Column(
         children: [
-          Text(
-            currentPoint.title,
-            style: MyTextStyles.headerText2,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              CustomStreamBuilder(
-                  stream: VehicleController.instance
-                      .getCheckpointImageDownloadURL(
-                          currentPoint.vehicleID, currentPoint.checkpointID),
-                  builder: (context, url) {
-                    return Container(
-                        width: 70,
-                        height: 100,
-                        child: Image(image: NetworkImage(url)));
-                  }),
-              BorderedContainer(
-                  width: currentPoint.conformanceStatus.title == "pending"
-                      ? 130
-                      : 190,
-                  height: 45,
-                  backgroundColor: currentPoint.conformanceStatus.accentColor,
-                  borderColor: currentPoint.conformanceStatus.color,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
-                        currentPoint.conformanceStatus.iconData,
-                        color: currentPoint.conformanceStatus.color,
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        currentPoint.conformanceStatus.title,
-                        style: MyTextStyles.buttonTextStyle,
-                      )
-                    ],
-                  )),
-              MyTextButton.secondary(
-                  text: "View",
-                  onPressed: () {
-                    context.pushNamed(
-                      Routes.checkpointInspection,
-                      params: {
-                        "vehicleInspectionID": currentPoint.vehicleInspectionID,
-                        "vehicleID": currentPoint.vehicleID,
-                        "checkpointInspectionID": currentPoint.id,
-                        "checkpointID": currentPoint.checkpointID
-                      },
-                    );
-                  })
-            ],
-          )
+          checkpointViewWidget(checkpoints[index], context),
+          if (index != checkpoints.length - 1)
+            const SizedBox(height: MySizes.spacing),
         ],
-      ));
+      );
+    },
+  );
 }
 
-///Widget for showing that the current report hasn't been processed
-Widget notProcessedWidget() {
-  return BorderedContainer(
-      width: 120,
-      height: 45,
-      backgroundColor: MyColors.grey500,
-      borderColor: MyColors.grey1000,
-      child: Row(
-        children: const [
-          Icon(
-            Icons.warning,
-            color: MyColors.grey1000,
-          ),
-          SizedBox(
-            width: 10,
-          ),
-          Text(
-            "Pending",
-            style: MyTextStyles.buttonTextStyle,
-          )
-        ],
-      ));
-}
+Widget dateStatusWidget(bool inDate) {
+  // determining properties for container
+  Color borderColor = inDate ? MyColors.green : MyColors.red;
+  Color backgroundColor = inDate ? MyColors.greenAcent : MyColors.redAccent;
+  IconData iconData = inDate
+      ? FontAwesomeIcons.solidCircleCheck
+      : FontAwesomeIcons.circleExclamation;
+  String text = inDate ? "Inspection Up-to-date" : "Inspection Outdated";
 
-///Widget for showing that a checkpoint is non-conforming
-Widget nonconforming() {
+  // returning container
   return BorderedContainer(
-      width: 190,
-      height: 45,
-      backgroundColor: MyColors.negativeAccent,
-      borderColor: MyColors.negative,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: const [
-          Icon(
-            Icons.warning,
-            color: MyColors.negative,
-          ),
-          SizedBox(
-            width: 10,
-          ),
-          Text(
-            "Non-conforming",
-            style: MyTextStyles.buttonTextStyle,
-          )
-        ],
-      ));
-}
-
-///Widget for showing a checkpoint is conforming
-Widget conforming() {
-  return BorderedContainer(
-      width: 160,
-      height: 45,
-      backgroundColor: MyColors.greenAcent,
-      borderColor: MyColors.green,
-      child: Row(
-        children: const [
-          Icon(
-            Icons.check_circle,
-            color: MyColors.green,
-          ),
-          SizedBox(
-            width: 10,
-          ),
-          Text(
-            "Conforming",
-            style: MyTextStyles.buttonTextStyle,
-          )
-        ],
-      ));
+    borderColor: borderColor,
+    backgroundColor: backgroundColor,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          iconData,
+          size: MySizes.mediumIconSize,
+          color: borderColor,
+        ),
+        const SizedBox(width: MySizes.spacing),
+        Text(
+          text,
+          style: MyTextStyles.headerText3,
+        ),
+      ],
+    ),
+  );
 }
 
 ///Widget for building the title of the page showing metadata about the report
 Widget reportTitleTile(VehicleInspection inspection) {
-  return BorderedContainer(
-      backgroundColor: MyColors.grey500,
-      padding: const EdgeInsets.all(0),
-      height: 70,
-      borderRadius: 10,
-      child: Center(
-          child: ListTile(
-              horizontalTitleGap: 0,
-              title: const Text(
-                "22/07/22",
+  return ColoredContainer(
+    color: MyColors.backgroundSecondary,
+    padding: MySizes.padding,
+    child: Row(
+      children: [
+        const Icon(
+          FontAwesomeIcons.magnifyingGlass,
+          color: MyColors.textPrimary,
+          size: MySizes.largeIconSize,
+        ),
+        const SizedBox(width: MySizes.spacing),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                inspection.timestamp.toDate().toString(),
                 style: MyTextStyles.headerText1,
               ),
-              subtitle: Row(
+              const SizedBox(height: MySizes.spacing / 2),
+              Row(
                 children: [
-                  const Icon(
-                    Icons.location_on,
-                    color: Colors.black,
-                  ),
-                  const Text("Reading"),
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  Row(
-                    children: [
-                      Icon(
-                        inspection.processingStatus.iconData,
-                        color: inspection.processingStatus.accentColor,
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      Text(inspection.processingStatus.title)
-                    ],
-                  ),
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  true ? upToDateWidget() : outdatedWidget()
+                  locationWidget(inspection.location),
+                  const SizedBox(width: MySizes.spacing * 2),
+                  processingStatusWidget(inspection.processingStatus),
                 ],
               ),
-              leading: const Icon(
-                Icons.search,
-                size: 40,
-              ))));
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
-///Class used in development to demonstrate UI
-class CheckPoint {
-  String name;
-  bool conforming;
+Widget inspectionStatusWidget(VehicleInspection vehicleInspection) {
+  // returning container
+  return BorderedContainer(
+    borderColor: vehicleInspection.conformanceStatus.color,
+    backgroundColor: vehicleInspection.conformanceStatus.accentColor,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          vehicleInspection.conformanceStatus.iconData,
+          size: MySizes.mediumIconSize,
+          color: vehicleInspection.conformanceStatus.color,
+        ),
+        const SizedBox(width: MySizes.spacing),
+        Text(
+          vehicleInspection.conformanceStatus.title.toCapitalized(),
+          style: MyTextStyles.headerText3,
+        ),
+      ],
+    ),
+  );
+}
 
-  CheckPoint(this.name, this.conforming);
+Widget checkpointViewWidget(
+  CheckpointInspection checkpointInspection,
+  BuildContext context,
+) {
+  return OutlinedButton(
+    style: OutlinedButton.styleFrom(
+      foregroundColor: MyColors.textPrimary,
+      backgroundColor: MyColors.backgroundSecondary,
+      padding: MySizes.padding,
+      side: const BorderSide(
+        width: 0,
+        color: MyColors.backgroundSecondary,
+      ),
+    ),
+    onPressed: () {
+      // navigating to image view
+      context.pushNamed(
+        Routes.checkpointInspection,
+        params: {
+          "vehicleInspectionID": checkpointInspection.vehicleInspectionID,
+          "vehicleID": checkpointInspection.vehicleID,
+          "checkpointInspectionID": checkpointInspection.id,
+          "checkpointID": checkpointInspection.checkpointID
+        },
+      );
+    },
+    child: SizedBox(
+      height: 100,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          BorderedContainer(
+            isDense: true,
+            backgroundColor: Colors.transparent,
+            padding: const EdgeInsets.all(MySizes.paddingValue / 2),
+            child: CustomStreamBuilder(
+              stream: InspectionController.instance
+                  .getUnprocessedCheckpointInspectionImageDownloadURL(
+                checkpointInspection.vehicleID,
+                checkpointInspection.vehicleInspectionID,
+                checkpointInspection.id,
+              ),
+              builder: (context, downloadURL) {
+                return Image.network(downloadURL);
+              },
+            ),
+          ),
+          const SizedBox(width: MySizes.spacing),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  checkpointInspection.title,
+                  style: MyTextStyles.headerText3,
+                ),
+                const Spacer(),
+                BorderedContainer(
+                  isDense: true,
+                  borderColor: checkpointInspection.conformanceStatus.color,
+                  backgroundColor:
+                      checkpointInspection.conformanceStatus.accentColor,
+                  padding: const EdgeInsets.all(MySizes.paddingValue / 2),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        checkpointInspection.conformanceStatus.iconData,
+                        color: checkpointInspection.conformanceStatus.color,
+                        size: MySizes.smallIconSize,
+                      ),
+                      const SizedBox(width: MySizes.spacing),
+                      Text(
+                        checkpointInspection.conformanceStatus.title
+                            .toTitleCase(),
+                        style: MyTextStyles.bodyText2,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Center(
+            child: Icon(
+              FontAwesomeIcons.circleChevronRight,
+              size: MySizes.mediumIconSize,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+///Widget with an amber warning for when a report is outdated
+Widget outdatedWidget() {
+  return Row(
+    children: const [
+      Icon(
+        FontAwesomeIcons.circleExclamation,
+        color: MyColors.amber,
+      ),
+      SizedBox(width: MySizes.spacing),
+      Text(
+        "Outdated",
+        style: MyTextStyles.bodyText1,
+      )
+    ],
+  );
+}
+
+///Widget with a green checkmark for when a report is the most recent available
+Widget upToDateWidget() {
+  return Row(
+    children: const [
+      Icon(
+        FontAwesomeIcons.solidCircleCheck,
+        size: MySizes.smallIconSize,
+        color: MyColors.green,
+      ),
+      SizedBox(width: MySizes.spacing),
+      Text(
+        "Up to date",
+        style: MyTextStyles.bodyText1,
+      )
+    ],
+  );
 }
