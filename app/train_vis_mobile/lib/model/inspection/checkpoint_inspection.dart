@@ -70,6 +70,12 @@ class CheckpointInspection extends ModelObject {
     // getting snapshot data
     final data = snapshot.data();
 
+    // gathering sign data
+    Map<String, ConformanceStatus> signs = {};
+    data?["signs"].forEach((sign, conformanceStatus) {
+      signs[sign] = ConformanceStatus.fromString(conformanceStatus)!;
+    });
+
     // cocnverting document data to an object
     return CheckpointInspection(
       id: snapshot.id,
@@ -81,9 +87,7 @@ class CheckpointInspection extends ModelObject {
       index: data?["index"],
       conformanceStatus:
           ConformanceStatus.fromString(data?["conformanceStatus"]),
-      signs: (data?["signs"]).entries.forEach((sign) {
-        return {sign.key: ConformanceStatus.fromString(sign.value)};
-      }),
+      signs: signs,
     );
   }
 

@@ -52,12 +52,6 @@ class ReportSummary extends StatelessWidget {
           return PaddedCustomScrollView(
             slivers: [
               SliverToBoxAdapter(
-                child: dateStatusWidget(true),
-              ),
-              const SliverToBoxAdapter(
-                child: SizedBox(height: MySizes.spacing),
-              ),
-              SliverToBoxAdapter(
                 child: CustomStreamBuilder(
                   stream: InspectionController.instance
                       .getVehicleInspection(vehicleInspectionID),
@@ -69,22 +63,14 @@ class ReportSummary extends StatelessWidget {
               const SliverToBoxAdapter(
                 child: SizedBox(height: MySizes.spacing),
               ),
-              const SliverToBoxAdapter(
-                child: Text(
-                  "Report",
-                  style: MyTextStyles.headerText2,
-                ),
-              ),
-              const SliverToBoxAdapter(
-                child: SizedBox(height: MySizes.spacing),
-              ),
               SliverToBoxAdapter(
                 child: CustomStreamBuilder(
-                    stream: InspectionController.instance
-                        .getVehicleInspection(vehicleInspectionID),
-                    builder: (context, vehicleInspection) {
-                      return inspectionStatusWidget(vehicleInspection);
-                    }),
+                  stream: InspectionController.instance
+                      .getVehicleInspection(vehicleInspectionID),
+                  builder: (context, vehicleInspection) {
+                    return inspectionStatusWidget(vehicleInspection);
+                  },
+                ),
               ),
               const SliverToBoxAdapter(
                 child: SizedBox(height: MySizes.spacing),
@@ -190,24 +176,34 @@ Widget reportTitleTile(VehicleInspection inspection) {
 
 Widget inspectionStatusWidget(VehicleInspection vehicleInspection) {
   // returning container
-  return BorderedContainer(
-    borderColor: vehicleInspection.conformanceStatus.color,
-    backgroundColor: vehicleInspection.conformanceStatus.accentColor,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          vehicleInspection.conformanceStatus.iconData,
-          size: MySizes.mediumIconSize,
-          color: vehicleInspection.conformanceStatus.color,
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const Text(
+        "Report",
+        style: MyTextStyles.headerText2,
+      ),
+      const SizedBox(height: MySizes.spacing),
+      BorderedContainer(
+        borderColor: vehicleInspection.conformanceStatus.color,
+        backgroundColor: vehicleInspection.conformanceStatus.accentColor,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              vehicleInspection.conformanceStatus.iconData,
+              size: MySizes.mediumIconSize,
+              color: vehicleInspection.conformanceStatus.color,
+            ),
+            const SizedBox(width: MySizes.spacing),
+            Text(
+              vehicleInspection.conformanceStatus.title.toCapitalized(),
+              style: MyTextStyles.headerText3,
+            ),
+          ],
         ),
-        const SizedBox(width: MySizes.spacing),
-        Text(
-          vehicleInspection.conformanceStatus.title.toCapitalized(),
-          style: MyTextStyles.headerText3,
-        ),
-      ],
-    ),
+      ),
+    ],
   );
 }
 
