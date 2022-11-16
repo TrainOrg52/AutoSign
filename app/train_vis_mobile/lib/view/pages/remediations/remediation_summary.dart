@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:train_vis_mobile/view/pages/remediations/remediations.dart';
 import 'package:train_vis_mobile/view/routes/routes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
-import "package:train_vis_mobile/view/theme/widgets/my_icon_button.dart";
-import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
-import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
+import 'package:train_vis_mobile/view/theme/widgets/my_text_button.dart';
 import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
-import 'package:train_vis_mobile/view/widgets/colored_container.dart';
-import 'package:train_vis_mobile/view/pages/reports/reports.dart';
-import 'package:train_vis_mobile/view/pages/remediations/remediations.dart';
 
 class RemediationSummary extends StatelessWidget {
+  @override
   Widget build(BuildContext context) {
     Remediation exampleRemediation = Remediation("Reading", "22/06/22", 3, [
       "Entrance 1: Door",
@@ -43,7 +40,7 @@ ListView _buildCheckpointList(BuildContext context, Remediation remediation) {
         if (index == 0) {
           return remediationTile(remediation, context);
         } else if (index == 1) {
-          return Text(
+          return const Text(
             "Inspection",
             style: MyTextStyles.headerText1,
           );
@@ -51,7 +48,7 @@ ListView _buildCheckpointList(BuildContext context, Remediation remediation) {
           //return reportTile(
           //  Report("22/06/22", "Reading", false, true, []), context);
         } else if (index == 3) {
-          return Text(
+          return const Text(
             "Report",
             style: MyTextStyles.headerText1,
           );
@@ -68,7 +65,7 @@ ListView _buildCheckpointList(BuildContext context, Remediation remediation) {
 Widget remediationCheckpoint(String sectionName, String imageURL,
     String issueDescription, BuildContext context) {
   return BorderedContainer(
-      padding: EdgeInsets.all(0),
+      padding: const EdgeInsets.all(0),
       height: 230,
       borderRadius: 10,
       borderColor: MyColors.backgroundPrimary,
@@ -78,11 +75,11 @@ Widget remediationCheckpoint(String sectionName, String imageURL,
           style: MyTextStyles.headerText1,
         ),
         Row(children: [
-          Container(
+          SizedBox(
             width: 100,
             child: Image(image: NetworkImage(imageURL)),
           ),
-          SizedBox(
+          const SizedBox(
             width: 30,
           ),
           issueAction(issueDescription)
@@ -109,12 +106,12 @@ Widget issueAction(String issueDescription) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(
+      const Text(
         "Issue",
         style: MyTextStyles.headerText2,
       ),
       issue(issueDescription),
-      Text("Action", style: MyTextStyles.headerText2),
+      const Text("Action", style: MyTextStyles.headerText2),
       remediatedWidget(),
     ],
   );
@@ -129,11 +126,11 @@ Widget issue(String issueDescription) {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(
+          const Icon(
             Icons.warning,
             color: MyColors.negative,
           ),
-          SizedBox(
+          const SizedBox(
             width: 10,
           ),
           Text(
@@ -152,7 +149,7 @@ Widget remediatedWidget() {
       borderColor: MyColors.green,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
+        children: const [
           Icon(
             Icons.check_circle,
             color: MyColors.green,

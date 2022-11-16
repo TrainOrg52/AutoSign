@@ -1,20 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:train_vis_mobile/view/pages/inspections/inspections.dart';
 import 'package:train_vis_mobile/view/routes/routes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
-import "package:train_vis_mobile/view/theme/widgets/my_icon_button.dart";
-import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_text_styles.dart';
 import 'package:train_vis_mobile/view/widgets/bordered_container.dart';
-import 'package:train_vis_mobile/view/widgets/colored_container.dart';
-import 'package:train_vis_mobile/view/pages/reports/reports.dart';
 
 class RemediationsList extends StatelessWidget {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           "Remediations",
           style: MyTextStyles.headerText1,
         ),
@@ -48,7 +46,7 @@ ListView _buildRemediationList(BuildContext context) {
 
 Widget remediationTile(Remediation remediation, BuildContext context) {
   return BorderedContainer(
-      padding: EdgeInsets.all(0),
+      padding: const EdgeInsets.all(0),
       height: 70,
       borderRadius: 10,
       child: Center(
@@ -61,7 +59,7 @@ Widget remediationTile(Remediation remediation, BuildContext context) {
               subtitle: Row(
                 children: [
                   locationWidget(remediation.location),
-                  SizedBox(
+                  const SizedBox(
                     width: 16,
                   ),
                   numIssuesWidget(remediation.numRemediations)
@@ -73,7 +71,7 @@ Widget remediationTile(Remediation remediation, BuildContext context) {
                 color: Colors.black,
               ),
               trailing: IconButton(
-                icon: Icon(
+                icon: const Icon(
                   Icons.navigate_next_sharp,
                   color: Colors.black,
                   size: 40,
@@ -93,7 +91,7 @@ Widget remediationTile(Remediation remediation, BuildContext context) {
 Widget numIssuesWidget(int numIssues) {
   return Row(
     children: [
-      Icon(
+      const Icon(
         Icons.check_circle,
         color: MyColors.green,
       ),

@@ -5,7 +5,7 @@ import 'package:train_vis_mobile/controller/inspection_controller.dart';
 import 'package:train_vis_mobile/main.dart';
 import 'package:train_vis_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:train_vis_mobile/model/inspection/vehicle_inspection.dart';
-import 'package:train_vis_mobile/view/pages/reports/reports.dart';
+import 'package:train_vis_mobile/view/pages/inspections/inspections.dart';
 import 'package:train_vis_mobile/view/routes/routes.dart';
 import 'package:train_vis_mobile/view/theme/data/my_colors.dart';
 import 'package:train_vis_mobile/view/theme/data/my_sizes.dart';

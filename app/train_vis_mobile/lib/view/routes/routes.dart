@@ -1,14 +1,14 @@
 import 'package:go_router/go_router.dart';
 import 'package:train_vis_mobile/view/pages/home/home_page.dart';
 import 'package:train_vis_mobile/view/pages/inspect/inspect_page.dart';
+import 'package:train_vis_mobile/view/pages/inspections/image_view.dart';
+import 'package:train_vis_mobile/view/pages/inspections/inspections.dart';
+import 'package:train_vis_mobile/view/pages/inspections/summary.dart';
 import 'package:train_vis_mobile/view/pages/profile/profile_page.dart';
 import 'package:train_vis_mobile/view/pages/remediate/remediate_page.dart';
 import 'package:train_vis_mobile/view/pages/remediations/remediation_fix.dart';
 import 'package:train_vis_mobile/view/pages/remediations/remediation_summary.dart';
 import 'package:train_vis_mobile/view/pages/remediations/remediations.dart';
-import 'package:train_vis_mobile/view/pages/reports/image_view.dart';
-import 'package:train_vis_mobile/view/pages/reports/reports.dart';
-import 'package:train_vis_mobile/view/pages/reports/summary.dart';
 import 'package:train_vis_mobile/view/pages/status/status_page.dart';
 
 /// Contains definitions for the application's routing information.
@@ -25,7 +25,7 @@ class Routes {
   static const status = "status";
   static const inspect = "inspect";
   static const remediate = "remediate";
-  static const reports = "reports";
+  static const inspections = "inspections";
   static const vehicleInspection = "inspectionWalkthrough";
   static const checkpointInspection = "inspectionCheckpoint";
   static const remediations = "remediations";
@@ -114,16 +114,16 @@ class Routes {
             },
           ),
 
-          // /////// //
-          // REPORTS //
-          // /////// //
+          // /////////// //
+          // INSPECTIONS //
+          // /////////// //
 
           GoRoute(
-            name: Routes.reports,
-            path: "reports",
+            name: Routes.inspections,
+            path: "inspections",
             builder: (context, state) {
               String vehicleID = state.params["vehicleID"]!;
-              return ReportsPage(vehicleID);
+              return InspectionsPage(vehicleID);
             },
             routes: [
               // ////////////////// //

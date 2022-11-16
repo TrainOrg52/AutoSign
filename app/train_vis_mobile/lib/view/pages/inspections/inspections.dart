@@ -15,10 +15,10 @@ import 'package:train_vis_mobile/view/widgets/padded_custom_scroll_view.dart';
 
 ///Page for showing the list of reports associated with a train
 ///Currently contains dummy data just to demonstrate the UI
-class ReportsPage extends StatelessWidget {
+class InspectionsPage extends StatelessWidget {
   String vehicleID;
 
-  ReportsPage(this.vehicleID);
+  InspectionsPage(this.vehicleID);
 
   @override
   Widget build(BuildContext context) {

@@ -45,9 +45,9 @@ class VehicleActivityContainer extends StatelessWidget {
 
         const SizedBox(height: MySizes.spacing),
 
-        // /////// //
-        // REPORTS //
-        // /////// //
+        // /////////// //
+        // INSPECTIONS //
+        // /////////// //
 
         _buildActivityButton(
           text: "Inspections",
@@ -55,7 +55,7 @@ class VehicleActivityContainer extends StatelessWidget {
           onPressed: () {
             // navigating to reports page
             context.pushNamed(
-              Routes.reports,
+              Routes.inspections,
               params: {"vehicleID": vehicleID},
             );
           },
