@@ -93,12 +93,13 @@ class vehicleInspection:
     """
     @authors: Charlie Powell, Benjamin Sanati
     """
-    def __init__(self, id, timestamp, vehicleID, processingStatus, conformanceStatus):
+    def __init__(self, id, timestamp, vehicleID, processingStatus, conformanceStatus, location):
         self.id = id
         self.timestamp = timestamp
         self.vehicleID = vehicleID
         self.processingStatus = processingStatus
         self.conformanceStatus = conformanceStatus
+        self.location = location
 
     @staticmethod
     def from_doc(doc):
@@ -109,7 +110,8 @@ class vehicleInspection:
             data["timestamp"],
             data["vehicleID"],
             data["processingStatus"],
-            data["conformanceStatus"]
+            data["conformanceStatus"],
+            data["location"]
         )
 
     def to_dict(self):
@@ -117,7 +119,8 @@ class vehicleInspection:
             "timestamp": self.timestamp,
             "vehicleID": self.vehicleID,
             "processingStatus": self.processingStatus,
-            "conformanceStatus": self.conformanceStatus
+            "conformanceStatus": self.conformanceStatus,
+            "location": self.location
         }
 
     def update(self, db):

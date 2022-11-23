@@ -8,7 +8,10 @@ import torchvision.transforms as transforms
 from object_detector.inference import ObjectDetector
 
 """
-    @brief: Every 3 seconds, performs a get request from firestore and looks for any inspection walkthrough processing status fields that are 'pending'. It then iterates over each instance of the occurrence and then processes the inspection.
+    @brief: 
+        Every 3 seconds, performs a get request from firestore and looks for any inspection walkthrough processing status fields that are 'pending'. 
+        It then iterates over each instance of the occurrence and then processes the inspection.
+    
     @params: N/A
     @return: N/A
     @authors: Benjamin Sanati, Charlie Powell
@@ -42,7 +45,10 @@ def runServer():
 
 
 """
-    @brief: Processes each inspection walkthrough and uploads the processed results to firestore and storage. Uses the object detector followed by (non-optimal) predicted instance/ground-truth instance matching logic.
+    @brief: 
+        Processes each inspection walkthrough and uploads the processed results to firestore and storage. Uses the object detector followed by 
+        (non-optimal) predicted instance/ground-truth instance matching logic.
+    
     @params: 'inspection_walkthrough' is an instance of an inspection that is yet to be processed.
     @return: N/A
     @authors: Benjamin Sanati, Charlie Powell
@@ -93,6 +99,7 @@ def processInspectionWalkthrough(vehicle_inspection, vehicle):
         # STEP 2.3: PRE-PROCESSING MEDIA #
 
         image = Image.open(local_path)
+        w, h = image.size
         image = ImageOps.exif_transpose(image)
         image = resize(image)
         image.save(local_path)
@@ -102,44 +109,13 @@ def processInspectionWalkthrough(vehicle_inspection, vehicle):
         vehicle_checkpoints.append(vehicle_checkpoint)
         vehicle_checkpoint_signs.append(vehicle_checkpoint.signs)
 
-    """
-    for vehicle_inspection_id in checkpoint_inspections:
-        # STEP 2.1: GATHERING INSPECTION CHECKPOINT OBJECT AND CHECKPOINT OBJECT #
-
-        vehicle_checkpoint = checkpoint_inspections_collection.document(vehicle_inspection_id).get()
-        vehicle_checkpoint = CheckpointInspection.from_doc(vehicle_checkpoint)
-        #vehicle_checkpoints.append(vehicle_checkpoint)
-        #vehicle_checkpoint_signs.append(vehicle_checkpoint.signs)
-
-        # STEP 2.2: DOWNLOADING UNPROCESSED MEDIA FROM CLOUD STROAGE #
-
-        # defining path to Cloud Storage
-        storage_root = f"/{vehicle_inspection.vehicleID}/inspectionWalkthroughs/{vehicle_inspection.id}/{vehicle_checkpoint.id}"
-        storage_roots.append(storage_root)
-        storage_path = f"{storage_root}/unprocessed.png"
-        print(f"\tIdentified checkpoint {vehicle_checkpoint.id}")
-
-        # defining path to local storage
-        local_path = f"samples/images/{vehicle_checkpoint.id}.png"
-
-        # downloading image from firebase storage
-        storage.child(storage_path).download(local_path)
-
-        # STEP 2.3: PRE-PROCESSING MEDIA #
-
-        image = Image.open(local_path)
-        image = ImageOps.exif_transpose(image)
-        image = resize(image)
-        image.save(local_path)
-    """
-
     # STEP 2.4: PROCESSING MEDIA AND SAVING TO STORAGE #
 
     print("\tDetecting Signs...", flush=True)
 
     dst_root = fr'samples/images'
     local_root = fr'samples/processed_images'
-    _, identified_signs = obj_det(dst_root, local_root, storage, storage_roots)
+    _, identified_signs = obj_det(dst_root, local_root, storage, storage_roots, w, h)
 
     # STEP 2.5: COMPARE LOCATED LABELS TO EXPECTED #
 
@@ -210,7 +186,10 @@ def processInspectionWalkthrough(vehicle_inspection, vehicle):
 
 
 """
-    @brief: Performs setup of firebase firestore, storage and the initialization of YOLOv7. Calls the server once the setup is completed
+    @brief: 
+        Performs setup of firebase firestore, storage and the initialization of YOLOv7. 
+        Calls the server once the setup is completed.
+    
     @params: N/A
     @return: N/A
     @authors: Benjamin Sanati, Charlie Powell
@@ -255,7 +234,7 @@ if __name__ == "__main__":
     resize = transforms.Resize([1280, 1280])
 
     # initialize object detector
-    obj_det = ObjectDetector(image_size=1280, conf_thresh=0.55, iou_thresh=0.65, num_classes=11, view_img=False)
+    obj_det = ObjectDetector(image_size=1280, conf_thresh=0.7, iou_thresh=0.7, num_classes=11, view_img=False)
 
     print("Setup Complete!")
     print("-----------------------")

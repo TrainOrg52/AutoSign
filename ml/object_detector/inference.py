@@ -5,9 +5,13 @@ import ntpath
 import cv2
 import torch
 import torch.nn as nn
+import numpy as np
 from numpy import random
+from PIL import Image
 import sys
 from tqdm import tqdm
+
+from torchvision.transforms import transforms
 
 sys.path.insert(0, r'object_detector/yolov7')
 
@@ -17,6 +21,18 @@ from utils.general import check_img_size, check_requirements, check_imshow, non_
     scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path
 from utils.torch_utils import select_device, load_classifier, time_synchronized, TracedModel
 
+
+def resize_bbox(bbox, image_height, image_width):
+
+    x_scale = (image_height / 1280)
+    y_scale = (image_width / 1280)
+
+    bbox[0] *= x_scale
+    bbox[1] *= y_scale
+    bbox[2] *= x_scale
+    bbox[3] *= y_scale
+
+    return bbox
 
 
 class ObjectDetector(nn.Module):
@@ -65,20 +81,19 @@ class ObjectDetector(nn.Module):
         self.image_size = check_img_size(self.image_size, s=self.stride)  # check img_size
 
         # Get names and colors
-        self.names = ['In Emergency Pull Handle Down', 'No Smoking Or Vaping', 'Call For Aid', 'Push Button When Lit',
-                      'In Emergency Pull To Operate', 'First Aid Equipment', 'Fire Extinguisher Beneath The Seats',
-                      'Emergency Exit Forwards', 'Priority Space For Wheelchair Users',
-                      'Train-To-Track Evacuation Instructions',
-                      'Please Give Up This Seat For Someone Less Able To Stand Than You']
-        self.colours = [[random.randint(0, 255) for _ in range(3)] for _ in self.names]  # define random colours for each label in the dataset
+        self.names = ['Pull Handle Down', 'No Smoking', 'Call For Aid', 'Push Button', 'Pull To Operate', 'First Aid',
+                      'Fire Extinguisher', 'Emergency Exit', 'Priority Space', 'Evacuation Instructions',
+                      'Give Up Seat']
+        self.colours = [[random.randint(0, 255) for _ in range(3)] for _ in
+                        self.names]  # define random colours for each label in the dataset
 
         # model warmup
         self.model(
             torch.zeros(1, 3, self.image_size, self.image_size).to(self.device).type_as(next(self.model.parameters())))
-        
+
         sys.stdout = sys.__stdout__  # enable printing
 
-    def forward(self, data_src, processed_destination, storage, storage_roots):
+    def forward(self, data_src, processed_destination, storage, storage_roots, w, h):
         """
         @brief: Runs object detection model on each image in inspectionWalkthrough. Uploads processed images to firestore storage. Returns bbox coordinate and labels for each object in each image.
         Args:
@@ -118,19 +133,29 @@ class ObjectDetector(nn.Module):
 
             # save image with bbox predictions overlay
             p, s, im0, frame = path, '', im0s, getattr(dataset, 'frame', 0)
+
             # Rescale boxes from img_size to im0 size
             pred[:, :4] = scale_coords(img.shape[2:], pred[:, :4], im0.shape).round()
+
+            # resize image
+            resize_image = transforms.Resize([w, h])
+            im0 = np.array(resize_image(Image.fromarray(im0)))
 
             for info in pred:
                 # add bboxes around objects
                 box = info[:4]
                 label = int(info[-1])
+
+                # rescale bboxes
+                box = resize_bbox(box, h, w)
+
+                # add bboxes to image
                 cv2.rectangle(im0, (int(box[0]), int(box[1])), (int(box[2]), int(box[3])), tuple(self.colours[label]),
-                              5)
+                              10)
 
                 # add filled bboxes with object label above bboxes
                 c1, c2 = (int(box[0]), int(box[1])), (int(box[2]), int(box[3]))
-                line_thickness = 2  # line/font thickness
+                line_thickness = 5  # line/font thickness
                 tf = max(line_thickness - 1, 1)  # font thickness
                 t_size = cv2.getTextSize(self.names[label], 0, fontScale=line_thickness / 3, thickness=tf)[0]
                 c2 = int(box[0]) + t_size[0], int(box[1]) - t_size[1] - 3
