@@ -63,6 +63,4 @@ flutter:
           weight: 900
 
   # ASSETS #
-  assets:
-    - resources/images/707-012.png
-    - resources/images/checkpoint 1.png
+  #assets:
