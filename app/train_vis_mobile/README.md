@@ -1,3 +1,0 @@
-# TrainVis Mobile Application
-
-// TODO
