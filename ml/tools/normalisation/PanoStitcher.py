@@ -2,9 +2,9 @@
 import cv2, os
 import imutils
 import numpy as np
-from ml.media_handling.normalisation.FeatureMap import FeatureMap
+from ml.tools.normalisation.FeatureMap import FeatureMap
 import matplotlib.pyplot as plt
-from ml.media_handling.normalisation.Normalise import Normalise
+from ml.tools.normalisation.Normalise import Normalise
 
 class PanoStitcher:
 

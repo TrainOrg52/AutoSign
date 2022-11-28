@@ -1,7 +1,7 @@
 import os
 import cv2
 import numpy as np
-from ml.media_handling.normalisation.FeatureMap import FeatureMap
+from ml.tools.normalisation.FeatureMap import FeatureMap
 
 class Normalise:
 
