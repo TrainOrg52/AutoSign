@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "321213051352",
+    "project_id": "train-vis",
+    "storage_bucket": "train-vis.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:321213051352:android:7bdbc413a9403b539a82ad",
+        "android_client_info": {
+          "package_name": "com.elec6200.group52.auto_sign_mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "321213051352-ogdk3lru3j7kt4ej1qb3phpbd2htlesd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUEUOS6nxZfxusRAImof0nYdAr4YRG_Nk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "321213051352-ogdk3lru3j7kt4ej1qb3phpbd2htlesd.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "321213051352-fgnc9gjint6s74tfg7ccbqok2guslb63.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "ssad",
+                "app_store_id": "123"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

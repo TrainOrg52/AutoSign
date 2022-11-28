@@ -1,0 +1,66 @@
+name: auto_sign_mobile
+description: Mobile application for the AutoSign project.
+
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.18.2 <3.0.0"
+
+dependencies:
+
+  flutter:
+    sdk: flutter
+
+  #routing
+  go_router: ^5.1.5 # application routing
+
+  # firebase
+  firebase_core: ^2.1.1 # main firebase packages
+  cloud_firestore: ^4.0.4 # Firebase Firestore
+  firebase_storage: ^11.0.4 # Firebase Storage
+
+  # camera
+  camera: ^0.10.0+4 # access to device camera
+  image: ^3.2.2 # image processing
+
+  # Cosmetic
+  font_awesome_flutter: ^10.2.1 # custom ucons
+  percent_indicator: ^4.2.2 # custom percent indicator widgets
+  intl: ^0.17.0 # language translation
+
+dev_dependencies:
+  flutter_lints: ^2.0.1
+  flutter_test:
+    sdk: flutter
+
+# The following section is specific to Flutter packages.
+flutter:
+  uses-material-design: true
+
+  # FONTS #
+  fonts:
+    - family: Poppins
+      fonts:
+        - asset: resources/fonts/poppins/Poppins-Light.ttf
+          weight: 100
+        - asset: resources/fonts/poppins/Poppins-ExtraLight.ttf
+          weight: 200
+        - asset: resources/fonts/poppins/Poppins-Light.ttf
+          weight: 300
+        - asset: resources/fonts/poppins/Poppins-Regular.ttf
+          weight: 400
+        - asset: resources/fonts/poppins/Poppins-Medium.ttf
+          weight: 500
+        - asset: resources/fonts/poppins/Poppins-SemiBold.ttf
+          weight: 600
+        - asset: resources/fonts/poppins/Poppins-Bold.ttf
+          weight: 700
+        - asset: resources/fonts/poppins/Poppins-ExtraBold.ttf
+          weight: 800
+        - asset: resources/fonts/poppins/Poppins-Black.ttf
+          weight: 900
+
+  # ASSETS #
+  #assets:
