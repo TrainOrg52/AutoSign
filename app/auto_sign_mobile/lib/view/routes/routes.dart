@@ -6,6 +6,7 @@ import 'package:auto_sign_mobile/view/pages/inspections/summary.dart';
 import 'package:auto_sign_mobile/view/pages/profile/profile_page.dart';
 import 'package:auto_sign_mobile/view/pages/remediate/checkout/checkout_page.dart';
 import 'package:auto_sign_mobile/view/pages/remediate/remediate_page.dart';
+import 'package:auto_sign_mobile/view/pages/remediate/sign_remediate/sign_remediate_page.dart';
 import 'package:auto_sign_mobile/view/pages/remediations/remediation_fix.dart';
 import 'package:auto_sign_mobile/view/pages/remediations/remediation_summary.dart';
 import 'package:auto_sign_mobile/view/pages/remediations/remediations.dart';
@@ -26,6 +27,7 @@ class Routes {
   static const status = "status";
   static const inspect = "inspect";
   static const remediate = "remediate";
+  static const signRemediate = "signRemediate";
   static const checkout = "checkout";
   static const inspections = "inspections";
   static const vehicleInspection = "inspectionWalkthrough";
@@ -135,7 +137,14 @@ class Routes {
               // SIGN REMEDIATE //
               // ////////////// //
 
-              // TODO
+              GoRoute(
+                name: Routes.signRemediate,
+                path: "sign", // TODO give this a proper name
+                builder: (context, state) {
+                  // displaying pagee
+                  return const SignRemediatePage();
+                },
+              ),
             ],
           ),
 

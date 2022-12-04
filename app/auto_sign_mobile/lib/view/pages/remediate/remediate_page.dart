@@ -75,7 +75,7 @@ class RemediatePage extends StatelessWidget {
                     // /////////////////////////////// //
 
                     SliverToBoxAdapter(
-                        child: _buildCheckpointRemediateContainer()),
+                        child: _buildCheckpointRemediateContainer(context)),
                   ],
                 ),
 
@@ -151,7 +151,7 @@ class RemediatePage extends StatelessWidget {
   }
 
   /// TODO
-  Widget _buildCheckpointRemediateContainer() {
+  Widget _buildCheckpointRemediateContainer(BuildContext context) {
     return ColoredContainer(
       color: MyColors.backgroundSecondary,
       padding: MySizes.padding,
@@ -255,7 +255,10 @@ class RemediatePage extends StatelessWidget {
                 iconData: FontAwesomeIcons.hammer,
                 onPressed: () {
                   // remediating the issue
-                  // TODO
+                  context.pushNamed(
+                    Routes.signRemediate,
+                    params: {"vehicleID": vehicleID},
+                  );
                 },
               ),
             ],

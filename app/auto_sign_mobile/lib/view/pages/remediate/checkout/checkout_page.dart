@@ -91,7 +91,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   // /////// //
 
                   OrderSummaryContainer(
-                    onSubmit: _onSubmit,
+                    onSubmit: _handleSubmit,
                   ),
 
                   // ////// //
@@ -113,7 +113,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   // ////////////// //
 
   // TODO
-  Future<void> _onSubmit() async {
+  Future<void> _handleSubmit() async {
     // navigating to the submit page
     pageController.nextPage(
       duration: const Duration(milliseconds: 500),
@@ -126,6 +126,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     });
 
     // submiting order
+    // TODO Do this properly - just a dummy wait at the moment
     await Future.delayed(const Duration(seconds: 2));
 
     // updating state
