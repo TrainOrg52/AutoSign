@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
 import 'package:auto_sign_mobile/model/vehicle/checkpoint.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
@@ -122,12 +120,6 @@ class _CheckpointInspectionCapturePageViewState
               // /////// //
 
               _buildCapturePage(),
-
-              // ////// //
-              // REVIEW //
-              // ////// //
-
-              _buildReviewPage(),
             ],
           ),
         ),
@@ -198,80 +190,11 @@ class _CheckpointInspectionCapturePageViewState
           this.capturePath = capturePath;
         });
 
-        // navigating to review page
-        pageController.animateToPage(
-          2,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.ease,
+        // submitting the checkpoint inspection to the callback
+        widget.onCheckpointInspectionCaptured(
+          capturePath,
         );
       },
-    );
-  }
-
-  /// Builds the page that allows the user to review the image of the checkpoint
-  /// that they have captured and retake/confirm it.
-  Widget _buildReviewPage() {
-    return Column(
-      children: [
-        const Spacer(),
-
-        // ////////////// //
-        // CAPTURED IMAGE //
-        // ////////////// //
-
-        Expanded(
-          flex: 12,
-          child: BorderedContainer(
-            isDense: true,
-            backgroundColor: Colors.transparent,
-            padding: const EdgeInsets.all(MySizes.paddingValue),
-            child: Image.file(File(capturePath)),
-          ),
-        ),
-
-        const Spacer(),
-
-        // /////// //
-        // ACTIONS //
-        // /////// //
-
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // ////// //
-            // RETAKE //
-            // ////// //
-
-            MyTextButton.secondary(
-              text: "Retake",
-              onPressed: () {
-                // navigating back to the capture page
-                pageController.animateToPage(
-                  1,
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.ease,
-                );
-              },
-            ),
-
-            const SizedBox(width: MySizes.spacing),
-
-            // //// //
-            // NEXT //
-            // //// //
-
-            MyTextButton.primary(
-              text: "Next",
-              onPressed: () {
-                // submitting the checkpoint inspection to the callback
-                widget.onCheckpointInspectionCaptured(
-                  capturePath,
-                );
-              },
-            )
-          ],
-        ),
-      ],
     );
   }
 }
