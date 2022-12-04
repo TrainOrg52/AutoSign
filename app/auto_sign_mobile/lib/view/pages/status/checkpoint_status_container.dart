@@ -234,6 +234,7 @@ class CheckpointStatusContainer extends StatelessWidget {
             // ACTION TAKEN //
             // //////////// //
 
+            // TODO needs to be re-done for the proper remediate data model
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

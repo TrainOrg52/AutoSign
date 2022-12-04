@@ -61,6 +61,7 @@ class _CheckpointStatusListState extends State<CheckpointStatusList> {
       builder: (context, checkpoints) {
         return ListView.builder(
           shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
           itemCount: checkpoints.length,
           itemBuilder: ((context, index) {
             return Column(

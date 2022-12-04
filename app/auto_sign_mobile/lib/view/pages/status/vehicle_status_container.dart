@@ -68,7 +68,7 @@ class VehicleStatusContainer extends StatelessWidget {
               backgroundColor: vehicle.conformanceStatus.color,
               borderColor: vehicle.conformanceStatus.color,
               textColor: MyColors.antiPrimary,
-              text: "Start Remediation",
+              text: "Remediate",
               onPressed: () {
                 // navigating to status
                 context.pushNamed(
