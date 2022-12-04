@@ -176,35 +176,10 @@ class VehicleActionContainer extends StatelessWidget {
   /// Displays a confirmation dialog to ensure the user would like to carry out
   /// a remediation, and if so, navigates the user to the remediate page.
   Future<void> _handleRemediate(BuildContext context) async {
-    // displaying confirmation dialog
-    bool result = await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return const ConfirmationDialog(
-          title: "Start Remediation",
-          message:
-              "Are you sure you want to start a remediation? This will overwrite the existing status of the vehicle.",
-          falseText: "No",
-          trueText: "Yes",
-          trueBackgroundColor: MyColors.green,
-          trueTextColor: MyColors.antiPrimary,
-        );
-      },
+    // navigating to remediate page
+    context.pushNamed(
+      Routes.remediate,
+      params: {"vehicleID": vehicleID},
     );
-
-    // acting based on result of dialog
-    if (result) {
-      // result true -> navigate to inspect
-
-      // navigating to remediate page
-      context.pushNamed(
-        Routes.remediate,
-        params: {"vehicleID": vehicleID},
-      );
-    } else {
-      // result false -> do nothing
-
-      // nothing
-    }
   }
 }
