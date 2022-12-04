@@ -187,15 +187,15 @@ class MyIconButton extends StatelessWidget {
       borderRadius: borderRadius,
       iconSize: iconSize,
       // colors
-      iconColor: MyColors.antiNegative,
-      backgroundColor: MyColors.negative,
+      iconColor: MyColors.negative,
+      backgroundColor: Colors.transparent,
       borderColor: Colors.transparent,
     );
   }
 
-  // /// //
+  // //// //
   // BACK //
-  // /// //
+  // //// //
 
   /// Back icon button.
   static MyIconButton back({

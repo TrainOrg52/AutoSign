@@ -64,9 +64,9 @@ class MyTextField extends StatelessWidget {
     );
   }
 
-  // /////// //
-  // PRIMARY //
-  // /////// //
+  // ////// //
+  // NORMAL //
+  // ////// //
 
   /// Primary icon button.
   static MyTextField normal({
@@ -74,8 +74,6 @@ class MyTextField extends StatelessWidget {
     required TextEditingController controller,
     String? hintText,
     // MySizes
-    double? height,
-    double? width,
     EdgeInsetsGeometry? padding,
     double? borderWidth,
     double? borderRadius,
@@ -91,6 +89,32 @@ class MyTextField extends StatelessWidget {
       borderRadius: borderRadius,
       // colors
       borderColor: MyColors.lineColor,
+    );
+  }
+
+  // /////// //
+  // PRIMARY //
+  // /////// //
+
+  /// Primary icon button.
+  static MyTextField plain({
+    // member variables
+    required TextEditingController controller,
+    String? hintText,
+    // MySizes
+    double? borderWidth,
+    double? borderRadius,
+    double? iconSize,
+  }) {
+    return MyTextField._(
+      // member variables
+      controller: controller,
+      hintText: hintText,
+      // MySizes
+      borderWidth: 0,
+      borderRadius: 0,
+      // colors
+      borderColor: Colors.transparent,
     );
   }
 }

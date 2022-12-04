@@ -1,4 +1,5 @@
 import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
+import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
@@ -10,6 +11,7 @@ import 'package:auto_sign_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:auto_sign_mobile/view/widgets/padded_custom_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 /// Page to carry out a remediation for a train vehicle.
 ///
@@ -85,7 +87,7 @@ class RemediatePage extends StatelessWidget {
                   alignment: Alignment.bottomCenter,
                   child: Padding(
                     padding: const EdgeInsets.all(MySizes.paddingValue * 2),
-                    child: _buildCheckoutContainer(),
+                    child: _buildCheckoutContainer(context),
                   ),
                 ),
               ],
@@ -264,7 +266,7 @@ class RemediatePage extends StatelessWidget {
   }
 
   /// TODO
-  Widget _buildCheckoutContainer() {
+  Widget _buildCheckoutContainer(BuildContext context) {
     return BorderedContainer(
       borderColor: MyColors.blue,
       backgroundColor: MyColors.blueAccent,
@@ -300,7 +302,10 @@ class RemediatePage extends StatelessWidget {
             text: "Checkout",
             onPressed: () {
               // going to the checkout
-              // TODO
+              context.pushNamed(
+                Routes.checkout,
+                params: {"vehicleID": vehicleID},
+              );
             },
           ),
         ],

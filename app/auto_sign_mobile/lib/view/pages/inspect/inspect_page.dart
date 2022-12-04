@@ -92,7 +92,7 @@ class _InspectPageState extends State<InspectPage> {
       // /////// //
 
       appBar: AppBar(
-        leading: !isSubmitted
+        leading: !isOnSubmitPage
             ? MyIconButton.secondary(
                 iconData: FontAwesomeIcons.xmark,
                 iconSize: MySizes.largeIconSize,

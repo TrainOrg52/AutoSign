@@ -4,6 +4,7 @@ import 'package:auto_sign_mobile/view/pages/inspections/image_view.dart';
 import 'package:auto_sign_mobile/view/pages/inspections/inspections.dart';
 import 'package:auto_sign_mobile/view/pages/inspections/summary.dart';
 import 'package:auto_sign_mobile/view/pages/profile/profile_page.dart';
+import 'package:auto_sign_mobile/view/pages/remediate/checkout/checkout_page.dart';
 import 'package:auto_sign_mobile/view/pages/remediate/remediate_page.dart';
 import 'package:auto_sign_mobile/view/pages/remediations/remediation_fix.dart';
 import 'package:auto_sign_mobile/view/pages/remediations/remediation_summary.dart';
@@ -25,6 +26,7 @@ class Routes {
   static const status = "status";
   static const inspect = "inspect";
   static const remediate = "remediate";
+  static const checkout = "checkout";
   static const inspections = "inspections";
   static const vehicleInspection = "inspectionWalkthrough";
   static const checkpointInspection = "inspectionCheckpoint";
@@ -112,6 +114,29 @@ class Routes {
               // displaying remediate page
               return RemediatePage(vehicleID: vehicleID);
             },
+            routes: [
+              // //////// //
+              // CHECKOUT //
+              // //////// //
+
+              GoRoute(
+                name: Routes.checkout,
+                path: "checkout",
+                builder: (context, state) {
+                  // getting params from state
+                  String vehicleID = state.params["vehicleID"]!;
+
+                  // displaying pagee
+                  return CheckoutPage(vehicleID: vehicleID);
+                },
+              ),
+
+              // ////////////// //
+              // SIGN REMEDIATE //
+              // ////////////// //
+
+              // TODO
+            ],
           ),
 
           // /////////// //
