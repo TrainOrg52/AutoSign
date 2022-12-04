@@ -1,3 +1,4 @@
+import 'package:auto_sign_mobile/model/status/conformance_status.dart';
 import 'package:auto_sign_mobile/model/vehicle/vehicle.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
@@ -86,37 +87,27 @@ class VehicleStatusOverviewContainer extends StatelessWidget {
                 textColor: MyColors.antiPrimary,
                 text: "View",
                 onPressed: () {
-                  // navigating to inspection page
-                  context.pushNamed(
-                    Routes.vehicleInspection,
-                    params: {
-                      "vehicleID": vehicle.id,
-                      "vehicleInspectionID": vehicle.lastVehicleInspectionID,
-                    },
-                  );
+                  // navigating based on conformance status
+                  if (vehicle.conformanceStatus == ConformanceStatus.pending) {
+                    // conformance status pending -> go to most recent inspection
 
-                  // TODO removed for deliverable 1 (remediation)
-                  // // navigating based on conformance status
-                  // if (vehicle.conformanceStatus == ConformanceStatus.pending) {
-                  //   // conformance status pending -> go to most recent inspection
+                    // navigating to inspection page
+                    context.pushNamed(
+                      Routes.vehicleInspection,
+                      params: {
+                        "vehicleID": vehicle.id,
+                        "vehicleInspectionID": vehicle.lastVehicleInspectionID,
+                      },
+                    );
+                  } else {
+                    // conformance status not pending -> go to status page
 
-                  //   // navigating to inspection page
-                  //   context.pushNamed(
-                  //     Routes.vehicleInspection,
-                  //     params: {
-                  //       "vehicleID": vehicle.id,
-                  //       "vehicleInspectionID": vehicle.lastVehicleInspectionID,
-                  //     },
-                  //   );
-                  // } else {
-                  //   // conformance status not pending -> go to status page
-
-                  //   // navigating to status page
-                  //   context.pushNamed(
-                  //     Routes.status,
-                  //     params: {"vehicleID": vehicle.id},
-                  //   );
-                  // }
+                    // navigating to status page
+                    context.pushNamed(
+                      Routes.status,
+                      params: {"vehicleID": vehicle.id},
+                    );
+                  }
                 },
               ),
             ],

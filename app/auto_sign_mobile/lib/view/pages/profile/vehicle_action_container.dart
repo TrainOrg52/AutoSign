@@ -66,23 +66,22 @@ class VehicleActionContainer extends StatelessWidget {
               ),
             ),
 
-            // TODO removed for deliverable 1 (remediation)
-            // const SizedBox(width: MySizes.spacing),
+            const SizedBox(width: MySizes.spacing),
 
             // ///////// //
             // REMEDIATE //
             // ///////// //
 
-            // Expanded(
-            //   child: _buildActionButton(
-            //     text: "Remediate",
-            //     icon: FontAwesomeIcons.hammer,
-            //     onPressed: () {
-            //       // handling the action
-            //       _handleRemediate(context);
-            //     },
-            //   ),
-            // ),
+            Expanded(
+              child: _buildActionButton(
+                text: "Remediate",
+                icon: FontAwesomeIcons.hammer,
+                onPressed: () {
+                  // handling the action
+                  _handleRemediate(context);
+                },
+              ),
+            ),
           ],
         ),
       ],

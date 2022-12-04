@@ -61,24 +61,23 @@ class VehicleActivityContainer extends StatelessWidget {
           },
         ),
 
-        // TODO removed for deliverable 1 (remediation)
-        // const SizedBox(height: MySizes.spacing),
+        const SizedBox(height: MySizes.spacing),
 
         // //////////// //
         // REMEDIATIONS //
         // //////////// //
 
-        // _buildActivityButton(
-        //   text: "Remediations",
-        //   icon: FontAwesomeIcons.hammer,
-        //   onPressed: () {
-        //     // navigating to remediationss page
-        //     context.pushNamed(
-        //       Routes.remediations,
-        //       params: {"vehicleID": vehicleID},
-        //     );
-        //   },
-        // ),
+        _buildActivityButton(
+          text: "Remediations",
+          icon: FontAwesomeIcons.hammer,
+          onPressed: () {
+            // navigating to remediationss page
+            context.pushNamed(
+              Routes.remediations,
+              params: {"vehicleID": vehicleID},
+            );
+          },
+        ),
       ],
     );
   }
