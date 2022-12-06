@@ -1,7 +1,7 @@
 import 'package:auto_sign_mobile/controller/inspection_controller.dart';
 import 'package:auto_sign_mobile/main.dart';
+import 'package:auto_sign_mobile/model/enums/processing_status.dart';
 import 'package:auto_sign_mobile/model/inspection/vehicle_inspection.dart';
-import 'package:auto_sign_mobile/model/status/processing_status.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';

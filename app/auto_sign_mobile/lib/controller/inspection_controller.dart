@@ -2,9 +2,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
+import 'package:auto_sign_mobile/model/enums/processing_status.dart';
 import 'package:auto_sign_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:auto_sign_mobile/model/inspection/vehicle_inspection.dart';
-import 'package:auto_sign_mobile/model/status/processing_status.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 

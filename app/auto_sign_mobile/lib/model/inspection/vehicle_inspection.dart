@@ -1,6 +1,6 @@
+import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
+import 'package:auto_sign_mobile/model/enums/processing_status.dart';
 import 'package:auto_sign_mobile/model/model_object.dart';
-import 'package:auto_sign_mobile/model/status/conformance_status.dart';
-import 'package:auto_sign_mobile/model/status/processing_status.dart';
 import 'package:auto_sign_mobile/model/vehicle/vehicle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -23,7 +23,6 @@ class VehicleInspection extends ModelObject {
     this.location = "",
     ProcessingStatus? processingStatus,
     ConformanceStatus? conformanceStatus,
-    Map<String, ConformanceStatus>? checkpoints,
   })  : processingStatus = processingStatus ?? ProcessingStatus.uploading,
         conformanceStatus = conformanceStatus ?? ConformanceStatus.pending,
         super(id: id, timestamp: timestamp);

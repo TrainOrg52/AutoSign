@@ -109,7 +109,7 @@ ListView _buildReportSummary(BuildContext context,
 Widget dateStatusWidget(bool inDate) {
   // determining properties for container
   Color borderColor = inDate ? MyColors.green : MyColors.red;
-  Color backgroundColor = inDate ? MyColors.greenAcent : MyColors.redAccent;
+  Color backgroundColor = inDate ? MyColors.greenAccent : MyColors.redAccent;
   IconData iconData = inDate
       ? FontAwesomeIcons.solidCircleCheck
       : FontAwesomeIcons.circleExclamation;

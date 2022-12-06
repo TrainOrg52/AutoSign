@@ -145,7 +145,7 @@ Widget remediatedWidget() {
   return BorderedContainer(
       width: 160,
       height: 45,
-      backgroundColor: MyColors.greenAcent,
+      backgroundColor: MyColors.greenAccent,
       borderColor: MyColors.green,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,

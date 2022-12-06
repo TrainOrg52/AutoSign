@@ -1,4 +1,4 @@
-import 'package:auto_sign_mobile/model/status/conformance_status.dart';
+import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
 import 'package:auto_sign_mobile/model/vehicle/checkpoint.dart';
 import 'package:auto_sign_mobile/model/vehicle/vehicle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

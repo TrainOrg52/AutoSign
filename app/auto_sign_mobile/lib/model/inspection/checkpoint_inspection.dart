@@ -1,5 +1,6 @@
+import 'package:auto_sign_mobile/model/enums/capture_type.dart';
+import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
 import 'package:auto_sign_mobile/model/model_object.dart';
-import 'package:auto_sign_mobile/model/status/conformance_status.dart';
 import 'package:auto_sign_mobile/model/vehicle/checkpoint.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -13,6 +14,7 @@ class CheckpointInspection extends ModelObject {
   int index; // index o f checkpoint in vehicle
   ConformanceStatus conformanceStatus; // conformance status of checkpoint
   Map<String, ConformanceStatus> signs; // map of signs to conformance status
+  CaptureType captureType; // type of media captured in inspection
 
   // helper (NOT TO BE SENT TO FIRESTORE)
   String capturePath;
@@ -29,10 +31,12 @@ class CheckpointInspection extends ModelObject {
     this.checkpointID = "",
     this.title = "",
     this.index = 0,
+    CaptureType? captureType,
     ConformanceStatus? conformanceStatus,
     Map<String, ConformanceStatus>? signs,
     this.capturePath = "",
-  })  : conformanceStatus = conformanceStatus ?? ConformanceStatus.pending,
+  })  : captureType = captureType ?? CaptureType.photo,
+        conformanceStatus = conformanceStatus ?? ConformanceStatus.pending,
         signs = signs ?? {},
         super(id: id, timestamp: timestamp);
 
@@ -51,6 +55,7 @@ class CheckpointInspection extends ModelObject {
       checkpointID: checkpoint.id,
       title: checkpoint.title,
       index: checkpoint.index,
+      captureType: checkpoint.captureType,
       conformanceStatus: ConformanceStatus.pending,
       signs: {
         for (String signID in checkpoint.signs)
@@ -85,6 +90,7 @@ class CheckpointInspection extends ModelObject {
       checkpointID: data?["checkpointID"],
       title: data?["title"],
       index: data?["index"],
+      captureType: CaptureType.fromString(data?["captureType"]),
       conformanceStatus:
           ConformanceStatus.fromString(data?["conformanceStatus"]),
       signs: signs,
@@ -102,6 +108,7 @@ class CheckpointInspection extends ModelObject {
       "checkpointID": checkpointID,
       "title": title,
       "index": index,
+      "captureType": captureType.toString(),
       "conformanceStatus": conformanceStatus.toString(),
       "signs": signs.map(
         (signID, conformanceStatus) => MapEntry(

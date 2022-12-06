@@ -40,6 +40,10 @@ class ConformanceStatus {
       return conforming;
     } else if (status == nonConforming.title) {
       return nonConforming;
+    } else if (status == missing.title) {
+      return missing;
+    } else if (status == damaged.title) {
+      return damaged;
     } else if (status == error.title) {
       return error;
     }
@@ -66,6 +70,8 @@ class ConformanceStatus {
     pending,
     conforming,
     nonConforming,
+    missing,
+    damaged,
     error,
   ];
 
@@ -83,7 +89,7 @@ class ConformanceStatus {
     title: "conforming",
     description: "Conforming",
     color: MyColors.green,
-    accentColor: MyColors.greenAcent,
+    accentColor: MyColors.greenAccent,
     iconData: FontAwesomeIcons.solidCircleCheck,
   );
 
@@ -91,6 +97,24 @@ class ConformanceStatus {
   static const ConformanceStatus nonConforming = ConformanceStatus._(
     title: "non-conforming",
     description: "Non-Conforming",
+    color: MyColors.negative,
+    accentColor: MyColors.negativeAccent,
+    iconData: FontAwesomeIcons.circleExclamation,
+  );
+
+  // missing
+  static const ConformanceStatus missing = ConformanceStatus._(
+    title: "missing",
+    description: "Missing",
+    color: MyColors.negative,
+    accentColor: MyColors.negativeAccent,
+    iconData: FontAwesomeIcons.circleExclamation,
+  );
+
+  // damaged
+  static const ConformanceStatus damaged = ConformanceStatus._(
+    title: "damaged",
+    description: "Damaged",
     color: MyColors.negative,
     accentColor: MyColors.negativeAccent,
     iconData: FontAwesomeIcons.circleExclamation,

@@ -104,7 +104,7 @@ extension TimestampExtension on int {
     DateTime date = DateTime.fromMillisecondsSinceEpoch(this * 1000);
 
     // defining format of date time object
-    DateFormat dateFormat = DateFormat('dd/MM/yy - HH:mm ');
+    DateFormat dateFormat = DateFormat('dd/MM/yy');
 
     // formatting date-time object
     String formattedDate = dateFormat.format(date);

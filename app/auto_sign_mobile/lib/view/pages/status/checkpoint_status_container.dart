@@ -260,7 +260,7 @@ class CheckpointStatusContainer extends StatelessWidget {
                       const BorderedContainer(
                         isDense: true,
                         borderColor: MyColors.green,
-                        backgroundColor: MyColors.greenAcent,
+                        backgroundColor: MyColors.greenAccent,
                         padding: EdgeInsets.all(MySizes.paddingValue / 2),
                         child: Text(
                           "Remediated",

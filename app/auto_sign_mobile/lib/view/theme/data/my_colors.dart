@@ -38,7 +38,7 @@ class MyColors {
 
   // MAIN COLORS //
   static const Color green = Color.fromARGB(255, 104, 214, 155);
-  static const Color greenAcent = Color.fromARGB(255, 193, 232, 211);
+  static const Color greenAccent = Color.fromARGB(255, 193, 232, 211);
   static const Color amber = Color.fromARGB(255, 226, 162, 126);
   static const Color amberAccent = Color.fromARGB(255, 234, 202, 182);
   static const Color red = Color.fromARGB(255, 217, 119, 117);

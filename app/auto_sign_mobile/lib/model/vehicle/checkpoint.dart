@@ -1,5 +1,7 @@
+import 'package:auto_sign_mobile/model/enums/capture_type.dart';
+import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
+import 'package:auto_sign_mobile/model/enums/remediation_status.dart';
 import 'package:auto_sign_mobile/model/model_object.dart';
-import 'package:auto_sign_mobile/model/status/conformance_status.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// A checkpoint within the gold standard walkthrough of a given train vehicle.
@@ -10,9 +12,11 @@ class Checkpoint extends ModelObject {
   String prompt; // prompt shown when capturing the checkpoint
   int index; // index for the checkpoint within the vehicle
   List<String> signs; // list of signs expected within the checkpoint
+  CaptureType captureType; // capture type for the checkpoint
   ConformanceStatus conformanceStatus; // current status of the checkpoint
   String lastVehicleInspectionID; // last inspection
   ConformanceStatus lastVehicleInspectionResult; // result of last inspection
+  RemediationStatus remediationStatus; // remediation status of the checkpoint
   String? lastVehicleRemediationID; // last remediation (if exists)
 
   // ///////////////// //
@@ -27,14 +31,18 @@ class Checkpoint extends ModelObject {
     this.prompt = "",
     this.index = 0,
     List<String>? signs,
+    CaptureType? captureType,
     ConformanceStatus? conformanceStatus,
     this.lastVehicleInspectionID = "",
     ConformanceStatus? lastVehicleInspectionResult,
+    RemediationStatus? remediationStatus,
     this.lastVehicleRemediationID,
-  })  : signs = signs ?? [],
+  })  : captureType = captureType ?? CaptureType.photo,
+        signs = signs ?? [],
         conformanceStatus = conformanceStatus ?? ConformanceStatus.pending,
         lastVehicleInspectionResult =
             lastVehicleInspectionResult ?? ConformanceStatus.pending,
+        remediationStatus = remediationStatus ?? RemediationStatus.none,
         super(id: id, timestamp: timestamp);
 
   // ///////// //
@@ -55,12 +63,15 @@ class Checkpoint extends ModelObject {
       title: data?["title"],
       prompt: data?["prompt"],
       index: data?["index"],
+      captureType: CaptureType.fromString(data?["captureType"]),
       signs: List.from(data?["signs"]),
       conformanceStatus:
           ConformanceStatus.fromString(data?["conformanceStatus"]),
       lastVehicleInspectionID: data?["lastVehicleInspectionID"],
       lastVehicleInspectionResult:
           ConformanceStatus.fromString(data?["lastVehicleInspectionResult"]),
+      remediationStatus:
+          RemediationStatus.fromString(data?["remediationStatus"]),
       lastVehicleRemediationID: data?["lastVehicleRemediationID"] == "null"
           ? null
           : data?["lastVehicleRemediationID"],
@@ -77,10 +88,12 @@ class Checkpoint extends ModelObject {
       "title": title,
       "prompt": prompt,
       "index": index,
+      "captureType": captureType.toString(),
       "signs": signs,
       "conformanceStatus": conformanceStatus.toString(),
       "lastVehicleInspectionID": lastVehicleInspectionID,
       "lastVehicleInspectionResult": lastVehicleInspectionResult,
+      "remediationStatus": remediationStatus.toString(),
       "lastVehicleRemediationID": lastVehicleRemediationID,
     };
   }

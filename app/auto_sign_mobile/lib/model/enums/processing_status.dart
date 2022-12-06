@@ -100,7 +100,7 @@ class ProcessingStatus {
   static const ProcessingStatus processed = ProcessingStatus._(
     title: "processed",
     color: MyColors.green,
-    accentColor: MyColors.greenAcent,
+    accentColor: MyColors.greenAccent,
     iconData: FontAwesomeIcons.solidCircleCheck,
   );
 

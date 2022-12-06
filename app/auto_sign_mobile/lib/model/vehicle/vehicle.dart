@@ -1,5 +1,5 @@
+import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
 import 'package:auto_sign_mobile/model/model_object.dart';
-import 'package:auto_sign_mobile/model/status/conformance_status.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// A single train vehicle.
@@ -20,7 +20,6 @@ class Vehicle extends ModelObject {
     this.title = "",
     this.location = "",
     ConformanceStatus? conformanceStatus,
-    List<String>? checkpoints,
     this.lastVehicleInspectionID = "",
   })  : conformanceStatus = conformanceStatus ?? ConformanceStatus.pending,
         super(id: id, timestamp: timestamp);
