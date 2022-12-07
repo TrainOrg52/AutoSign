@@ -212,29 +212,15 @@ class InspectionController {
 
   /// Returns the download URL for the unprocessed image of an
   /// [InspectionCheckpoint].
-  Stream<String> getUnprocessedCheckpointInspectionImageDownloadURL(
+  Stream<String> getCheckpointInspectionCaptureDownloadURL(
     String vehicleID,
     String vehicleInspectionID,
     String checkpointInspectionID,
+    CaptureType captureType,
   ) {
     // defining reference to Storage
     Reference reference = FirebaseStorage.instance.ref(
-        "$vehicleID/vehicleInspections/$vehicleInspectionID/$checkpointInspectionID/unprocessed.png");
-
-    // returning download URL
-    return reference.getDownloadURL().asStream();
-  }
-
-  /// Returns the download URL for the processed image of an
-  /// [InspectionCheckpoint].
-  Stream<String> getProcessedCheckpointInspectionImageDownloadURL(
-    String vehicleID,
-    String vehicleInspectionID,
-    String checkpointInspectionID,
-  ) {
-    // defining reference to Storage
-    Reference reference = FirebaseStorage.instance.ref(
-        "$vehicleID/vehicleInspections/$vehicleInspectionID/$checkpointInspectionID/processed.png");
+        "$vehicleID/vehicleInspections/$vehicleInspectionID/$checkpointInspectionID.${captureType.fileExtension}");
 
     // returning download URL
     return reference.getDownloadURL().asStream();

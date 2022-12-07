@@ -9,6 +9,7 @@ import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
 import 'package:auto_sign_mobile/view/theme/widgets/my_icon_button.dart';
 import 'package:auto_sign_mobile/view/widgets/bordered_container.dart';
+import 'package:auto_sign_mobile/view/widgets/capture_preview.dart';
 import 'package:auto_sign_mobile/view/widgets/colored_container.dart';
 import 'package:auto_sign_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:auto_sign_mobile/view/widgets/padded_custom_scroll_view.dart';
@@ -135,13 +136,13 @@ class ImageViewState extends State<ImageView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(children: [
-          Text(
+          const Text(
             "Report",
             style: MyTextStyles.headerText2,
           ),
-          Spacer(),
+          const Spacer(),
           IconButton(
-            icon: Icon(
+            icon: const Icon(
               FontAwesomeIcons.pencil,
               size: 25,
             ),
@@ -251,9 +252,16 @@ class ImageViewState extends State<ImageView> {
               const SizedBox(height: MySizes.spacing),
               toggleStates[0] == false
                   ? expectedImage(
-                      vehicleID, checkpointID, checkpointInspection.captureType)
+                      vehicleID,
+                      checkpointID,
+                      checkpointInspection.captureType,
+                    )
                   : inspectionImage(
-                      vehicleID, vehicleInspectionID, checkpointInspectionID),
+                      vehicleID,
+                      vehicleInspectionID,
+                      checkpointInspectionID,
+                      checkpointInspection.captureType,
+                    ),
             ],
           ),
         ),
@@ -262,22 +270,23 @@ class ImageViewState extends State<ImageView> {
   }
 }
 
-Widget inspectionImage(vehicleID, vehicleInspectionID, checkpointInspectionID) {
+Widget inspectionImage(
+    vehicleID, vehicleInspectionID, checkpointInspectionID, captureType) {
   return ColoredContainer(
     color: MyColors.backgroundSecondary,
     width: 300,
     padding: MySizes.padding,
-    child: BorderedContainer(
-      backgroundColor: Colors.transparent,
-      padding: const EdgeInsets.all(MySizes.paddingValue),
-      child: CustomStreamBuilder(
-        stream: InspectionController.instance
-            .getUnprocessedCheckpointInspectionImageDownloadURL(
-                vehicleID, vehicleInspectionID, checkpointInspectionID),
-        builder: (context, downloadURL) {
-          return Image.network(downloadURL);
-        },
-      ),
+    child: CustomStreamBuilder<String>(
+      stream: InspectionController.instance
+          .getCheckpointInspectionCaptureDownloadURL(vehicleID,
+              vehicleInspectionID, checkpointInspectionID, captureType),
+      builder: (context, downloadURL) {
+        return CapturePreview(
+          captureType: captureType,
+          path: downloadURL,
+          isNetworkURL: true,
+        );
+      },
     ),
   );
 }
@@ -287,16 +296,19 @@ Widget expectedImage(vehicleID, checkpointID, captureType) {
     color: MyColors.backgroundSecondary,
     width: 300,
     padding: MySizes.padding,
-    child: BorderedContainer(
-      backgroundColor: Colors.transparent,
-      padding: const EdgeInsets.all(MySizes.paddingValue),
-      child: CustomStreamBuilder(
-        stream: VehicleController.instance
-            .getCheckpointDemoDownloadURL(vehicleID, checkpointID, captureType),
-        builder: (context, downloadURL) {
-          return Image.network(downloadURL);
-        },
+    child: CustomStreamBuilder<String>(
+      stream: VehicleController.instance.getCheckpointDemoDownloadURL(
+        vehicleID,
+        checkpointID,
+        captureType,
       ),
+      builder: (context, downloadURL) {
+        return CapturePreview(
+          captureType: captureType,
+          path: downloadURL,
+          isNetworkURL: true,
+        );
+      },
     ),
   );
 }

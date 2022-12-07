@@ -1,5 +1,7 @@
 import 'package:auto_sign_mobile/controller/inspection_controller.dart';
+import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
 import 'package:auto_sign_mobile/main.dart';
+import 'package:auto_sign_mobile/model/enums/capture_type.dart';
 import 'package:auto_sign_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:auto_sign_mobile/model/inspection/vehicle_inspection.dart';
 import 'package:auto_sign_mobile/view/pages/inspections/inspections.dart';
@@ -9,6 +11,7 @@ import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
 import 'package:auto_sign_mobile/view/theme/widgets/my_icon_button.dart';
 import 'package:auto_sign_mobile/view/widgets/bordered_container.dart';
+import 'package:auto_sign_mobile/view/widgets/capture_preview.dart';
 import 'package:auto_sign_mobile/view/widgets/colored_container.dart';
 import 'package:auto_sign_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:auto_sign_mobile/view/widgets/padded_custom_scroll_view.dart';
@@ -238,21 +241,18 @@ Widget checkpointViewWidget(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          BorderedContainer(
-            isDense: true,
-            backgroundColor: Colors.transparent,
-            padding: const EdgeInsets.all(MySizes.paddingValue / 2),
-            child: CustomStreamBuilder(
-              stream: InspectionController.instance
-                  .getUnprocessedCheckpointInspectionImageDownloadURL(
-                checkpointInspection.vehicleID,
-                checkpointInspection.vehicleInspectionID,
-                checkpointInspection.id,
-              ),
-              builder: (context, downloadURL) {
-                return Image.network(downloadURL);
-              },
+          CustomStreamBuilder<String>(
+            stream: VehicleController.instance.getCheckpointShowcaseDownloadURL(
+              checkpointInspection.vehicleID,
+              checkpointInspection.checkpointID,
             ),
+            builder: (context, downloadURL) {
+              return CapturePreview(
+                captureType: CaptureType.photo,
+                path: downloadURL,
+                isNetworkURL: true,
+              );
+            },
           ),
           const SizedBox(width: MySizes.spacing),
           Expanded(
