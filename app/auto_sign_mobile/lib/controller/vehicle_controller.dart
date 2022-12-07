@@ -1,3 +1,4 @@
+import 'package:auto_sign_mobile/model/enums/capture_type.dart';
 import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
 import 'package:auto_sign_mobile/model/vehicle/checkpoint.dart';
 import 'package:auto_sign_mobile/model/vehicle/vehicle.dart';
@@ -92,13 +93,27 @@ class VehicleController {
   }
 
   /// Returns the download URL for the image of the [Checkpoint].
-  Stream<String> getCheckpointImageDownloadURL(
+  Stream<String> getCheckpointDemoDownloadURL(
+    String vehicleID,
+    String checkpointID,
+    CaptureType captureType,
+  ) {
+    // defining reference to Storage
+    Reference reference = FirebaseStorage.instance.ref(
+        "$vehicleID/checkpoints/$checkpointID/demo.${captureType.fileExtension}");
+
+    // returning download URL
+    return reference.getDownloadURL().asStream();
+  }
+
+  /// Returns the download URL for the image of the [Checkpoint].
+  Stream<String> getCheckpointShowcaseDownloadURL(
     String vehicleID,
     String checkpointID,
   ) {
     // defining reference to Storage
     Reference reference = FirebaseStorage.instance
-        .ref("$vehicleID/checkpoints/$checkpointID.png");
+        .ref("$vehicleID/checkpoints/$checkpointID/showcase.png");
 
     // returning download URL
     return reference.getDownloadURL().asStream();

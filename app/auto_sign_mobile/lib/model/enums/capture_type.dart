@@ -2,6 +2,7 @@
 class CaptureType {
   // MEMBER VARIABLES //
   final String title; // title for the capture type
+  final String fileExtension; // file extension for media of this type
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -13,6 +14,7 @@ class CaptureType {
   /// can be used.
   const CaptureType._({
     required this.title,
+    required this.fileExtension,
   });
 
   // ///////////////// //
@@ -54,10 +56,12 @@ class CaptureType {
   // photo
   static const CaptureType photo = CaptureType._(
     title: "photo",
+    fileExtension: "png",
   );
 
   // video
   static const CaptureType video = CaptureType._(
     title: "video",
+    fileExtension: "mp4",
   );
 }

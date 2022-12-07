@@ -1,4 +1,5 @@
 import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
+import 'package:auto_sign_mobile/model/enums/capture_type.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
@@ -172,10 +173,11 @@ class RemediatePage extends StatelessWidget {
                   backgroundColor: Colors.transparent,
                   padding: const EdgeInsets.all(MySizes.paddingValue / 2),
                   child: CustomStreamBuilder(
-                    stream: VehicleController.instance
-                        .getCheckpointImageDownloadURL(
+                    stream:
+                        VehicleController.instance.getCheckpointDemoDownloadURL(
                       "707-008",
                       "JlFY9HXxzEoqYQfs6ZXk",
+                      CaptureType.photo,
                     ),
                     builder: (context, downloadURL) {
                       return Image.network(downloadURL);

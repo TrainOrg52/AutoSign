@@ -1,5 +1,6 @@
 import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
 import 'package:auto_sign_mobile/main.dart';
+import 'package:auto_sign_mobile/model/enums/capture_type.dart';
 import 'package:auto_sign_mobile/model/vehicle/checkpoint.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
@@ -7,6 +8,7 @@ import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
 import 'package:auto_sign_mobile/view/theme/widgets/my_icon_button.dart';
 import 'package:auto_sign_mobile/view/widgets/bordered_container.dart';
+import 'package:auto_sign_mobile/view/widgets/capture_preview.dart';
 import 'package:auto_sign_mobile/view/widgets/colored_container.dart';
 import 'package:auto_sign_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:flutter/material.dart';
@@ -91,19 +93,18 @@ class CheckpointStatusContainer extends StatelessWidget {
           // CHECKPOINT IMAGE //
           // //////////////// //
 
-          BorderedContainer(
-            isDense: true,
-            backgroundColor: Colors.transparent,
-            padding: const EdgeInsets.all(MySizes.paddingValue / 2),
-            child: CustomStreamBuilder(
-              stream: VehicleController.instance.getCheckpointImageDownloadURL(
-                checkpoint.vehicleID,
-                checkpoint.id,
-              ),
-              builder: (context, downloadURL) {
-                return Image.network(downloadURL);
-              },
+          CustomStreamBuilder<String>(
+            stream: VehicleController.instance.getCheckpointShowcaseDownloadURL(
+              checkpoint.vehicleID,
+              checkpoint.id,
             ),
+            builder: (context, downloadURL) {
+              return CapturePreview(
+                captureType: CaptureType.photo,
+                path: downloadURL,
+                isNetworkURL: true,
+              );
+            },
           ),
 
           const SizedBox(width: MySizes.spacing),

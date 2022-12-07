@@ -1,11 +1,9 @@
-import 'dart:io';
-
 import 'package:auto_sign_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
 import 'package:auto_sign_mobile/view/theme/widgets/my_text_button.dart';
-import 'package:auto_sign_mobile/view/widgets/bordered_container.dart';
 import 'package:auto_sign_mobile/view/widgets/camera_container.dart';
+import 'package:auto_sign_mobile/view/widgets/capture_preview.dart';
 import 'package:flutter/material.dart';
 
 /// A custom [PageView] for reviewing a single [CheckpointInspection]. The
@@ -133,19 +131,17 @@ class _CheckpointInspectionReviewPageViewState
   Widget _buildPreviewPage() {
     return Column(
       children: [
-        // /////////////////////////// //
-        // CHECKPOINT INSPECTION IMAGE //
-        // /////////////////////////// //
+        // ///////////////////////////// //
+        // CHECKPOINT INSPECTION PREVIEW //
+        // ///////////////////////////// //
 
         const Spacer(),
 
         Expanded(
           flex: 12,
-          child: BorderedContainer(
-            isDense: true,
-            backgroundColor: Colors.transparent,
-            padding: const EdgeInsets.all(MySizes.paddingValue),
-            child: Image.asset(capturePath),
+          child: CapturePreview(
+            captureType: widget.checkpointInspection.captureType,
+            path: capturePath,
           ),
         ),
 
@@ -197,6 +193,7 @@ class _CheckpointInspectionReviewPageViewState
   /// [CheckpointInspection].
   Widget _buildCapturePage() {
     return CameraContainer(
+      captureType: widget.checkpointInspection.captureType,
       onCaptured: (capturePath) {
         // handling capture
 
@@ -228,11 +225,9 @@ class _CheckpointInspectionReviewPageViewState
 
         Expanded(
           flex: 12,
-          child: BorderedContainer(
-            isDense: true,
-            backgroundColor: Colors.transparent,
-            padding: const EdgeInsets.all(MySizes.paddingValue),
-            child: Image.file(File(capturePath)),
+          child: CapturePreview(
+            captureType: widget.checkpointInspection.captureType,
+            path: capturePath,
           ),
         ),
 

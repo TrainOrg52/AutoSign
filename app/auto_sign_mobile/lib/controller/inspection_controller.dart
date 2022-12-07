@@ -2,11 +2,13 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
+import 'package:auto_sign_mobile/model/enums/capture_type.dart';
 import 'package:auto_sign_mobile/model/enums/processing_status.dart';
 import 'package:auto_sign_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:auto_sign_mobile/model/inspection/vehicle_inspection.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:video_compress/video_compress.dart';
 
 /// Controller that manages the application's list of [VehicleInspection]
 /// and [CheckpointInspection] objects.
@@ -119,7 +121,7 @@ class InspectionController {
   /// 1 - The [CheckpointInspection] object is uploaded to Firestore, and it's [id]
   /// property is updated using the [id] of the document that was created.
   ///
-  /// 2 - The image associated with the [CheckpointInspection] is uploaded to
+  /// 2 - The media associated with the [CheckpointInspection] is uploaded to
   /// Storage under the ID of the Firestore document.
   Future<void> _addCheckpointInspection(
     CheckpointInspection checkpointInspection,
@@ -131,14 +133,29 @@ class InspectionController {
 
     // adding the file to cloud storage
     try {
+      // variable to hold capture path
+      String capturePath = checkpointInspection.capturePath;
+
+      // converting video to correct fomat (via compression)
+      if (checkpointInspection.captureType == CaptureType.video) {
+        // compressing video file + converting to mp4
+        MediaInfo? compressedVideo = await VideoCompress.compressVideo(
+          capturePath,
+          quality: VideoQuality.HighestQuality,
+          deleteOrigin: false, // It's false by default
+        );
+
+        // updting the capture path
+        capturePath = compressedVideo!.path!;
+      }
+
       // getting the data for the capture
-      Uint8List data =
-          await File(checkpointInspection.capturePath).readAsBytes();
+      Uint8List data = await File(capturePath).readAsBytes();
 
       // posting the capture to storage
       await FirebaseStorage.instance
           .ref(
-              "${checkpointInspection.vehicleID}/vehicleInspections/${checkpointInspection.vehicleInspectionID}/${checkpointInspection.id}/unprocessed.png")
+              "${checkpointInspection.vehicleID}/vehicleInspections/${checkpointInspection.vehicleInspectionID}/${checkpointInspection.id}.${checkpointInspection.captureType.fileExtension}")
           .putData(data);
     } on FirebaseException catch (e) {
       // handling exception

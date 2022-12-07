@@ -3,8 +3,8 @@ import 'package:auto_sign_mobile/model/vehicle/checkpoint.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
 import 'package:auto_sign_mobile/view/theme/widgets/my_text_button.dart';
-import 'package:auto_sign_mobile/view/widgets/bordered_container.dart';
 import 'package:auto_sign_mobile/view/widgets/camera_container.dart';
+import 'package:auto_sign_mobile/view/widgets/capture_preview.dart';
 import 'package:auto_sign_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:flutter/material.dart';
 
@@ -143,17 +143,20 @@ class _CheckpointInspectionCapturePageViewState
 
         const Spacer(),
 
-        BorderedContainer(
-          isDense: true,
-          backgroundColor: Colors.transparent,
-          padding: const EdgeInsets.all(MySizes.paddingValue),
+        Expanded(
+          flex: 15,
           child: CustomStreamBuilder(
-            stream: VehicleController.instance.getCheckpointImageDownloadURL(
+            stream: VehicleController.instance.getCheckpointDemoDownloadURL(
               widget.checkpoint.vehicleID,
               widget.checkpoint.id,
+              widget.checkpoint.captureType,
             ),
             builder: (context, downloadURL) {
-              return Image.network(downloadURL);
+              return CapturePreview(
+                captureType: widget.checkpoint.captureType,
+                path: downloadURL,
+                isNetworkURL: true,
+              );
             },
           ),
         ),
@@ -182,6 +185,7 @@ class _CheckpointInspectionCapturePageViewState
   /// Builds the page that allows the user to capture an image of the checkpoing.
   Widget _buildCapturePage() {
     return CameraContainer(
+      captureType: widget.checkpoint.captureType,
       onCaptured: (capturePath) {
         // handling capture
 

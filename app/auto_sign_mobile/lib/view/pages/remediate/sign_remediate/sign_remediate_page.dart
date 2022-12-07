@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:auto_sign_mobile/model/enums/capture_type.dart';
 import 'package:auto_sign_mobile/view/pages/remediate/sign_remediate/sign_remediate_progress_bar.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
@@ -8,6 +7,7 @@ import 'package:auto_sign_mobile/view/theme/widgets/my_icon_button.dart';
 import 'package:auto_sign_mobile/view/theme/widgets/my_text_button.dart';
 import 'package:auto_sign_mobile/view/widgets/bordered_container.dart';
 import 'package:auto_sign_mobile/view/widgets/camera_container.dart';
+import 'package:auto_sign_mobile/view/widgets/capture_preview.dart';
 import 'package:auto_sign_mobile/view/widgets/confirmation_dialog.dart';
 import 'package:auto_sign_mobile/view/widgets/padded_custom_scroll_view.dart';
 import 'package:flutter/material.dart';
@@ -347,6 +347,7 @@ class _SignRemediatePageState extends State<SignRemediatePage> {
   Widget _buildCapturePage() {
     // TODO - need a prompt in here
     return CameraContainer(
+      captureType: CaptureType.video, // TODO change
       onCaptured: (capturePath) {
         // handling capture
 
@@ -392,11 +393,9 @@ class _SignRemediatePageState extends State<SignRemediatePage> {
 
         Expanded(
           flex: 12,
-          child: BorderedContainer(
-            isDense: true,
-            backgroundColor: Colors.transparent,
-            padding: const EdgeInsets.all(MySizes.paddingValue),
-            child: Image.file(File(capturePath)),
+          child: CapturePreview(
+            captureType: CaptureType.video,
+            path: capturePath,
           ),
         ),
 

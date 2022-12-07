@@ -24,6 +24,9 @@ dependencies:
   # camera
   camera: ^0.10.0+4 # access to device camera
   image: ^3.2.2 # image processing
+  video_player: ^2.4.8 # displaying videos
+  flick_video_player: ^0.5.0 # displaying videos
+  video_compress: ^3.1.1
 
   # Cosmetic
   font_awesome_flutter: ^10.2.1 # custom ucons

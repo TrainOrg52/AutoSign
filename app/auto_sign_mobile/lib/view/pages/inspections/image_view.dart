@@ -250,7 +250,8 @@ class ImageViewState extends State<ImageView> {
               ),
               const SizedBox(height: MySizes.spacing),
               toggleStates[0] == false
-                  ? expectedImage(vehicleID, checkpointID)
+                  ? expectedImage(
+                      vehicleID, checkpointID, checkpointInspection.captureType)
                   : inspectionImage(
                       vehicleID, vehicleInspectionID, checkpointInspectionID),
             ],
@@ -281,7 +282,7 @@ Widget inspectionImage(vehicleID, vehicleInspectionID, checkpointInspectionID) {
   );
 }
 
-Widget expectedImage(vehicleID, checkpointID) {
+Widget expectedImage(vehicleID, checkpointID, captureType) {
   return ColoredContainer(
     color: MyColors.backgroundSecondary,
     width: 300,
@@ -291,7 +292,7 @@ Widget expectedImage(vehicleID, checkpointID) {
       padding: const EdgeInsets.all(MySizes.paddingValue),
       child: CustomStreamBuilder(
         stream: VehicleController.instance
-            .getCheckpointImageDownloadURL(vehicleID, checkpointID),
+            .getCheckpointDemoDownloadURL(vehicleID, checkpointID, captureType),
         builder: (context, downloadURL) {
           return Image.network(downloadURL);
         },

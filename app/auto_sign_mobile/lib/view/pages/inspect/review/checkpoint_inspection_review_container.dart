@@ -1,10 +1,11 @@
-import 'dart:io';
-
+import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
+import 'package:auto_sign_mobile/model/enums/capture_type.dart';
 import 'package:auto_sign_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
 import 'package:auto_sign_mobile/view/theme/widgets/my_text_button.dart';
-import 'package:auto_sign_mobile/view/widgets/bordered_container.dart';
+import 'package:auto_sign_mobile/view/widgets/capture_preview.dart';
+import 'package:auto_sign_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:flutter/material.dart';
 
 /// A custom [Container] that displays an overview of a [CheckpointInspection]
@@ -42,15 +43,22 @@ class CheckpointInspectionReviewContainer extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          // //////////////// //
-          // CHECKPOINT IMAGE //
-          // //////////////// //
+          // /////////////////// //
+          // CHECKPOINT SHOWCASE //
+          // /////////////////// //
 
-          BorderedContainer(
-            isDense: true,
-            backgroundColor: Colors.transparent,
-            padding: const EdgeInsets.all(MySizes.paddingValue / 2),
-            child: Image.file(File(checkpointInspection.capturePath)),
+          CustomStreamBuilder<String>(
+            stream: VehicleController.instance.getCheckpointShowcaseDownloadURL(
+              checkpointInspection.vehicleID,
+              checkpointInspection.checkpointID,
+            ),
+            builder: (context, downloadURL) {
+              return CapturePreview(
+                captureType: CaptureType.photo,
+                path: downloadURL,
+                isNetworkURL: true,
+              );
+            },
           ),
 
           const SizedBox(width: MySizes.spacing),

@@ -1,3 +1,4 @@
+import 'package:auto_sign_mobile/model/enums/capture_type.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
 import 'package:auto_sign_mobile/view/widgets/custom_future_builder.dart';
@@ -9,10 +10,14 @@ import 'package:percent_indicator/percent_indicator.dart';
 // MAIN CLASS //
 // ////////// //
 
-/// TODO
+/// A container that allows for a certain type of camera media to be captured.
+///
+/// Either photo of video can be captured using the container, based by the
+/// provided [captureType] property.
 class CameraContainer extends StatelessWidget {
   // MEMBER VARIABLES //
-  final Function(String) onCaptured;
+  final CaptureType captureType; // capture type for the camera (photo of vid)
+  final Function(String) onCaptured; // callback for when media captured
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -20,6 +25,7 @@ class CameraContainer extends StatelessWidget {
 
   const CameraContainer({
     super.key,
+    required this.captureType,
     required this.onCaptured,
   });
 
@@ -33,6 +39,7 @@ class CameraContainer extends StatelessWidget {
       future: availableCameras(),
       builder: (context, cameras) {
         return CameraContainerAux(
+          captureType: captureType,
           cameras: cameras,
           onCapture: onCaptured,
         );
@@ -45,11 +52,13 @@ class CameraContainer extends StatelessWidget {
 // AUXILLIARY CLASS //
 // //////////////// //
 
-/// TODO
+/// An auxilliary helper container that actually loads the camera using the provided
+/// [camera] property.
 class CameraContainerAux extends StatefulWidget {
   // MEMBER VARIABLES //
-  final List<CameraDescription> cameras;
-  final Function(String) onCapture;
+  final CaptureType captureType; // capture type for the camera.
+  final List<CameraDescription> cameras; // cameras that can be used.
+  final Function(String) onCapture; // callback for when media captured.
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -57,6 +66,7 @@ class CameraContainerAux extends StatefulWidget {
 
   const CameraContainerAux({
     super.key,
+    required this.captureType,
     required this.cameras,
     required this.onCapture,
   });
@@ -69,12 +79,13 @@ class CameraContainerAux extends StatefulWidget {
   State<CameraContainerAux> createState() => _CameraContainerAuxState();
 }
 
-/// TODO
+/// State class for [CameraContainerAux].
 class _CameraContainerAuxState extends State<CameraContainerAux> {
   // STATE VARIABLES //
   late CameraController controller; // controller for camera
   late bool isInitialized; // initialization state of camera
-  late bool photoCaptured; // if a photo has been captured or not
+  late bool isRecording; // current recording state of the capture
+  late bool mediaCaptured; // if a photo/video has been captured or not
 
   // THEME-ING
   // sizes
@@ -92,7 +103,8 @@ class _CameraContainerAuxState extends State<CameraContainerAux> {
 
     // initializing state
     isInitialized = false;
-    photoCaptured = false;
+    isRecording = false;
+    mediaCaptured = false;
 
     // initializing controller
     controller = CameraController(
@@ -165,41 +177,94 @@ class _CameraContainerAuxState extends State<CameraContainerAux> {
           // CAPTURE BUTTON //
           // ////////////// //
 
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: MySizes.padding,
-              child: CircularPercentIndicator(
-                radius: captureButtonOutlineRadius,
-                lineWidth: captureButtonOutlineWidth,
-                percent: 1.0,
-                progressColor: MyColors.backgroundSecondary,
-                center: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    shape: const CircleBorder(),
-                    backgroundColor: MyColors.grey100,
-                    foregroundColor: MyColors.textPrimary,
-                    side: const BorderSide(
-                      width: 0,
-                      color: MyColors.backgroundSecondary,
-                    ),
-                  ),
-                  onPressed: !photoCaptured
-                      ? () async {
-                          await _capturePhoto();
-                        }
-                      : null,
-                  child: SizedBox(
-                    height: captureButtonRadius * 2,
-                    width: captureButtonRadius * 2,
-                  ),
-                ),
-              ),
-            ),
-          ),
+          widget.captureType == CaptureType.photo
+              ? _buildPhotoCaptureButton()
+              : _buildVideoCaptureButton(),
         ],
       );
     }
+  }
+
+  // ////////////////////// //
+  // HELPER BUILDER METHODS //
+  // ////////////////////// //
+
+  /// Builds the capture button for the capture of a photo.
+  Widget _buildPhotoCaptureButton() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Padding(
+        padding: MySizes.padding,
+        child: CircularPercentIndicator(
+          radius: captureButtonOutlineRadius,
+          lineWidth: captureButtonOutlineWidth,
+          percent: 1.0,
+          progressColor: MyColors.backgroundSecondary,
+          center: OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              shape: const CircleBorder(),
+              backgroundColor: MyColors.grey100,
+              foregroundColor: MyColors.textPrimary,
+              side: const BorderSide(
+                width: 0,
+                color: MyColors.backgroundSecondary,
+              ),
+            ),
+            onPressed: !mediaCaptured
+                ? () async {
+                    await _capturePhoto();
+                  }
+                : null,
+            child: SizedBox(
+              height: captureButtonRadius * 2,
+              width: captureButtonRadius * 2,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Builds the capture button for the capture of a video.
+  ///
+  /// The button changes dynamically based on the recording state of the container.
+  Widget _buildVideoCaptureButton() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Padding(
+        padding: MySizes.padding,
+        child: CircularPercentIndicator(
+          radius: captureButtonOutlineRadius,
+          lineWidth: captureButtonOutlineWidth,
+          backgroundColor: Colors.transparent,
+          percent: 1.0,
+          progressColor:
+              isRecording ? Colors.transparent : MyColors.backgroundSecondary,
+          center: SizedBox(
+            height: captureButtonRadius * 2,
+            width: captureButtonRadius * 2,
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                shape: isRecording
+                    ? RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(MySizes.borderRadius * 2))
+                    : const CircleBorder(),
+                backgroundColor: MyColors.red,
+                foregroundColor: MyColors.textPrimary,
+                minimumSize: Size(captureButtonRadius, captureButtonRadius),
+              ),
+              onPressed: !mediaCaptured
+                  ? () async {
+                      await _captureVideo();
+                    }
+                  : null,
+              child: Container(),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   // /////////////// //
@@ -213,7 +278,7 @@ class _CameraContainerAuxState extends State<CameraContainerAux> {
   Future<void> _capturePhoto() async {
     // updating state
     setState(() {
-      photoCaptured = true;
+      mediaCaptured = true;
     });
 
     // capturing the photo
@@ -224,7 +289,49 @@ class _CameraContainerAuxState extends State<CameraContainerAux> {
 
     // resetting state
     setState(() {
-      photoCaptured = false;
+      mediaCaptured = false;
     });
+  }
+
+  /// Handles the capturing of a video.
+  ///
+  /// Depending on the current state of the system (recording or not recording),
+  /// this method will either start a recording or stop one.
+  ///
+  /// If it stops a recording, it passes the gathered video + sensor data onto
+  /// the handling method.
+  Future<void> _captureVideo() async {
+    // checking if currently recording
+    if (isRecording) {
+      // currently recording -> need to stop recording
+
+      // updating state
+      setState(() {
+        mediaCaptured = true;
+        isRecording = false;
+      });
+
+      // gathering video
+      XFile? videoFile = await controller.stopVideoRecording();
+
+      // handling the capture
+      widget.onCapture(videoFile.path);
+
+      // resetting state
+      setState(() {
+        mediaCaptured = false;
+      });
+    } else {
+      // not currently recording -> need to start recording
+
+      // starting recording
+      await controller.prepareForVideoRecording();
+      await controller.startVideoRecording();
+
+      // updating state
+      setState(() {
+        isRecording = true;
+      });
+    }
   }
 }
