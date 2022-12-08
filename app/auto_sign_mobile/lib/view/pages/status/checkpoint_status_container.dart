@@ -1,6 +1,7 @@
 import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
 import 'package:auto_sign_mobile/main.dart';
 import 'package:auto_sign_mobile/model/enums/capture_type.dart';
+import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
 import 'package:auto_sign_mobile/model/vehicle/checkpoint.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
@@ -172,15 +173,23 @@ class CheckpointStatusContainer extends StatelessWidget {
   Widget _buildContainerDropDown(BuildContext context) {
     return Column(
       children: [
+        // //////////////////// //
+        // NON-CONFORMING SIGNS //
+        // //////////////////// //
+
+        const SizedBox(height: MySizes.spacing),
+
+        _buildNonConformingSignsList(),
+
         const Divider(
           color: MyColors.lineColor,
           thickness: MySizes.lineWidth,
           height: (MySizes.spacing * 2) + 1,
         ),
 
-        // ///////// //
-        // DROP DOWN //
-        // ///////// //
+        // ////////////////////////////// //
+        // LAST INSPECTION + ACTION TAKEN //
+        // ////////////////////////////// //
 
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -292,5 +301,73 @@ class CheckpointStatusContainer extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  /// TODO
+  Widget _buildNonConformingSignsList() {
+    // getting list of non-conforming signs
+    List<Map<String, ConformanceStatus>> nonConformingSigns = [];
+    for (var sign in checkpoint.signs) {
+      if (sign.entries.first.value == ConformanceStatus.nonConforming) {
+        nonConformingSigns.add(sign);
+      }
+    }
+
+    // building the list based on the non-conforming signs
+    if (nonConformingSigns.isEmpty) {
+      // no non-conforming signs - just return empty container
+      return Container();
+    } else {
+      // non-conforming signs - need to show them
+
+      // list view to hold non-conforming signs
+      return ListView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: nonConformingSigns.length,
+        itemBuilder: (context, index) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ////////////// //
+              // SIGN CONTAINER //
+              // ////////////// //
+
+              BorderedContainer(
+                isDense: true,
+                borderColor:
+                    nonConformingSigns[index].entries.first.value.color,
+                backgroundColor:
+                    nonConformingSigns[index].entries.first.value.accentColor,
+                padding: const EdgeInsets.all(MySizes.paddingValue / 2),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      nonConformingSigns[index].entries.first.value.iconData,
+                      size: MySizes.smallIconSize,
+                      color:
+                          nonConformingSigns[index].entries.first.value.color,
+                    ),
+                    const SizedBox(width: MySizes.spacing),
+                    Text(
+                      "'${nonConformingSigns[index].entries.first.key}' : ${nonConformingSigns[index].entries.first.value.toString().toCapitalized()}",
+                      style: MyTextStyles.bodyText2,
+                    ),
+                  ],
+                ),
+              ),
+
+              // /////// //
+              // SPACING //
+              // /////// //
+
+              if (index != nonConformingSigns.length - 1)
+                const SizedBox(height: MySizes.spacing),
+            ],
+          );
+        },
+      );
+    }
   }
 }

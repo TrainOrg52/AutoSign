@@ -50,13 +50,6 @@ class CheckpointInspection extends ModelObject {
     required Checkpoint checkpoint,
     required String capturePath,
   }) {
-    // List<Map<String, ConformanceStatus>> signs = [];
-    // for (String signID in checkpoint.signs) {
-    //   signs.add({signID: ConformanceStatus.pending});
-    // }
-
-    // print(signs);
-
     return CheckpointInspection(
       vehicleID: checkpoint.vehicleID,
       vehicleInspectionID: vehicleInspectionID,
