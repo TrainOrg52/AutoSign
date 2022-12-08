@@ -351,7 +351,7 @@ class CheckpointStatusContainer extends StatelessWidget {
                     ),
                     const SizedBox(width: MySizes.spacing),
                     Text(
-                      "'${nonConformingSigns[index].entries.first.key}' : ${nonConformingSigns[index].entries.first.value.toString().toCapitalized()}",
+                      "${nonConformingSigns[index].entries.first.key} : ${nonConformingSigns[index].entries.first.value.toString().toCapitalized()}",
                       style: MyTextStyles.bodyText2,
                     ),
                   ],

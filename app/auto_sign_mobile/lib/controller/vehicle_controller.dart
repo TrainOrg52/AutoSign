@@ -78,6 +78,25 @@ class VehicleController {
         );
   }
 
+  /// Returns a [Stream] for the [List] of [Checkpoint]s associated with the given
+  /// [vehicleID] that are non-conforming.
+  ///
+  /// The [Checkpoint]s are sorted based on their [index] property.
+  Stream<List<Checkpoint>> getNonConformingCheckpointsWhereVehicleIs(
+    String vehicleID,
+  ) {
+    return _checkpointsRef
+        .where("vehicleID", isEqualTo: vehicleID)
+        .where("conformanceStatus", isEqualTo: "non-conforming")
+        .orderBy("index")
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => Checkpoint.fromFirestore(doc))
+              .toList(),
+        );
+  }
+
   // ////////////// //
   // GETTING IMAGES //
   // ////////////// //

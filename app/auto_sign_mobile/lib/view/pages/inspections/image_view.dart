@@ -187,7 +187,7 @@ class ImageViewState extends State<ImageView> {
               ),
               const SizedBox(width: MySizes.spacing),
               Text(
-                "'${sign.entries.first.key}' : ${sign.entries.first.value.toString().toCapitalized()}",
+                "${sign.entries.first.key} : ${sign.entries.first.value.toString().toCapitalized()}",
                 style: MyTextStyles.bodyText2,
               ),
             ],

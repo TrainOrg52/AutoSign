@@ -1,5 +1,7 @@
 import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
-import 'package:auto_sign_mobile/model/enums/capture_type.dart';
+import 'package:auto_sign_mobile/main.dart';
+import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
+import 'package:auto_sign_mobile/model/vehicle/checkpoint.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
@@ -56,8 +58,9 @@ class RemediatePage extends StatelessWidget {
 
       body: SafeArea(
         child: CustomStreamBuilder(
-          stream: VehicleController.instance.getVehicle(vehicleID),
-          builder: (context, vehicle) {
+          stream: VehicleController.instance
+              .getNonConformingCheckpointsWhereVehicleIs(vehicleID),
+          builder: (context, checkpoints) {
             return Stack(
               children: [
                 PaddedCustomScrollView(
@@ -75,8 +78,13 @@ class RemediatePage extends StatelessWidget {
                     // CHECKPOINT REMEDIATE CONTAINERS //
                     // /////////////////////////////// //
 
-                    SliverToBoxAdapter(
-                        child: _buildCheckpointRemediateContainer(context)),
+                    for (Checkpoint checkpoint in checkpoints)
+                      SliverToBoxAdapter(
+                        child: _buildCheckpointRemediateContainer(
+                          context,
+                          checkpoint,
+                        ),
+                      ),
                   ],
                 ),
 
@@ -152,7 +160,10 @@ class RemediatePage extends StatelessWidget {
   }
 
   /// TODO
-  Widget _buildCheckpointRemediateContainer(BuildContext context) {
+  Widget _buildCheckpointRemediateContainer(
+    BuildContext context,
+    Checkpoint checkpoint,
+  ) {
     return ColoredContainer(
       color: MyColors.backgroundSecondary,
       padding: MySizes.padding,
@@ -173,11 +184,10 @@ class RemediatePage extends StatelessWidget {
                   backgroundColor: Colors.transparent,
                   padding: const EdgeInsets.all(MySizes.paddingValue / 2),
                   child: CustomStreamBuilder(
-                    stream:
-                        VehicleController.instance.getCheckpointDemoDownloadURL(
-                      "707-008",
-                      "JlFY9HXxzEoqYQfs6ZXk",
-                      CaptureType.photo,
+                    stream: VehicleController.instance
+                        .getCheckpointShowcaseDownloadURL(
+                      checkpoint.vehicleID,
+                      checkpoint.id,
                     ),
                     builder: (context, downloadURL) {
                       return Image.network(downloadURL);
@@ -191,8 +201,8 @@ class RemediatePage extends StatelessWidget {
                 // TITLE //
                 // ///// //
 
-                const Text(
-                  "Platform 1 Door",
+                Text(
+                  checkpoint.title,
                   style: MyTextStyles.headerText3,
                 ),
               ],
@@ -209,62 +219,64 @@ class RemediatePage extends StatelessWidget {
 
           const SizedBox(height: MySizes.spacing),
 
-          Row(
-            children: [
-              // /////////// //
-              // SIGN STATUS //
-              // /////////// //
+          for (var sign in checkpoint.signs)
+            if (sign.entries.first.value == ConformanceStatus.nonConforming)
+              Row(
+                children: [
+                  // /////////// //
+                  // SIGN STATUS //
+                  // /////////// //
 
-              BorderedContainer(
-                isDense: true,
-                borderColor: MyColors.red,
-                backgroundColor: MyColors.redAccent,
-                padding: const EdgeInsets.all(MySizes.paddingValue / 2),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Icon(
-                      FontAwesomeIcons.circleExclamation,
-                      color: MyColors.red,
-                      size: MySizes.smallIconSize,
+                  BorderedContainer(
+                    isDense: true,
+                    borderColor: sign.entries.first.value.color,
+                    backgroundColor: sign.entries.first.value.accentColor,
+                    padding: const EdgeInsets.all(MySizes.paddingValue / 2),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          sign.entries.first.value.iconData,
+                          size: MySizes.smallIconSize,
+                          color: sign.entries.first.value.color,
+                        ),
+                        const SizedBox(width: MySizes.spacing),
+                        Text(
+                          "${sign.entries.first.key} : ${sign.entries.first.value.toString().toCapitalized()}",
+                          style: MyTextStyles.bodyText2,
+                        ),
+                      ],
                     ),
-                    SizedBox(width: MySizes.spacing),
-                    Text(
-                      "Evacuation Instructions Missing",
-                      style: MyTextStyles.bodyText2,
-                    ),
-                  ],
-                ),
+                  ),
+
+                  const Spacer(),
+
+                  // //////////// //
+                  // SIGN ACTIONS //
+                  // //////////// //
+
+                  MyIconButton.secondary(
+                    iconData: FontAwesomeIcons.cartPlus,
+                    onPressed: () {
+                      // adding the sign to the cart
+                      // TODO
+                    },
+                  ),
+
+                  const SizedBox(width: MySizes.spacing),
+
+                  MyIconButton.secondary(
+                    iconData: FontAwesomeIcons.hammer,
+                    onPressed: () {
+                      // remediating the issue
+                      context.pushNamed(
+                        Routes.signRemediate,
+                        params: {"vehicleID": checkpoint.vehicleID},
+                      );
+                    },
+                  ),
+                ],
               ),
-
-              const Spacer(),
-
-              // //////////// //
-              // SIGN ACTIONS //
-              // //////////// //
-
-              MyIconButton.secondary(
-                iconData: FontAwesomeIcons.cartPlus,
-                onPressed: () {
-                  // adding the sign to the cart
-                  // TODO
-                },
-              ),
-
-              const SizedBox(width: MySizes.spacing),
-
-              MyIconButton.secondary(
-                iconData: FontAwesomeIcons.hammer,
-                onPressed: () {
-                  // remediating the issue
-                  context.pushNamed(
-                    Routes.signRemediate,
-                    params: {"vehicleID": vehicleID},
-                  );
-                },
-              ),
-            ],
-          ),
         ],
       ),
     );
