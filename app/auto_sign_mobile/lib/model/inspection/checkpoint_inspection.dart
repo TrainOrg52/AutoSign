@@ -13,7 +13,8 @@ class CheckpointInspection extends ModelObject {
   String title; // title of the checkpoint
   int index; // index o f checkpoint in vehicle
   ConformanceStatus conformanceStatus; // conformance status of checkpoint
-  Map<String, ConformanceStatus> signs; // map of signs to conformance status
+  List<Map<String, ConformanceStatus>>
+      signs; // map of signs to conformance status
   CaptureType captureType; // type of media captured in inspection
 
   // helper (NOT TO BE SENT TO FIRESTORE)
@@ -33,11 +34,11 @@ class CheckpointInspection extends ModelObject {
     this.index = 0,
     CaptureType? captureType,
     ConformanceStatus? conformanceStatus,
-    Map<String, ConformanceStatus>? signs,
+    List<Map<String, ConformanceStatus>>? signs,
     this.capturePath = "",
   })  : captureType = captureType ?? CaptureType.photo,
         conformanceStatus = conformanceStatus ?? ConformanceStatus.pending,
-        signs = signs ?? {},
+        signs = signs ?? [],
         super(id: id, timestamp: timestamp);
 
   // /////////////// //
@@ -49,6 +50,13 @@ class CheckpointInspection extends ModelObject {
     required Checkpoint checkpoint,
     required String capturePath,
   }) {
+    // List<Map<String, ConformanceStatus>> signs = [];
+    // for (String signID in checkpoint.signs) {
+    //   signs.add({signID: ConformanceStatus.pending});
+    // }
+
+    // print(signs);
+
     return CheckpointInspection(
       vehicleID: checkpoint.vehicleID,
       vehicleInspectionID: vehicleInspectionID,
@@ -57,10 +65,10 @@ class CheckpointInspection extends ModelObject {
       index: checkpoint.index,
       captureType: checkpoint.captureType,
       conformanceStatus: ConformanceStatus.pending,
-      signs: {
+      signs: [
         for (String signID in checkpoint.signs)
-          signID: ConformanceStatus.pending
-      },
+          {signID: ConformanceStatus.pending}
+      ],
       capturePath: capturePath,
     );
   }
@@ -76,9 +84,12 @@ class CheckpointInspection extends ModelObject {
     final data = snapshot.data();
 
     // gathering sign data
-    Map<String, ConformanceStatus> signs = {};
-    data?["signs"].forEach((sign, conformanceStatus) {
-      signs[sign] = ConformanceStatus.fromString(conformanceStatus)!;
+    List<Map<String, ConformanceStatus>> signs = [];
+    data?["signs"].forEach((sign) {
+      signs.add({
+        sign.entries.first.key:
+            ConformanceStatus.fromString(sign.entries.first.value)!
+      });
     });
 
     // cocnverting document data to an object
@@ -100,6 +111,13 @@ class CheckpointInspection extends ModelObject {
   /// Converts the [Walkthrough] into a [Map] that can be published to firestore.
   @override
   Map<String, dynamic> toFirestore() {
+    // creating firebase object for signs
+    List<Map<String, String>> signsToPost = [];
+    for (var sign in signs) {
+      signsToPost
+          .add({sign.entries.first.key: sign.entries.first.value.toString()});
+    }
+
     // converting the object to a map
     return {
       "timestamp": timestamp,
@@ -110,12 +128,7 @@ class CheckpointInspection extends ModelObject {
       "index": index,
       "captureType": captureType.toString(),
       "conformanceStatus": conformanceStatus.toString(),
-      "signs": signs.map(
-        (signID, conformanceStatus) => MapEntry(
-          signID,
-          conformanceStatus.toString(),
-        ),
-      ),
+      "signs": signsToPost,
     };
   }
 }

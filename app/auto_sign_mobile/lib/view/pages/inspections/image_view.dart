@@ -170,24 +170,24 @@ class ImageViewState extends State<ImageView> {
     List<Widget> widgets = [];
     int count = 0;
 
-    for (var sign in checkpointInspection.signs.entries) {
+    for (var sign in checkpointInspection.signs) {
       widgets.add(
         BorderedContainer(
           isDense: true,
-          borderColor: sign.value.color,
-          backgroundColor: sign.value.accentColor,
+          borderColor: sign.entries.first.value.color,
+          backgroundColor: sign.entries.first.value.accentColor,
           padding: const EdgeInsets.all(MySizes.paddingValue / 2),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                sign.value.iconData,
+                sign.entries.first.value.iconData,
                 size: MySizes.smallIconSize,
-                color: sign.value.color,
+                color: sign.entries.first.value.color,
               ),
               const SizedBox(width: MySizes.spacing),
               Text(
-                "'${sign.key}' : ${sign.value.toString().toCapitalized()}",
+                "'${sign.entries.first.key}' : ${sign.entries.first.value.toString().toCapitalized()}",
                 style: MyTextStyles.bodyText2,
               ),
             ],
@@ -195,7 +195,7 @@ class ImageViewState extends State<ImageView> {
         ),
       );
 
-      if (count != checkpointInspection.signs.entries.length - 1) {
+      if (count != checkpointInspection.signs.length - 1) {
         widgets.add(const SizedBox(height: MySizes.spacing));
       }
 

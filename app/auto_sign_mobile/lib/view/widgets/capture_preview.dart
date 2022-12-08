@@ -81,37 +81,38 @@ class _CapturePreviewState extends State<CapturePreview> {
   Widget build(BuildContext context) {
     return SizedBox(
       child: BorderedContainer(
-          isDense: true,
-          backgroundColor: Colors.transparent,
-          padding: const EdgeInsets.all(MySizes.paddingValue),
-          child: widget.captureType == CaptureType.photo
-              // ///////////// //
-              // PHOTO PREVIEW //
-              // ///////////// //
+        isDense: true,
+        backgroundColor: Colors.transparent,
+        padding: const EdgeInsets.all(MySizes.paddingValue),
+        child: widget.captureType == CaptureType.photo
+            // ///////////// //
+            // PHOTO PREVIEW //
+            // ///////////// //
 
-              ? widget.isNetworkURL
-                  ? Image.network(widget.path)
-                  : Image.file(File(widget.path))
+            ? widget.isNetworkURL
+                ? Image.network(widget.path)
+                : Image.file(File(widget.path))
 
-              // ///////////// //
-              // VIDEO PREVIEW //
-              // ///////////// //
+            // ///////////// //
+            // VIDEO PREVIEW //
+            // ///////////// //
 
-              : FlickVideoPlayer(
-                  flickManager: flickManager,
-                  flickVideoWithControls: SafeArea(
-                    child: AspectRatio(
-                      aspectRatio: 9 / 16,
-                      child: FlickVideoWithControls(
-                        videoFit: BoxFit.fitHeight,
-                        controls: FlickPortraitControls(
-                          iconSize: MySizes.largeIconSize,
-                          progressBarSettings: FlickProgressBarSettings(),
-                        ),
+            : FlickVideoPlayer(
+                flickManager: flickManager,
+                flickVideoWithControls: SafeArea(
+                  child: AspectRatio(
+                    aspectRatio: 9 / 16,
+                    child: FlickVideoWithControls(
+                      videoFit: BoxFit.fitHeight,
+                      controls: FlickPortraitControls(
+                        iconSize: MySizes.largeIconSize,
+                        progressBarSettings: FlickProgressBarSettings(),
                       ),
                     ),
                   ),
-                )),
+                ),
+              ),
+      ),
     );
   }
 }
