@@ -11,7 +11,7 @@ class Checkpoint extends ModelObject {
   String title; // title of the checkpoint
   String prompt; // prompt shown when capturing the checkpoint
   int index; // index for the checkpoint within the vehicle
-  List<String> signs; // list of signs expected within the checkpoint
+  List<Map<String, ConformanceStatus>> signs; // list of signs in the checkpoint
   CaptureType captureType; // capture type for the checkpoint
   ConformanceStatus conformanceStatus; // current status of the checkpoint
   String lastVehicleInspectionID; // last inspection
@@ -30,7 +30,7 @@ class Checkpoint extends ModelObject {
     this.title = "",
     this.prompt = "",
     this.index = 0,
-    List<String>? signs,
+    List<Map<String, ConformanceStatus>>? signs,
     CaptureType? captureType,
     ConformanceStatus? conformanceStatus,
     this.lastVehicleInspectionID = "",
@@ -55,6 +55,15 @@ class Checkpoint extends ModelObject {
     // getting snapshot data
     final data = snapshot.data();
 
+    // gathering sign data
+    List<Map<String, ConformanceStatus>> signs = [];
+    data?["signs"].forEach((sign) {
+      signs.add({
+        sign.entries.first.key:
+            ConformanceStatus.fromString(sign.entries.first.value)!
+      });
+    });
+
     // cocnverting document data to an object
     return Checkpoint(
       id: snapshot.id,
@@ -64,7 +73,7 @@ class Checkpoint extends ModelObject {
       prompt: data?["prompt"],
       index: data?["index"],
       captureType: CaptureType.fromString(data?["captureType"]),
-      signs: List.from(data?["signs"]),
+      signs: signs,
       conformanceStatus:
           ConformanceStatus.fromString(data?["conformanceStatus"]),
       lastVehicleInspectionID: data?["lastVehicleInspectionID"],

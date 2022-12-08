@@ -66,8 +66,8 @@ class CheckpointInspection extends ModelObject {
       captureType: checkpoint.captureType,
       conformanceStatus: ConformanceStatus.pending,
       signs: [
-        for (String signID in checkpoint.signs)
-          {signID: ConformanceStatus.pending}
+        for (Map<String, ConformanceStatus> sign in checkpoint.signs)
+          {sign.entries.first.key: ConformanceStatus.pending}
       ],
       capturePath: capturePath,
     );
