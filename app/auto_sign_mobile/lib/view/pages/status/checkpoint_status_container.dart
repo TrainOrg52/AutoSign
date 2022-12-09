@@ -3,6 +3,7 @@ import 'package:auto_sign_mobile/main.dart';
 import 'package:auto_sign_mobile/model/enums/capture_type.dart';
 import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
 import 'package:auto_sign_mobile/model/vehicle/checkpoint.dart';
+import 'package:auto_sign_mobile/model/vehicle/sign.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
@@ -306,9 +307,9 @@ class CheckpointStatusContainer extends StatelessWidget {
   /// TODO
   Widget _buildNonConformingSignsList() {
     // getting list of non-conforming signs
-    List<Map<String, ConformanceStatus>> nonConformingSigns = [];
+    List<Sign> nonConformingSigns = [];
     for (var sign in checkpoint.signs) {
-      if (sign.entries.first.value == ConformanceStatus.nonConforming) {
+      if (sign.conformanceStatus == ConformanceStatus.nonConforming) {
         nonConformingSigns.add(sign);
       }
     }
@@ -335,23 +336,21 @@ class CheckpointStatusContainer extends StatelessWidget {
 
               BorderedContainer(
                 isDense: true,
-                borderColor:
-                    nonConformingSigns[index].entries.first.value.color,
+                borderColor: nonConformingSigns[index].conformanceStatus.color,
                 backgroundColor:
-                    nonConformingSigns[index].entries.first.value.accentColor,
+                    nonConformingSigns[index].conformanceStatus.accentColor,
                 padding: const EdgeInsets.all(MySizes.paddingValue / 2),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      nonConformingSigns[index].entries.first.value.iconData,
+                      nonConformingSigns[index].conformanceStatus.iconData,
                       size: MySizes.smallIconSize,
-                      color:
-                          nonConformingSigns[index].entries.first.value.color,
+                      color: nonConformingSigns[index].conformanceStatus.color,
                     ),
                     const SizedBox(width: MySizes.spacing),
                     Text(
-                      "${nonConformingSigns[index].entries.first.key} : ${nonConformingSigns[index].entries.first.value.toString().toCapitalized()}",
+                      "${nonConformingSigns[index].title} : ${nonConformingSigns[index].conformanceStatus.toString().toCapitalized()}",
                       style: MyTextStyles.bodyText2,
                     ),
                   ],

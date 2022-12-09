@@ -174,20 +174,20 @@ class ImageViewState extends State<ImageView> {
       widgets.add(
         BorderedContainer(
           isDense: true,
-          borderColor: sign.entries.first.value.color,
-          backgroundColor: sign.entries.first.value.accentColor,
+          borderColor: sign.conformanceStatus.color,
+          backgroundColor: sign.conformanceStatus.accentColor,
           padding: const EdgeInsets.all(MySizes.paddingValue / 2),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                sign.entries.first.value.iconData,
+                sign.conformanceStatus.iconData,
                 size: MySizes.smallIconSize,
-                color: sign.entries.first.value.color,
+                color: sign.conformanceStatus.color,
               ),
               const SizedBox(width: MySizes.spacing),
               Text(
-                "${sign.entries.first.key} : ${sign.entries.first.value.toString().toCapitalized()}",
+                "${sign.title} : ${sign.conformanceStatus.toString().toCapitalized()}",
                 style: MyTextStyles.bodyText2,
               ),
             ],
