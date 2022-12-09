@@ -10,6 +10,7 @@ import 'package:auto_sign_mobile/view/theme/widgets/my_icon_button.dart';
 import 'package:auto_sign_mobile/view/theme/widgets/my_text_button.dart';
 import 'package:auto_sign_mobile/view/widgets/bordered_container.dart';
 import 'package:auto_sign_mobile/view/widgets/colored_container.dart';
+import 'package:auto_sign_mobile/view/widgets/custom_dropdown_button.dart';
 import 'package:auto_sign_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:auto_sign_mobile/view/widgets/padded_custom_scroll_view.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ import 'package:go_router/go_router.dart';
 /// Page to carry out a remediation for a train vehicle.
 ///
 /// TODO
-class RemediatePage extends StatelessWidget {
+class RemediatePage extends StatefulWidget {
   // MEMBERS //
   final String vehicleID;
 
@@ -33,9 +34,32 @@ class RemediatePage extends StatelessWidget {
   });
 
   // //////////// //
-  // BUILD METHOD //
+  // CREATE STATE //
   // //////////// //
 
+  @override
+  State<RemediatePage> createState() => _RemediatePageState();
+}
+
+class _RemediatePageState extends State<RemediatePage> {
+  // STATE VARIABLES //
+  late final Map<Checkpoint, Map<String, bool>> signsInCart;
+
+  // ////////// //
+  // INIT STATE //
+  // ////////// //
+
+  @override
+  void initState() {
+    // super state
+    super.initState();
+
+    signsInCart = {};
+  }
+
+  // //////////// //
+  // BUILD METHOD //
+  // //////////// //
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,8 +83,23 @@ class RemediatePage extends StatelessWidget {
       body: SafeArea(
         child: CustomStreamBuilder(
           stream: VehicleController.instance
-              .getNonConformingCheckpointsWhereVehicleIs(vehicleID),
+              .getNonConformingCheckpointsWhereVehicleIs(widget.vehicleID),
           builder: (context, checkpoints) {
+            // initializing the signs in cart object
+            for (Checkpoint checkpoint in checkpoints) {
+              // adding empty map for the checkpoint
+              signsInCart[checkpoint] = {};
+
+              // populating map for the checkpoint
+              for (var sign in checkpoint.signs) {
+                if (sign.entries.first.value ==
+                    ConformanceStatus.nonConforming) {
+                  signsInCart[checkpoint]?[sign.entries.first.key] = false;
+                }
+              }
+            }
+
+            // building the widget
             return Stack(
               children: [
                 PaddedCustomScrollView(
@@ -85,6 +124,57 @@ class RemediatePage extends StatelessWidget {
                           checkpoint,
                         ),
                       ),
+
+                    // //////////////////////// //
+                    // EXAMPLE DROP DOWN BUTTON //
+                    // //////////////////////// //
+
+                    SliverToBoxAdapter(
+                      child: CustomDropdownButton<ConformanceStatus>(
+                        // value
+                        value: ConformanceStatus
+                            .conforming, // TODO change this to be the current conformance status of the sign
+                        // on changed
+                        onChanged:
+                            (ConformanceStatus? conformanceStatus) async {
+                          if (conformanceStatus != null) {
+                            // updating the conformance status
+                            // TODO
+                          }
+                        },
+                        // items
+                        items: ConformanceStatus.userSelectableValues
+                            .map<DropdownMenuItem<ConformanceStatus>>(
+                          (conformanceStatus) {
+                            return DropdownMenuItem(
+                              value: conformanceStatus,
+                              child: BorderedContainer(
+                                isDense: true,
+                                borderColor: conformanceStatus.color,
+                                backgroundColor: conformanceStatus.accentColor,
+                                padding: const EdgeInsets.all(
+                                    MySizes.paddingValue / 2),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      conformanceStatus.iconData,
+                                      size: MySizes.smallIconSize,
+                                      color: conformanceStatus.color,
+                                    ),
+                                    const SizedBox(width: MySizes.spacing),
+                                    Text(
+                                      conformanceStatus.title.toCapitalized(),
+                                      style: MyTextStyles.bodyText2,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ).toList(),
+                      ),
+                    ),
                   ],
                 ),
 
@@ -106,10 +196,6 @@ class RemediatePage extends StatelessWidget {
       ),
     );
   }
-
-  // ////////////////////// //
-  // HELPER BUILDER METHODS //
-  // ////////////////////// //
 
   /// TODO
   Widget _buildAddAllToCartContainer() {
@@ -321,12 +407,32 @@ class RemediatePage extends StatelessWidget {
               // going to the checkout
               context.pushNamed(
                 Routes.checkout,
-                params: {"vehicleID": vehicleID},
+                params: {"vehicleID": widget.vehicleID},
               );
             },
           ),
         ],
       ),
     );
+  }
+
+  // ////////////// //
+  // HELPER METHODS //
+  // ////////////// //
+
+  /// Adds the given checkpoint sign to the cart.
+  void _addSignToCart(Checkpoint checkpoint, String signID) {
+    // updating the cart
+  }
+
+  /// Removes the given checkpoint sign from the cart.
+  void _removeSignFromCart(Checkpoint checkpoint, String signID) {
+    // updating the cart
+  }
+
+  /// Adds the signs from all of the non-conformances in the checkpoints to the
+  /// cart.
+  void _addAllSignsToCart(List<Checkpoint> checkpoints) {
+    /// TODO
   }
 }

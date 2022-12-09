@@ -32,6 +32,7 @@ dependencies:
   font_awesome_flutter: ^10.2.1 # custom ucons
   percent_indicator: ^4.2.2 # custom percent indicator widgets
   intl: ^0.17.0 # language translation
+  dropdown_button2: ^1.9.2 #custom drop down button
 
 dev_dependencies:
   flutter_lints: ^2.0.1

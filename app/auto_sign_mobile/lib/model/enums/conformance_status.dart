@@ -75,6 +75,13 @@ class ConformanceStatus {
     error,
   ];
 
+  // user-selectable instances
+  static const List<ConformanceStatus> userSelectableValues = [
+    conforming,
+    missing,
+    damaged,
+  ];
+
   // pending
   static const ConformanceStatus pending = ConformanceStatus._(
     title: "pending",
