@@ -1,6 +1,9 @@
 import 'package:auto_sign_mobile/model/enums/capture_type.dart';
 import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
+import 'package:auto_sign_mobile/model/enums/remediation_status.dart';
+import 'package:auto_sign_mobile/model/remediation/sign_remediation.dart';
 import 'package:auto_sign_mobile/model/vehicle/checkpoint.dart';
+import 'package:auto_sign_mobile/model/vehicle/sign.dart';
 import 'package:auto_sign_mobile/model/vehicle/vehicle.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -62,6 +65,12 @@ class VehicleController {
         .map((snapshot) => Checkpoint.fromFirestore(snapshot));
   }
 
+  /// Returns the [Checkpoint] matching the given [checkpointID].
+  Future<Checkpoint> getCheckpointAtInstant(String checkpointID) async {
+    return Checkpoint.fromFirestore(
+        await _checkpointsRef.doc(checkpointID).get());
+  }
+
   /// Returns a [Stream] for the [List] of [Checkpoint]s associated with the
   /// given [vehcileID].
   ///
@@ -76,6 +85,20 @@ class VehicleController {
               .map((doc) => Checkpoint.fromFirestore(doc))
               .toList(),
         );
+  }
+
+  /// Returns a [List] of [Checkpoint]s associated with the given [vehcileID].
+  ///
+  /// The [Checkpoint]s are sorted based on their [index] property.
+  Future<List<Checkpoint>> getCheckpointsWhereVehicleIsAtInstant(
+      String vehicleID) async {
+    return _checkpointsRef
+        .where("vehicleID", isEqualTo: vehicleID)
+        .orderBy("index")
+        .get()
+        .then((snapshot) {
+      return snapshot.docs.map((doc) => Checkpoint.fromFirestore(doc)).toList();
+    });
   }
 
   /// Returns a [Stream] for the [List] of [Checkpoint]s associated with the given
@@ -183,5 +206,71 @@ class VehicleController {
         "lastVehicleRemediationID": "",
       },
     );
+  }
+
+  /// TODO
+  Future<void> remediateCheckpointSign(SignRemediation signRemediation) async {
+    // /////////////////////////////// //
+    // UPDATING CHECKPOINT INFORMATION //
+    // /////////////////////////////// //
+
+    // getting the checkpoint
+    Checkpoint checkpoint = Checkpoint.fromFirestore(
+        await _checkpointsRef.doc(signRemediation.checkpointID).get());
+
+    // updating conformance status of sign
+    for (Sign sign in checkpoint.signs) {
+      if (sign.id == signRemediation.signID) {
+        sign.conformanceStatus = ConformanceStatus.conforming;
+      }
+    }
+
+    // updating last vehicle remediation ID
+    checkpoint.lastVehicleRemediationID = signRemediation.vehicleRemediationID;
+
+    // updating conformance status of checkpoint
+    ConformanceStatus checkpointConformanceStatus =
+        ConformanceStatus.conforming;
+    for (Sign sign in checkpoint.signs) {
+      if (sign.conformanceStatus == ConformanceStatus.nonConforming) {
+        checkpointConformanceStatus = ConformanceStatus.nonConforming;
+        break;
+      }
+    }
+    checkpoint.conformanceStatus = checkpointConformanceStatus;
+
+    // updating remediation status of checkpoint
+    if (checkpoint.conformanceStatus == ConformanceStatus.conforming) {
+      checkpoint.remediationStatus = RemediationStatus.complete;
+    } else {
+      checkpoint.remediationStatus = RemediationStatus.partial;
+    }
+
+    // posting updated checkpoint information into firestore
+    await _checkpointsRef.doc(checkpoint.id).update(checkpoint.toFirestore());
+
+    // //////////////////////////// //
+    // UPDATING VEHICLE CONFORMANCE //
+    // //////////////////////////// //
+
+    // gathering vehicle
+    Vehicle vehicle = await VehicleController.instance
+        .getVehicleAtInstant(checkpoint.vehicleID);
+    // getting list of checkpoints in vehicle
+    List<Checkpoint> checkpoints = await VehicleController.instance
+        .getCheckpointsWhereVehicleIsAtInstant(checkpoint.vehicleID);
+
+    // updating conformance status of vehicle object
+    ConformanceStatus vehicleConformanceStatus = ConformanceStatus.conforming;
+    for (Checkpoint checkpoint in checkpoints) {
+      if (checkpoint.conformanceStatus == ConformanceStatus.nonConforming) {
+        vehicleConformanceStatus = ConformanceStatus.nonConforming;
+        break;
+      }
+    }
+    vehicle.conformanceStatus = vehicleConformanceStatus;
+
+    // posting updated vehicle information into firestore
+    await _vehiclesRef.doc(vehicle.id).update(vehicle.toFirestore());
   }
 }

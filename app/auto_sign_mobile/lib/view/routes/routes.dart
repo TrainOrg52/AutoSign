@@ -139,10 +139,19 @@ class Routes {
 
               GoRoute(
                 name: Routes.signRemediate,
-                path: "sign", // TODO give this a proper name
+                path: ":checkpointID/:signID",
                 builder: (context, state) {
-                  // displaying pagee
-                  return const SignRemediatePage();
+                  // getting params from the state
+                  String vehicleID = state.params["vehicleID"]!;
+                  String checkpointID = state.params["checkpointID"]!;
+                  String signID = state.params["signID"]!;
+
+                  // displaying page
+                  return SignRemediatePage(
+                    vehicleID: vehicleID,
+                    checkpointID: checkpointID,
+                    signID: signID,
+                  );
                 },
               ),
             ],

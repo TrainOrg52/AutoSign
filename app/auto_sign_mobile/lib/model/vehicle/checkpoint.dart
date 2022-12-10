@@ -97,11 +97,11 @@ class Checkpoint extends ModelObject {
       "index": index,
       "captureType": captureType.toString(),
       "signs": [
-        for (var sign in signs) sign.toFirestore(),
+        for (Sign sign in signs) sign.toFirestore(),
       ],
       "conformanceStatus": conformanceStatus.toString(),
       "lastVehicleInspectionID": lastVehicleInspectionID,
-      "lastVehicleInspectionResult": lastVehicleInspectionResult,
+      "lastVehicleInspectionResult": lastVehicleInspectionResult.toString(),
       "remediationStatus": remediationStatus.toString(),
       "lastVehicleRemediationID": lastVehicleRemediationID,
     };

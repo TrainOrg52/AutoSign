@@ -115,7 +115,7 @@ extension StringCasingExtension on String {
 /// TODO
 extension TimestampExtension on int {
   /// TODO
-  String toDate() {
+  String toDateString() {
     // gathering date time object
     DateTime date = DateTime.fromMillisecondsSinceEpoch(this * 1000);
 
@@ -127,5 +127,16 @@ extension TimestampExtension on int {
 
     // returning formatted date
     return formattedDate;
+  }
+
+  /// TODO
+  bool isToday() {
+    // gathering date time objects
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(this * 1000);
+
+    // comparing days within timestamps
+    return (dateTime.day == DateTime.now().day &&
+        dateTime.month == DateTime.now().month &&
+        dateTime.year == DateTime.now().year);
   }
 }

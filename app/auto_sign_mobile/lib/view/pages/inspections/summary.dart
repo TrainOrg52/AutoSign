@@ -158,7 +158,7 @@ Widget reportTitleTile(VehicleInspection inspection) {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                inspection.timestamp.toDate().toString(),
+                inspection.timestamp.toDateString().toString(),
                 style: MyTextStyles.headerText1,
               ),
               const SizedBox(height: MySizes.spacing / 2),

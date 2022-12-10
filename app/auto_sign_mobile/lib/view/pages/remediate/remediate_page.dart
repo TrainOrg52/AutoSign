@@ -319,7 +319,11 @@ class _RemediatePageState extends State<RemediatePage> {
                       // remediating the issue
                       context.pushNamed(
                         Routes.signRemediate,
-                        params: {"vehicleID": checkpoint.vehicleID},
+                        params: {
+                          "vehicleID": checkpoint.vehicleID,
+                          "checkpointID": checkpoint.id,
+                          "signID": sign.id,
+                        },
                       );
                     },
                   ),
