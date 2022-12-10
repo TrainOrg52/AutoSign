@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 /// TODO
 class OrderSubmitContainer extends StatelessWidget {
   // MEMBER VARIABLES //
+  final String vehicleID; // id of vehicle order is for
   final bool isSubmitted; // submission status of inspection
 
   // ///////////////// //
@@ -15,6 +16,7 @@ class OrderSubmitContainer extends StatelessWidget {
 
   const OrderSubmitContainer({
     super.key,
+    required this.vehicleID,
     required this.isSubmitted,
   });
 
@@ -127,7 +129,7 @@ class OrderSubmitContainer extends StatelessWidget {
           borderColor: MyColors.blue,
           textColor: MyColors.antiPrimary,
           onPressed: () {
-            // navigating back to remediate screen
+            // navigating to remediate screen (by popping)
             Navigator.of(context).pop();
           },
         ),

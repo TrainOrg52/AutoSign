@@ -16,6 +16,9 @@ dependencies:
   #routing
   go_router: ^5.1.5 # application routing
 
+  # state
+  provider: ^6.0.4
+
   # firebase
   firebase_core: ^2.1.1 # main firebase packages
   cloud_firestore: ^4.0.4 # Firebase Firestore

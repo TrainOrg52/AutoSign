@@ -1,9 +1,11 @@
+import 'package:auto_sign_mobile/controller/shop_controller.dart';
 import 'package:auto_sign_mobile/view/pages/remediate/checkout/order_submit_container.dart';
 import 'package:auto_sign_mobile/view/pages/remediate/checkout/order_summary_container.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
 import 'package:auto_sign_mobile/view/theme/widgets/my_icon_button.dart';
 import 'package:auto_sign_mobile/view/widgets/padded_custom_scroll_view.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 /// Page to carry out a remediation for a train vehicle.
 ///
@@ -98,7 +100,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   // SUBMIT //
                   // ////// //
 
-                  OrderSubmitContainer(isSubmitted: isSubmitted),
+                  OrderSubmitContainer(
+                      vehicleID: widget.vehicleID, isSubmitted: isSubmitted),
                 ],
               ),
             ),
@@ -113,7 +116,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   // ////////////// //
 
   // TODO
-  Future<void> _handleSubmit() async {
+  Future<void> _handleSubmit(BuildContext context) async {
     // navigating to the submit page
     pageController.nextPage(
       duration: const Duration(milliseconds: 500),
@@ -126,8 +129,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     });
 
     // submiting order
-    // TODO Do this properly - just a dummy wait at the moment
-    await Future.delayed(const Duration(seconds: 2));
+    await Provider.of<ShopController>(context, listen: false).submitOrder();
 
     // updating state
     setState(() {

@@ -1,3 +1,4 @@
+import 'package:auto_sign_mobile/controller/shop_controller.dart';
 import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
 import 'package:auto_sign_mobile/main.dart';
 import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
@@ -16,6 +17,7 @@ import 'package:auto_sign_mobile/view/widgets/padded_custom_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 /// Page to carry out a remediation for a train vehicle.
 ///
@@ -138,7 +140,7 @@ class _RemediatePageState extends State<RemediatePage> {
                     alignment: Alignment.bottomCenter,
                     child: Padding(
                       padding: const EdgeInsets.all(MySizes.paddingValue * 2),
-                      child: _buildCheckoutContainer(context),
+                      child: _buildCheckoutContainer(context, checkpoints),
                     ),
                   ),
               ],
@@ -329,7 +331,10 @@ class _RemediatePageState extends State<RemediatePage> {
   }
 
   /// TODO
-  Widget _buildCheckoutContainer(BuildContext context) {
+  Widget _buildCheckoutContainer(
+    BuildContext context,
+    List<Checkpoint> checkpoints,
+  ) {
     return BorderedContainer(
       borderColor: MyColors.blue,
       backgroundColor: MyColors.blueAccent,
@@ -356,7 +361,11 @@ class _RemediatePageState extends State<RemediatePage> {
             textColor: MyColors.antiPrimary,
             text: "Checkout",
             onPressed: () {
-              // going to the checkout
+              // putting the cart into the controller
+              Provider.of<ShopController>(context, listen: false).cart =
+                  _flattenCart(checkpoints);
+
+              // navigating to the checkout page
               context.pushNamed(
                 Routes.checkout,
                 params: {"vehicleID": widget.vehicleID},
@@ -434,5 +443,43 @@ class _RemediatePageState extends State<RemediatePage> {
         allSignsAddedToCart = true;
       }
     });
+  }
+
+  /// Flattens the string into a single map.
+  Map<String, int> _flattenCart(List<Checkpoint> checkpoints) {
+    // creating empty map
+    Map<String, int> flattenedCart = {};
+
+    // creating the flattened cart
+
+    // iterating over checkpoints in cart
+    for (MapEntry<String, List<String>> checkpointSigns in cart.entries) {
+      // converting the sign id to a title
+      Checkpoint checkpoint = checkpoints
+          .where((checkpoint) => checkpoint.id == checkpointSigns.key)
+          .first;
+
+      // iterating over the signs in the checkpoint
+      for (String signID in checkpointSigns.value) {
+        // getting the title of the sign
+        Sign sign = checkpoint.signs.where((sign) => sign.id == signID).first;
+
+        // checking if this sign is the flattened cart
+        if (flattenedCart[sign.title] == null) {
+          // sign not in cart -> need to add it
+
+          // adding the sign to the cart
+          flattenedCart[sign.title] = 1;
+        } else {
+          // sign in cart -> need to increment it
+
+          // incrementing the quantity of the sign in the cart
+          flattenedCart[sign.title] = flattenedCart[sign.title]! + 1;
+        }
+      }
+    }
+
+    // returning the flattened cart
+    return flattenedCart;
   }
 }
