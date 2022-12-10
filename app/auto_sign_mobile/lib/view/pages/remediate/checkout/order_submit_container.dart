@@ -1,8 +1,13 @@
+import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
+import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
+import 'package:auto_sign_mobile/model/vehicle/vehicle.dart';
+import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
 import 'package:auto_sign_mobile/view/theme/widgets/my_text_button.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 /// TODO
 class OrderSubmitContainer extends StatelessWidget {
@@ -128,9 +133,23 @@ class OrderSubmitContainer extends StatelessWidget {
           backgroundColor: MyColors.blue,
           borderColor: MyColors.blue,
           textColor: MyColors.antiPrimary,
-          onPressed: () {
-            // navigating to remediate screen (by popping)
-            Navigator.of(context).pop();
+          onPressed: () async {
+            // getting the current state of the vehicle
+            Vehicle vehicle =
+                await VehicleController.instance.getVehicleAtInstant(vehicleID);
+
+            print(vehicle.conformanceStatus);
+
+            // redirecting based on conformance status of vehicle
+            if (vehicle.conformanceStatus == ConformanceStatus.conforming) {
+              GoRouter.of(context).goNamed(
+                Routes.profile,
+                params: {"vehicleID": vehicle.id},
+              );
+            } else {
+              // navigating to remediate screen (by popping)
+              Navigator.of(context).pop();
+            }
           },
         ),
       ],

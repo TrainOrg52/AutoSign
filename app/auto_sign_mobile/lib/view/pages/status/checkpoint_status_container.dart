@@ -2,6 +2,7 @@ import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
 import 'package:auto_sign_mobile/main.dart';
 import 'package:auto_sign_mobile/model/enums/capture_type.dart';
 import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
+import 'package:auto_sign_mobile/model/enums/remediation_status.dart';
 import 'package:auto_sign_mobile/model/vehicle/checkpoint.dart';
 import 'package:auto_sign_mobile/model/vehicle/sign.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
@@ -245,55 +246,46 @@ class CheckpointStatusContainer extends StatelessWidget {
             // ACTION TAKEN //
             // //////////// //
 
-            // TODO needs to be re-done for the proper remediate data model
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  "Action Taken",
+                  "Remediation",
                   style: MyTextStyles.bodyText2,
                 ),
                 const SizedBox(height: MySizes.spacing),
                 Row(
                   children: [
-                    if (checkpoint.lastVehicleRemediationID == "")
-                      const BorderedContainer(
-                        isDense: true,
-                        borderColor: MyColors.lineColor,
-                        backgroundColor: MyColors.greyAccent,
-                        padding: EdgeInsets.all(MySizes.paddingValue / 2),
-                        child: Text(
-                          "None",
-                          style: MyTextStyles.bodyText2,
-                        ),
-                      )
-                    else ...[
-                      const BorderedContainer(
-                        isDense: true,
-                        borderColor: MyColors.green,
-                        backgroundColor: MyColors.greenAccent,
-                        padding: EdgeInsets.all(MySizes.paddingValue / 2),
-                        child: Text(
-                          "Remediated",
-                          style: MyTextStyles.bodyText2,
-                        ),
+                    BorderedContainer(
+                      isDense: true,
+                      borderColor: checkpoint.remediationStatus.color,
+                      backgroundColor: checkpoint.remediationStatus.accentColor,
+                      padding: const EdgeInsets.all(MySizes.paddingValue / 2),
+                      child: Text(
+                        checkpoint.remediationStatus.title.toTitleCase(),
+                        style: MyTextStyles.bodyText2,
                       ),
-                      const SizedBox(width: MySizes.spacing),
-                      MyIconButton.secondary(
-                        iconData: FontAwesomeIcons.circleChevronRight,
-                        onPressed: () {
-                          // navigating to remediation
-                          context.pushNamed(
-                            Routes.remediationWalkthrough,
-                            params: {
-                              "vehicleID": checkpoint.vehicleID,
-                              "vehicleRemediationID":
-                                  checkpoint.lastVehicleRemediationID!,
+                    ),
+                    if (checkpoint.remediationStatus != RemediationStatus.none)
+                      Row(
+                        children: [
+                          const SizedBox(width: MySizes.spacing),
+                          MyIconButton.secondary(
+                            iconData: FontAwesomeIcons.circleChevronRight,
+                            onPressed: () {
+                              // navigating to remediation
+                              context.pushNamed(
+                                Routes.remediationWalkthrough,
+                                params: {
+                                  "vehicleID": checkpoint.vehicleID,
+                                  "vehicleRemediationID":
+                                      checkpoint.lastVehicleRemediationID!,
+                                },
+                              );
                             },
-                          );
-                        },
-                      ),
-                    ]
+                          ),
+                        ],
+                      )
                   ],
                 ),
               ],

@@ -1,8 +1,12 @@
+import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
+import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
+import 'package:auto_sign_mobile/model/vehicle/vehicle.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
 import 'package:auto_sign_mobile/view/widgets/confirmation_dialog.dart';
+import 'package:auto_sign_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -35,56 +39,63 @@ class VehicleActionContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // ///// //
-        // TITLE //
-        // ///// //
-
-        const Text(
-          "Action",
-          style: MyTextStyles.headerText2,
-        ),
-
-        const SizedBox(height: MySizes.spacing),
-
-        Row(
+    return CustomStreamBuilder<Vehicle>(
+      stream: VehicleController.instance.getVehicle(vehicleID),
+      builder: (context, vehicle) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // /////// //
-            // INSPECT //
-            // /////// //
+            // ///// //
+            // TITLE //
+            // ///// //
 
-            Expanded(
-              child: _buildActionButton(
-                text: "Inspect",
-                icon: FontAwesomeIcons.magnifyingGlass,
-                onPressed: () {
-                  // handling the action
-                  _handleInspect(context);
-                },
-              ),
+            const Text(
+              "Action",
+              style: MyTextStyles.headerText2,
             ),
 
-            const SizedBox(width: MySizes.spacing),
+            const SizedBox(height: MySizes.spacing),
 
-            // ///////// //
-            // REMEDIATE //
-            // ///////// //
+            Row(
+              children: [
+                // /////// //
+                // INSPECT //
+                // /////// //
 
-            Expanded(
-              child: _buildActionButton(
-                text: "Remediate",
-                icon: FontAwesomeIcons.hammer,
-                onPressed: () {
-                  // handling the action
-                  _handleRemediate(context);
-                },
-              ),
+                Expanded(
+                  child: _buildActionButton(
+                    text: "Inspect",
+                    icon: FontAwesomeIcons.magnifyingGlass,
+                    onPressed: () {
+                      // handling the action
+                      _handleInspect(context);
+                    },
+                  ),
+                ),
+
+                const SizedBox(width: MySizes.spacing),
+
+                // ///////// //
+                // REMEDIATE //
+                // ///////// //
+
+                Expanded(
+                  child: _buildActionButton(
+                    text: "Remediate",
+                    icon: FontAwesomeIcons.hammer,
+                    isDisabled: vehicle.conformanceStatus ==
+                        ConformanceStatus.conforming,
+                    onPressed: () {
+                      // handling the action
+                      _handleRemediate(context);
+                    },
+                  ),
+                ),
+              ],
             ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -96,19 +107,21 @@ class VehicleActionContainer extends StatelessWidget {
   Widget _buildActionButton({
     required String text,
     required IconData icon,
+    bool isDisabled = false,
     Function()? onPressed,
   }) {
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
         foregroundColor: MyColors.textPrimary,
-        backgroundColor: MyColors.backgroundSecondary,
+        backgroundColor:
+            isDisabled ? MyColors.grey500 : MyColors.backgroundSecondary,
         padding: MySizes.padding,
         side: const BorderSide(
           width: 0,
           color: MyColors.backgroundSecondary,
         ),
       ),
-      onPressed: onPressed,
+      onPressed: isDisabled ? null : onPressed,
       child: SizedBox(
         height: actionButtonHeight,
         child: Column(
