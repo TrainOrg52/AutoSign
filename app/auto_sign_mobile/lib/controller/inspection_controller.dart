@@ -6,9 +6,12 @@ import 'package:auto_sign_mobile/model/enums/capture_type.dart';
 import 'package:auto_sign_mobile/model/enums/processing_status.dart';
 import 'package:auto_sign_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:auto_sign_mobile/model/inspection/vehicle_inspection.dart';
+import 'package:auto_sign_mobile/model/vehicle/sign.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:video_compress/video_compress.dart';
+
+import '../model/enums/conformance_status.dart';
 
 /// Controller that manages the application's list of [VehicleInspection]
 /// and [CheckpointInspection] objects.
@@ -224,5 +227,30 @@ class InspectionController {
 
     // returning download URL
     return reference.getDownloadURL().asStream();
+  }
+
+  // /////////////// //
+  // UPDATING OBJECT //
+  // /////////////// //
+
+  /// TODO
+  Future<void> updateCheckpointInspectionSignConformanceStatus(
+    CheckpointInspection checkpointInspection,
+    Sign sign,
+    ConformanceStatus conformanceStatus,
+  ) async {
+    // updating the sign object within the checkpoint inspection
+    for (Sign signX in checkpointInspection.signs) {
+      if (signX.id == sign.id) {
+        signX.conformanceStatus = conformanceStatus;
+      }
+    }
+
+    // posting the updated checkpoint inspection to firestore
+    await _checkpointInspectionsRef.doc(checkpointInspection.id).update({
+      "signs": [
+        for (var sign in checkpointInspection.signs) sign.toFirestore(),
+      ]
+    });
   }
 }

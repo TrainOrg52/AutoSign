@@ -282,6 +282,7 @@ Widget inspectionImage(
               vehicleInspectionID, checkpointInspectionID, captureType),
       builder: (context, downloadURL) {
         return CapturePreview(
+          key: GlobalKey(),
           captureType: captureType,
           path: downloadURL,
           isNetworkURL: true,
@@ -304,6 +305,7 @@ Widget expectedImage(vehicleID, checkpointID, captureType) {
       ),
       builder: (context, downloadURL) {
         return CapturePreview(
+          key: GlobalKey(),
           captureType: captureType,
           path: downloadURL,
           isNetworkURL: true,
