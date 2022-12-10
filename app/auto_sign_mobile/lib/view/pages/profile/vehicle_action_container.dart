@@ -83,8 +83,8 @@ class VehicleActionContainer extends StatelessWidget {
                   child: _buildActionButton(
                     text: "Remediate",
                     icon: FontAwesomeIcons.hammer,
-                    isDisabled: vehicle.conformanceStatus ==
-                        ConformanceStatus.conforming,
+                    isDisabled: vehicle.conformanceStatus !=
+                        ConformanceStatus.nonConforming,
                     onPressed: () {
                       // handling the action
                       _handleRemediate(context);
