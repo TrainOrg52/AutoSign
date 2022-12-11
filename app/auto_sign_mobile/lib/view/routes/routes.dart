@@ -235,9 +235,11 @@ class Routes {
                   // getting params from state
                   String remediationWalkthroughID =
                       state.params["remediationWalkthroughID"]!;
+                  String vehicleID = state.params["vehicleID"]!;
 
                   // displaying remediate page
-                  return RemediationSummary();
+                  return RemediationSummary(
+                      vehicleID, remediationWalkthroughID);
                 },
 
                 // ////////////////////// //

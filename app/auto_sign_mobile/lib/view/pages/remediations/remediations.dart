@@ -1,5 +1,6 @@
 import 'package:auto_sign_mobile/controller/inspection_controller.dart';
 import 'package:auto_sign_mobile/controller/remediation_controller.dart';
+import 'package:auto_sign_mobile/main.dart';
 import 'package:auto_sign_mobile/view/pages/inspections/inspections.dart';
 import 'package:auto_sign_mobile/view/pages/remediations/remediation_checkpoint_page.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
@@ -10,6 +11,8 @@ import 'package:auto_sign_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../../model/remediation/vehicle_remediation.dart';
 
 class RemediationsList extends StatelessWidget {
   String vehicleID;
@@ -31,20 +34,15 @@ class RemediationsList extends StatelessWidget {
         stream: RemediationController.instance
             .getVehicleRemediationsWhereVehicleIs(vehicleID),
         builder: (context, remediations) {
-          return _buildRemediationList(context);
+          return _buildRemediationList(context, remediations);
         },
       ),
     );
   }
 }
 
-ListView _buildRemediationList(BuildContext context) {
-  List<Remediation> remediations = [
-    Remediation("Reading", "22/06/22", 3, [], [], []),
-    Remediation("Newport", "22/06/22", 1, [], [], []),
-    Remediation("Leeds", "22/06/22", 2, [], [], [])
-  ];
-
+ListView _buildRemediationList(
+    BuildContext context, List<VehicleRemediation> remediations) {
   return ListView.builder(
       padding: EdgeInsets.zero,
       itemCount: remediations.length * 2,
@@ -58,7 +56,7 @@ ListView _buildRemediationList(BuildContext context) {
       });
 }
 
-Widget remediationTile(Remediation remediation, BuildContext context) {
+Widget remediationTile(VehicleRemediation remediation, BuildContext context) {
   return BorderedContainer(
       padding: const EdgeInsets.all(0),
       height: 70,
@@ -67,7 +65,7 @@ Widget remediationTile(Remediation remediation, BuildContext context) {
           child: ListTile(
               horizontalTitleGap: 0,
               title: Text(
-                remediation.date,
+                remediation.timestamp.toDateString().toString(),
                 style: MyTextStyles.headerText1,
               ),
               subtitle: Row(
@@ -76,7 +74,13 @@ Widget remediationTile(Remediation remediation, BuildContext context) {
                   const SizedBox(
                     width: 16,
                   ),
-                  numIssuesWidget(remediation.numRemediations)
+                  CustomStreamBuilder(
+                      stream: RemediationController.instance
+                          .getSignRemediationsWhereVehicleRemediationIs(
+                              remediation.id),
+                      builder: (context, signremediations) {
+                        return numIssuesWidget(signremediations.length);
+                      })
                 ],
               ),
               leading: const SizedBox(

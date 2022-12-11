@@ -1,13 +1,22 @@
+import 'package:auto_sign_mobile/controller/remediation_controller.dart';
 import 'package:auto_sign_mobile/view/pages/remediations/remediations.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
 import 'package:auto_sign_mobile/view/theme/widgets/my_text_button.dart';
 import 'package:auto_sign_mobile/view/widgets/bordered_container.dart';
+import 'package:auto_sign_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../model/remediation/sign_remediation.dart';
+
 class RemediationSummary extends StatelessWidget {
+  String vehicleID;
+  String vehicleRemediationID;
+
+  RemediationSummary(this.vehicleID, this.vehicleRemediationID);
+
   @override
   Widget build(BuildContext context) {
     Remediation exampleRemediation = Remediation("Reading", "22/06/22", 3, [
@@ -29,16 +38,25 @@ class RemediationSummary extends StatelessWidget {
           backgroundColor: MyColors.antiPrimary,
           centerTitle: true,
         ),
-        body: _buildCheckpointList(context, exampleRemediation));
+        body: CustomStreamBuilder(
+          stream: RemediationController.instance
+              .getSignRemediationsWhereVehicleRemediationIs(
+                  vehicleRemediationID),
+          builder: (context, signremediations) {
+            return _buildCheckpointList(context, signremediations);
+          },
+        ));
   }
 }
 
-ListView _buildCheckpointList(BuildContext context, Remediation remediation) {
+ListView _buildCheckpointList(
+    BuildContext context, List<SignRemediation> signremediations) {
   return ListView.builder(
       itemCount: 7,
       itemBuilder: (_, index) {
         if (index == 0) {
-          return remediationTile(remediation, context);
+          //return remediationTile(remediation, context);
+          return Text("TODO");
         } else if (index == 1) {
           return const Text(
             "Inspection",
@@ -56,9 +74,9 @@ ListView _buildCheckpointList(BuildContext context, Remediation remediation) {
         }
 
         return remediationCheckpoint(
-            remediation.sectionNames[index - 4],
+            signremediations[index - 4].checkpointTitle.toString(),
             "https://upload.wikimedia.org/wikipedia/commons/4/4a/100x100_logo.png",
-            remediation.descriptions[index - 4],
+            signremediations[index - 4].title.toString(),
             context);
       });
 }
