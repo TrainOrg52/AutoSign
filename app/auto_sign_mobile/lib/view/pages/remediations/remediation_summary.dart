@@ -47,6 +47,7 @@ ListView _buildCheckpointList(BuildContext context, Remediation remediation) {
         } else if (index == 2) {
           //return reportTile(
           //  Report("22/06/22", "Reading", false, true, []), context);
+          return (Text("FILLER"));
         } else if (index == 3) {
           return const Text(
             "Report",

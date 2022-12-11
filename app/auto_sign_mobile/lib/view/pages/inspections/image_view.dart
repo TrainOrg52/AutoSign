@@ -16,6 +16,11 @@ import 'package:auto_sign_mobile/view/widgets/padded_custom_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../../model/enums/conformance_status.dart';
+import '../../../model/vehicle/sign.dart';
+import '../../theme/widgets/my_text_button.dart';
+import '../../widgets/custom_dropdown_button.dart';
+
 ///Class for showing an image within the app
 class ImageView extends StatefulWidget {
   String vehicleID;
@@ -103,31 +108,102 @@ class ImageViewState extends State<ImageView> {
     );
   }
 
-  Future<void> updateCheckpoint(BuildContext context) async {
+  Future<void> updateCheckpoint(
+      BuildContext context, CheckpointInspection checkpointInspection) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('AlertDialog Title'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: const <Widget>[
-                Text('This is a demo alert dialog.'),
-                Text('Would you like to approve of this message?'),
-              ],
-            ),
+          insetPadding: EdgeInsets.all(0),
+          contentPadding: EdgeInsets.zero,
+          title: const Text(
+            'Update Inspection',
+            textAlign: TextAlign.center,
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          content: Container(
+            width: 300,
+            child: _buildSignList(context, checkpointInspection.signs),
           ),
           actions: <Widget>[
-            TextButton(
-              child: const Text('Approve'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
+            MyTextButton.secondary(
+                text: "Cancel",
+                onPressed: () {
+                  Navigator.of(context).pop();
+                }),
+            MyTextButton.positive(
+                text: "Update",
+                onPressed: () {
+                  Navigator.of(context).pop();
+                }),
           ],
         );
       },
+    );
+  }
+
+  ListView _buildSignList(BuildContext context, List<Sign> signs) {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: signs.length,
+      itemBuilder: ((context, index) {
+        return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                signs[index].title.toString(),
+                style: MyTextStyles.bodyText3,
+              ),
+              SizedBox(
+                  width: 145,
+                  child: CustomDropdownButton<ConformanceStatus>(
+                    // value
+                    value: signs[index]
+                        .conformanceStatus, // TODO change this to be the current conformance status of the sign
+                    // on changed
+                    onChanged: (ConformanceStatus? conformanceStatus) async {
+                      if (conformanceStatus != null) {
+                        // updating the conformance status
+                        // TODO
+                      }
+                    },
+                    // items
+                    items: ConformanceStatus.userSelectableValues
+                        .map<DropdownMenuItem<ConformanceStatus>>(
+                      (conformanceStatus) {
+                        return (DropdownMenuItem(
+                          value: conformanceStatus,
+                          child: BorderedContainer(
+                            isDense: true,
+                            borderColor: conformanceStatus.color,
+                            backgroundColor: conformanceStatus.accentColor,
+                            padding:
+                                const EdgeInsets.all(MySizes.paddingValue / 2),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  conformanceStatus.iconData,
+                                  size: MySizes.smallIconSize,
+                                  color: conformanceStatus.color,
+                                ),
+                                const SizedBox(width: MySizes.spacing),
+                                Text(
+                                  conformanceStatus.title.toCapitalized(),
+                                  style: MyTextStyles.bodyText3,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ));
+                      },
+                    ).toList(),
+                  ))
+            ]);
+      }),
     );
   }
 
@@ -147,7 +223,7 @@ class ImageViewState extends State<ImageView> {
               size: 25,
             ),
             onPressed: () {
-              updateCheckpoint(context);
+              updateCheckpoint(context, checkpointInspection);
             },
           )
         ]),

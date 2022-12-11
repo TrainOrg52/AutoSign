@@ -4,6 +4,7 @@ import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
 import 'package:auto_sign_mobile/view/widgets/bordered_container.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 class RemediationsList extends StatelessWidget {
@@ -64,10 +65,15 @@ Widget remediationTile(Remediation remediation, BuildContext context) {
                   numIssuesWidget(remediation.numRemediations)
                 ],
               ),
-              leading: const Icon(
-                Icons.build,
-                size: 40,
-                color: Colors.black,
+              leading: const SizedBox(
+                height: 30,
+                width: 30,
+                child: Center(
+                    child: Icon(
+                  FontAwesomeIcons.hammer,
+                  size: 25,
+                  color: Colors.black,
+                )),
               ),
               trailing: IconButton(
                 icon: const Icon(
