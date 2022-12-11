@@ -207,37 +207,56 @@ class CheckpointStatusContainer extends StatelessWidget {
                   style: MyTextStyles.bodyText2,
                 ),
                 const SizedBox(height: MySizes.spacing),
-                Row(
-                  children: [
-                    BorderedContainer(
-                      isDense: true,
-                      borderColor: checkpoint.lastVehicleInspectionResult.color,
-                      backgroundColor:
-                          checkpoint.lastVehicleInspectionResult.accentColor,
-                      padding: const EdgeInsets.all(MySizes.paddingValue / 2),
-                      child: Text(
-                        checkpoint.lastVehicleInspectionResult.title
-                            .toTitleCase(),
-                        style: MyTextStyles.bodyText2,
+
+                // LAST INSPECTION EXISTS //
+
+                if (checkpoint.lastVehicleInspectionID != "")
+                  Row(
+                    children: [
+                      BorderedContainer(
+                        isDense: true,
+                        borderColor:
+                            checkpoint.lastVehicleInspectionResult.color,
+                        backgroundColor:
+                            checkpoint.lastVehicleInspectionResult.accentColor,
+                        padding: const EdgeInsets.all(MySizes.paddingValue / 2),
+                        child: Text(
+                          checkpoint.lastVehicleInspectionResult.title
+                              .toTitleCase(),
+                          style: MyTextStyles.bodyText2,
+                        ),
                       ),
+                      const SizedBox(width: MySizes.spacing),
+                      MyIconButton.secondary(
+                        iconData: FontAwesomeIcons.circleChevronRight,
+                        onPressed: () {
+                          // navigating to inspection
+                          context.pushNamed(
+                            Routes.vehicleInspection,
+                            params: {
+                              "vehicleID": checkpoint.vehicleID,
+                              "vehicleInspectionID":
+                                  checkpoint.lastVehicleInspectionID,
+                            },
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+
+                // LAST INSPECTION DOES NOT EXIST //
+
+                if (checkpoint.lastVehicleInspectionID == "")
+                  const BorderedContainer(
+                    isDense: true,
+                    borderColor: MyColors.lineColor,
+                    backgroundColor: MyColors.grey100,
+                    padding: EdgeInsets.all(MySizes.paddingValue / 2),
+                    child: Text(
+                      "None",
+                      style: MyTextStyles.bodyText2,
                     ),
-                    const SizedBox(width: MySizes.spacing),
-                    MyIconButton.secondary(
-                      iconData: FontAwesomeIcons.circleChevronRight,
-                      onPressed: () {
-                        // navigating to inspection
-                        context.pushNamed(
-                          Routes.vehicleInspection,
-                          params: {
-                            "vehicleID": checkpoint.vehicleID,
-                            "vehicleInspectionID":
-                                checkpoint.lastVehicleInspectionID,
-                          },
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                  ),
               ],
             ),
 
