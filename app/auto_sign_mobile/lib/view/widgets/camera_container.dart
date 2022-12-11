@@ -111,6 +111,7 @@ class _CameraContainerAuxState extends State<CameraContainerAux> {
       widget.cameras.first, // first camera is rear camera
       ResolutionPreset.max,
       imageFormatGroup: ImageFormatGroup.bgra8888,
+      enableAudio: false,
     );
     controller.initialize().then((_) {
       if (!mounted) {
