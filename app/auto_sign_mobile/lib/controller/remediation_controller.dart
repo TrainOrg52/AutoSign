@@ -194,7 +194,6 @@ class RemediationController {
   ) {
     return _signRemediationsRef
         .where("vehicleRemediationID", isEqualTo: vehicleRemediationID)
-        .orderBy("index")
         .snapshots()
         .map(
           (snapshot) => snapshot.docs
