@@ -156,6 +156,8 @@ def processVehicleInspection(vehicle_inspection, vehicle):
             if len(os.listdir(dst_root)):
                 video_bbox_coords, video_signs = obj_det.video_forward(dst_root, local_root)
 
+                print(video_signs)
+
                 # filter signs with video logic
                 filtered_signs = sign_presence_logic(video_signs, video_bbox_coords)
                 identified_signs.append(filtered_signs)

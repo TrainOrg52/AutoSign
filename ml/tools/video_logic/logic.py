@@ -59,6 +59,7 @@ def sign_presence_logic(identified_signs, bbox_coords):
 
     # remove signs identified outside the window of acceptance, perform "BTEC" NMS and remove once occurring signs
     padding = 10
+    print(identified_signs, flush=True)
     for frame_index in range(len(identified_signs)):
         # get the signs in the frame
         frame_signs = identified_signs[frame_index]
@@ -113,12 +114,14 @@ def sign_presence_logic(identified_signs, bbox_coords):
         # ########################### #
 
         if frame_index >= 1:
-            for sign_index in range(len(frame_signs)):
-                current_sign = identified_signs[frame_index][sign_index]
+            lag = 0
+            for sign_index in range(len(identified_signs[frame_index])):
+                current_sign = identified_signs[frame_index][sign_index-lag]
                 if current_sign not in identified_signs[frame_index - 1]:
                     if (frame_index < len(identified_signs)) and (
                             current_sign not in identified_signs[frame_index + 1]):
-                        identified_signs[frame_index].pop(sign_index)
+                        identified_signs[frame_index].pop(sign_index-lag)
+                        lag += 1
 
     # identify signs in video
     print("-" * 20)
