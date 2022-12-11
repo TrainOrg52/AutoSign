@@ -40,7 +40,7 @@ class Checkpoint:
     """
     @authors: Charlie Powell, Benjamin Sanati
     """
-    def __init__(self, id, timestamp, index, vehicleID, title, prompt, signs, conformanceStatus, lastVehicleInspectionID, lastVehicleInspectionResult, lastVehicleRemediationID):
+    def __init__(self, id, timestamp, index, vehicleID, title, prompt, signs, conformanceStatus, lastVehicleInspectionID, lastVehicleInspectionResult, lastVehicleRemediationID, remediationStatus, captureType):
         self.id = id
         self.timestamp = timestamp
         self.index = index
@@ -52,6 +52,8 @@ class Checkpoint:
         self.lastVehicleInspectionID = lastVehicleInspectionID
         self.lastVehicleInspectionResult = lastVehicleInspectionResult
         self.lastVehicleRemediationID = lastVehicleRemediationID
+        self.remediationStatus = remediationStatus
+        self.captureType = captureType
 
     @staticmethod
     def from_doc(doc):
@@ -69,6 +71,8 @@ class Checkpoint:
             data["lastVehicleInspectionID"],
             data["lastVehicleInspectionResult"],
             data["lastVehicleRemediationID"],
+            data["remediationStatus"],
+            data["captureType"]
         )
 
     def to_dict(self):
@@ -82,7 +86,9 @@ class Checkpoint:
             "lastVehicleInspectionID": self.lastVehicleInspectionID,
             "lastVehicleInspectionResult": self.lastVehicleInspectionResult,
             "lastVehicleRemediationID": self.lastVehicleRemediationID,
-            "signs": self.signs
+            "signs": self.signs,
+            "remediationStatus": self.remediationStatus,
+            "captureType": self.captureType
         }
 
     def update(self, db):
@@ -131,7 +137,7 @@ class CheckpointInspection:
     """
     @authors: Charlie Powell, Benjamin Sanati
     """
-    def __init__(self, id, index, timestamp, vehicleID, title, conformanceStatus, signs, checkpointID, vehicleInspectionID):
+    def __init__(self, id, index, timestamp, vehicleID, title, conformanceStatus, signs, checkpointID, vehicleInspectionID, captureType):
         self.id = id
         self.index = index
         self.timestamp = timestamp
@@ -141,6 +147,7 @@ class CheckpointInspection:
         self.conformanceStatus = conformanceStatus
         self.signs = signs
         self.vehicleInspectionID = vehicleInspectionID
+        self.captureType = captureType
 
     @staticmethod
     def from_doc(doc):
@@ -155,7 +162,8 @@ class CheckpointInspection:
             data["conformanceStatus"],
             data["signs"],
             data["checkpointID"],
-            data["vehicleInspectionID"]
+            data["vehicleInspectionID"],
+            data["captureType"]
         )
 
     def to_dict(self):
@@ -167,7 +175,8 @@ class CheckpointInspection:
             "conformanceStatus": self.conformanceStatus,
             "signs": self.signs,
             "checkpointID": self.checkpointID,
-            "vehicleInspectionID": self.vehicleInspectionID
+            "vehicleInspectionID": self.vehicleInspectionID,
+            "captureType": self.captureType
         }
 
     def update(self, db):

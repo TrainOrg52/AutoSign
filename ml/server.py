@@ -1,9 +1,14 @@
+import os
+import sys
+import cv2
+import math
+from model import *
 from time import sleep
+from PIL import Image, ImageOps
+from tools.video_logic.logic import *
 
 from firebase import Firebase
 from firebase_admin import credentials, firestore, initialize_app, storage
-from PIL import Image, ImageOps
-from model import *
 import torchvision.transforms as transforms
 from object_detector.inference import ObjectDetector
 
@@ -37,7 +42,7 @@ def runServer():
                 print(f"Identified inspection walkthrough for train {vehicle_inspection.vehicleID}")
 
                 # processing inspection walkthrough
-                processInspectionWalkthrough(vehicle_inspection, vehicle)
+                processVehicleInspection(vehicle_inspection, vehicle)
 
             print("All trains processed!")
 
@@ -53,7 +58,7 @@ def runServer():
     @return: N/A
     @authors: Benjamin Sanati, Charlie Powell
 """
-def processInspectionWalkthrough(vehicle_inspection, vehicle):
+def processVehicleInspection(vehicle_inspection, vehicle):
     # ############################################### #
     # STEP 1: UPDATE STATUS OF INSPECTION WALKTHROUGH #
     # ############################################### #
@@ -76,52 +81,102 @@ def processInspectionWalkthrough(vehicle_inspection, vehicle):
     checkpoint_inspections = checkpoint_inspections_collection.where(u'vehicleInspectionID', u'==',
                                                                      vehicle_inspection.id).get()
 
-    storage_roots = []
-    vehicle_checkpoints = []
-    vehicle_checkpoint_signs = []
+    vehicle_checkpoints, vehicle_checkpoint_signs = [], []
+    identified_signs = []
+    media_type = []
     for checkpoint_inspection in checkpoint_inspections:
         # STEP 2.1: GATHERING INSPECTION CHECKPOINT DOCUMENT #
         vehicle_checkpoint = CheckpointInspection.from_doc(checkpoint_inspection)
 
-        # STEP 2.2: DOWNLOADING UNPROCESSED MEDIA FROM CLOUD STROAGE #
+        # STEP 2.2: DOWNLOADING UNPROCESSED MEDIA FROM CLOUD STORAGE #
 
-        # defining path to Cloud Storage
-        storage_root = f"/{vehicle_inspection.vehicleID}/vehicleInspections/{vehicle_inspection.id}/{vehicle_checkpoint.id}"
-        storage_path = f"{storage_root}/unprocessed.png"
-        print(f"\tIdentified checkpoint {vehicle_checkpoint.id}")
+        media_type.append(vehicle_checkpoint.captureType)
 
-        # defining path to local storage
-        local_path = f"samples/images/{vehicle_checkpoint.id}.png"
+        print(vehicle_checkpoint.captureType)
+        if vehicle_checkpoint.captureType == 'photo':
+            # defining path to Cloud Storage
+            storage_path = f"/{vehicle_inspection.vehicleID}/vehicleInspections/{vehicle_inspection.id}/{vehicle_checkpoint.id}.png"
+            print(f"\tIdentified checkpoint {vehicle_checkpoint.id}")
 
-        # downloading image from firebase storage
-        storage.child(storage_path).download(local_path)
+            # defining path to local storage
+            local_path = f"samples/images/{vehicle_checkpoint.id}.png"
 
-        # STEP 2.3: PRE-PROCESSING MEDIA #
+            # downloading image from firebase storage
+            storage.child(storage_path).download(local_path)
 
-        image = Image.open(local_path)
-        w, h = image.size
-        image = ImageOps.exif_transpose(image)
-        image = resize(image)
-        image.save(local_path)
+            # STEP 2.3: PRE-PROCESSING MEDIA #
+
+            image = Image.open(local_path)
+            image = ImageOps.exif_transpose(image)
+            image = resize(image)
+            image.save(local_path)
+
+            # image detection
+            dst_root = 'samples/images'
+            local_root = 'samples/processed_images'
+            if len(os.listdir(dst_root)):
+                _, image_identified_signs = obj_det(dst_root, local_root)
+
+            identified_signs.extend(image_identified_signs)
+        elif vehicle_checkpoint.captureType == 'video':
+            # defining path to Cloud Storage
+            storage_path = f"/{vehicle_inspection.vehicleID}/vehicleInspections/{vehicle_inspection.id}/{vehicle_checkpoint.id}.mp4"
+            print(f"\tIdentified checkpoint {vehicle_checkpoint.id}")
+
+            # defining path to local storage
+            local_path = f"samples/videos/{vehicle_checkpoint.id}.mp4"
+
+            # downloading image from firebase storage
+            storage.child(storage_path).download(local_path)
+
+            # ################ #
+            # VIDEO PROCESSING #
+            # ################ #
+
+            print("\tVideo Processing...")
+
+            # load video
+            video = cv2.VideoCapture(local_path)
+            total_num_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+
+            # frame image path in local
+            frame_root = f"samples/video_images"
+
+            # video preprocessing
+            frame_num, count = 0, math.floor(total_num_frames / 20)
+            count = count if (count > 7) else 7
+            video_processing(video, frame_num, count, frame_root, total_num_frames)
+
+            if os.path.exists(local_path):
+                os.remove(local_path)
+
+            # video detection
+            dst_root = 'samples/video_images'
+            local_root = 'samples/processed_videos'
+            if len(os.listdir(dst_root)):
+                video_bbox_coords, video_signs = obj_det.video_forward(dst_root, local_root)
+
+                print(video_signs)
+
+                # filter signs with video logic
+                filtered_signs = sign_presence_logic(video_signs, video_bbox_coords)
+                identified_signs.append(filtered_signs)
+                print(f"\tFiltered Signs: {filtered_signs}")
 
         # adding data to lists
-        storage_roots.append(storage_root)
         vehicle_checkpoints.append(vehicle_checkpoint)
         vehicle_checkpoint_signs.append(vehicle_checkpoint.signs)
 
     # STEP 2.4: PROCESSING MEDIA AND SAVING TO STORAGE #
 
-    print("\tDetecting Signs...", flush=True)
-
-    dst_root = fr'samples/images'
-    local_root = fr'samples/processed_images'
-    _, identified_signs = obj_det(dst_root, local_root, storage, storage_roots, w, h)
+    print(f"\n\t\tIdentified Signs: {identified_signs}")
 
     # STEP 2.5: COMPARE LOCATED LABELS TO EXPECTED #
 
     print("\tChecking Conformance Status...")
     for predicted_signs, vehicle_sign, vehicle_checkpoint in zip(identified_signs, vehicle_checkpoint_signs,
                                                                  vehicle_checkpoints):
+
         new_checkpoint_conformance = "conforming"
 
         # updating signs
@@ -133,16 +188,16 @@ def processInspectionWalkthrough(vehicle_inspection, vehicle):
         checkpoint.conformanceStatus = "processing"
         checkpoint.lastVehicleInspectionResult = "conforming"
 
-        for (sign_id, sign_conformance) in vehicle_sign.items():
+        for pos, (signage) in enumerate(vehicle_sign):
             # checking if inspection sign identified
-            if sign_id in predicted_signs:
+            if signage['title'] in predicted_signs:
                 # sign identified -> updating status
 
                 # setting new sign conformance
                 new_sign_conformance = "conforming"
 
                 # removing identified sign from list
-                idx = predicted_signs.index(sign_id)
+                idx = predicted_signs.index(signage['title'])
                 predicted_signs.pop(idx)
 
             else:
@@ -164,14 +219,15 @@ def processInspectionWalkthrough(vehicle_inspection, vehicle):
             checkpoint.update(db)
 
             # updating signs
-            new_signs[sign_id] = new_sign_conformance
+            new_signs[pos]['conformanceStatus'] = new_sign_conformance
 
-        # STEP 2.6: UPDATE FIREBASE WITH CONFORMANCE AND PROCESSING STATUS FOR INSPECTION #
+            # STEP 2.6: UPDATE FIREBASE WITH CONFORMANCE AND PROCESSING STATUS FOR INSPECTION #
 
-        # updating inspection checkpoint object
-        vehicle_checkpoint.signs = new_signs
-        vehicle_checkpoint.conformanceStatus = new_checkpoint_conformance
-        vehicle_checkpoint.update(db)
+            # updating inspection checkpoint and checkpoint objects
+            vehicle_checkpoint.signs = new_signs
+            checkpoint.signs = new_signs
+            vehicle_checkpoint.conformanceStatus = new_checkpoint_conformance
+            vehicle_checkpoint.update(db)
 
     vehicle_inspection.processingStatus = "processed"
     vehicle_inspection.update(db)
@@ -234,7 +290,7 @@ if __name__ == "__main__":
     resize = transforms.Resize([1280, 1280])
 
     # initialize object detector
-    obj_det = ObjectDetector(image_size=1280, conf_thresh=0.7, iou_thresh=0.7, num_classes=11, view_img=False)
+    obj_det = ObjectDetector(image_size=1280, conf_thresh=0.65, iou_thresh=0.65, num_classes=38, view_img=False)
 
     print("Setup Complete!")
     print("-----------------------")
