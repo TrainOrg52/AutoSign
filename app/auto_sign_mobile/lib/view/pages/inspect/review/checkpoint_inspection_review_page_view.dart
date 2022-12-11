@@ -193,6 +193,7 @@ class _CheckpointInspectionReviewPageViewState
   /// [CheckpointInspection].
   Widget _buildCapturePage() {
     return CameraContainer(
+      key: GlobalKey(),
       captureType: widget.checkpointInspection.captureType,
       onCaptured: (capturePath) {
         // handling capture
@@ -226,6 +227,7 @@ class _CheckpointInspectionReviewPageViewState
         Expanded(
           flex: 12,
           child: CapturePreview(
+            key: GlobalKey(),
             captureType: widget.checkpointInspection.captureType,
             path: capturePath,
           ),

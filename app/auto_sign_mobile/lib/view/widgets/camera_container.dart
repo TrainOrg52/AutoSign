@@ -117,8 +117,11 @@ class _CameraContainerAuxState extends State<CameraContainerAux> {
       if (!mounted) {
         return;
       }
-      setState(() {
+      setState(() async {
         isInitialized = true;
+        if (widget.captureType == CaptureType.video) {
+          controller.prepareForVideoRecording();
+        }
       });
     }).catchError(
       (Object e) {
