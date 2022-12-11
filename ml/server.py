@@ -1,5 +1,3 @@
-import os
-import sys
 import cv2
 import math
 from model import *
@@ -114,10 +112,15 @@ def processVehicleInspection(vehicle_inspection, vehicle):
             # image detection
             dst_root = 'samples/images'
             local_root = 'samples/processed_images'
-            if len(os.listdir(dst_root)):
-                _, image_identified_signs = obj_det(dst_root, local_root)
+
+            _, image_identified_signs = obj_det(dst_root, local_root)
 
             identified_signs.extend(image_identified_signs)
+
+            # damage detection
+            damage_root = 'samples/normalized_images'
+
+
         elif vehicle_checkpoint.captureType == 'video':
             # defining path to Cloud Storage
             storage_path = f"/{vehicle_inspection.vehicleID}/vehicleInspections/{vehicle_inspection.id}/{vehicle_checkpoint.id}.mp4"
@@ -153,15 +156,14 @@ def processVehicleInspection(vehicle_inspection, vehicle):
             # video detection
             dst_root = 'samples/video_images'
             local_root = 'samples/processed_videos'
-            if len(os.listdir(dst_root)):
-                video_bbox_coords, video_signs = obj_det.video_forward(dst_root, local_root)
+            video_bbox_coords, video_signs = obj_det.video_forward(dst_root, local_root)
 
-                print(video_signs)
+            print(video_signs)
 
-                # filter signs with video logic
-                filtered_signs = sign_presence_logic(video_signs, video_bbox_coords)
-                identified_signs.append(filtered_signs)
-                print(f"\tFiltered Signs: {filtered_signs}")
+            # filter signs with video logic
+            filtered_signs = sign_presence_logic(video_signs, video_bbox_coords)
+            identified_signs.append(filtered_signs)
+            print(f"\tFiltered Signs: {filtered_signs}")
 
         # adding data to lists
         vehicle_checkpoints.append(vehicle_checkpoint)

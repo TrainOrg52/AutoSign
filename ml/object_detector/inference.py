@@ -8,9 +8,11 @@ import torch.nn as nn
 import numpy as np
 from numpy import random
 from PIL import Image
+from skimage import transform
 import sys
 from tqdm import tqdm
 
+import matplotlib.pyplot as plt
 from torchvision.transforms import transforms
 
 sys.path.insert(0, r'object_detector/yolov7')
@@ -170,8 +172,29 @@ class ObjectDetector(nn.Module):
             # save image
             data_dst = os.path.join(processed_destination, tail)
             cv2.imwrite(data_dst, im0)
+            # STEP 2.4.2: SAVE NORMALIZED SIGN IMAGES
 
-            # STEP 2.4.2: DELETE LOCAL IMAGES
+            for i, (box) in enumerate(pred[:, :4].cpu().numpy()):
+                image = img.squeeze().cpu()
+                image = image.permute(1, 2, 0).numpy()
+
+                x1, y1 = box[0], box[1]
+                x2, y2 = box[2], box[3]
+                src = np.array([[x1, y1], [x1, y2], [x2, y2], [x2, y1]]).reshape((4, 2))
+                dst = np.array([[0, 0], [0, image.shape[1]], [image.shape[0], image.shape[1]], [image.shape[0], 0]]).reshape((4, 2))
+
+                tform = transform.estimate_transform('projective', src, dst)
+                tf_img = transform.warp(image, tform.inverse)
+
+                # plotting the transformed image
+                fig, ax = plt.subplots()
+                ax.imshow(tf_img)
+
+                plt.axis('off')
+                plt.savefig(f"samples/normalized_images/{i}.png", bbox_inches='tight', pad_inches=0)
+                plt.close()
+
+            # STEP 2.4.3: DELETE LOCAL IMAGES
 
             # delete image (both processed and non-processed images)
             processed_file = os.path.join(processed_destination, tail)
