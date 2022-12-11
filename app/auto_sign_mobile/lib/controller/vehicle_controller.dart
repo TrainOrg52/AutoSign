@@ -232,7 +232,7 @@ class VehicleController {
     ConformanceStatus checkpointConformanceStatus =
         ConformanceStatus.conforming;
     for (Sign sign in checkpoint.signs) {
-      if (sign.conformanceStatus == ConformanceStatus.nonConforming) {
+      if (sign.conformanceStatus.isNonConforming()) {
         checkpointConformanceStatus = ConformanceStatus.nonConforming;
         break;
       }
@@ -263,7 +263,7 @@ class VehicleController {
     // updating conformance status of vehicle object
     ConformanceStatus vehicleConformanceStatus = ConformanceStatus.conforming;
     for (Checkpoint checkpoint in checkpoints) {
-      if (checkpoint.conformanceStatus == ConformanceStatus.nonConforming) {
+      if (checkpoint.conformanceStatus.isNonConforming()) {
         vehicleConformanceStatus = ConformanceStatus.nonConforming;
         break;
       }

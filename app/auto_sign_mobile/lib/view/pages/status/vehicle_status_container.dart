@@ -59,10 +59,10 @@ class VehicleStatusContainer extends StatelessWidget {
           ),
 
           // //////////////////////// //
-          // START REMEDIATION BUTTON //
+          // START REMEDIATION BUTTON // (only if non-conforming)
           // //////////////////////// //
 
-          if (vehicle.conformanceStatus == ConformanceStatus.nonConforming) ...[
+          if (vehicle.conformanceStatus.isNonConforming()) ...[
             const SizedBox(height: MySizes.spacing),
             MyTextButton.custom(
               backgroundColor: vehicle.conformanceStatus.color,

@@ -1,7 +1,6 @@
 import 'package:auto_sign_mobile/controller/shop_controller.dart';
 import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
 import 'package:auto_sign_mobile/main.dart';
-import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
 import 'package:auto_sign_mobile/model/vehicle/checkpoint.dart';
 import 'package:auto_sign_mobile/model/vehicle/sign.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
@@ -264,7 +263,7 @@ class _RemediatePageState extends State<RemediatePage> {
           const SizedBox(height: MySizes.spacing),
 
           for (var sign in checkpoint.signs)
-            if (sign.conformanceStatus == ConformanceStatus.nonConforming)
+            if (sign.conformanceStatus.isNonConforming())
               Row(
                 children: [
                   // /////////// //

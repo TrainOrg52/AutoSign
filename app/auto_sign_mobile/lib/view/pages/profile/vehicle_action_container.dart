@@ -1,5 +1,4 @@
 import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
-import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
 import 'package:auto_sign_mobile/model/vehicle/vehicle.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
@@ -83,8 +82,7 @@ class VehicleActionContainer extends StatelessWidget {
                   child: _buildActionButton(
                     text: "Remediate",
                     icon: FontAwesomeIcons.hammer,
-                    isDisabled: vehicle.conformanceStatus !=
-                        ConformanceStatus.nonConforming,
+                    isDisabled: vehicle.conformanceStatus.isConforming(),
                     onPressed: () {
                       // handling the action
                       _handleRemediate(context);

@@ -1,7 +1,6 @@
 import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
 import 'package:auto_sign_mobile/main.dart';
 import 'package:auto_sign_mobile/model/enums/capture_type.dart';
-import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
 import 'package:auto_sign_mobile/model/enums/remediation_status.dart';
 import 'package:auto_sign_mobile/model/vehicle/checkpoint.dart';
 import 'package:auto_sign_mobile/model/vehicle/sign.dart';
@@ -301,7 +300,7 @@ class CheckpointStatusContainer extends StatelessWidget {
     // getting list of non-conforming signs
     List<Sign> nonConformingSigns = [];
     for (var sign in checkpoint.signs) {
-      if (sign.conformanceStatus == ConformanceStatus.nonConforming) {
+      if (sign.conformanceStatus.isNonConforming()) {
         nonConformingSigns.add(sign);
       }
     }
