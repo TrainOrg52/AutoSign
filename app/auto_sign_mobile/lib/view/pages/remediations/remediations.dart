@@ -1,13 +1,21 @@
+import 'package:auto_sign_mobile/controller/inspection_controller.dart';
+import 'package:auto_sign_mobile/controller/remediation_controller.dart';
 import 'package:auto_sign_mobile/view/pages/inspections/inspections.dart';
+import 'package:auto_sign_mobile/view/pages/remediations/remediation_checkpoint_page.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
 import 'package:auto_sign_mobile/view/widgets/bordered_container.dart';
+import 'package:auto_sign_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 class RemediationsList extends StatelessWidget {
+  String vehicleID;
+
+  RemediationsList(this.vehicleID);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +27,13 @@ class RemediationsList extends StatelessWidget {
         backgroundColor: MyColors.antiPrimary,
         centerTitle: true,
       ),
-      body: _buildRemediationList(context),
+      body: CustomStreamBuilder(
+        stream: RemediationController.instance
+            .getVehicleRemediationsWhereVehicleIs(vehicleID),
+        builder: (context, remediations) {
+          return _buildRemediationList(context);
+        },
+      ),
     );
   }
 }

@@ -221,7 +221,7 @@ class Routes {
               String vehicleID = state.params["vehicleID"]!;
 
               // displaying remediate page
-              return RemediationsList();
+              return RemediationsList(vehicleID);
             },
             routes: [
               // /////////////////////// //

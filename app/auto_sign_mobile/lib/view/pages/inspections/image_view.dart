@@ -124,16 +124,12 @@ class ImageViewState extends State<ImageView> {
           actionsAlignment: MainAxisAlignment.center,
           content: Container(
             width: 300,
-            child: _buildSignList(context, checkpointInspection.signs),
+            child: _buildSignList(
+                context, checkpointInspection.signs, checkpointInspection),
           ),
           actions: <Widget>[
             MyTextButton.secondary(
-                text: "Cancel",
-                onPressed: () {
-                  Navigator.of(context).pop();
-                }),
-            MyTextButton.positive(
-                text: "Update",
+                text: "Finish",
                 onPressed: () {
                   Navigator.of(context).pop();
                 }),
@@ -143,7 +139,8 @@ class ImageViewState extends State<ImageView> {
     );
   }
 
-  ListView _buildSignList(BuildContext context, List<Sign> signs) {
+  ListView _buildSignList(BuildContext context, List<Sign> signs,
+      CheckpointInspection checkpointInspection) {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -157,7 +154,7 @@ class ImageViewState extends State<ImageView> {
                 style: MyTextStyles.bodyText3,
               ),
               SizedBox(
-                  width: 145,
+                  width: 175,
                   child: CustomDropdownButton<ConformanceStatus>(
                     // value
                     value: signs[index]
@@ -167,6 +164,11 @@ class ImageViewState extends State<ImageView> {
                       if (conformanceStatus != null) {
                         // updating the conformance status
                         // TODO
+                        InspectionController.instance
+                            .updateCheckpointInspectionSignConformanceStatus(
+                                checkpointInspection,
+                                signs[index],
+                                conformanceStatus);
                       }
                     },
                     // items
