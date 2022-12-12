@@ -7,9 +7,11 @@ import 'package:auto_sign_mobile/view/theme/widgets/my_text_button.dart';
 import 'package:auto_sign_mobile/view/widgets/bordered_container.dart';
 import 'package:auto_sign_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../model/remediation/sign_remediation.dart';
+import '../../theme/data/my_sizes.dart';
 
 class RemediationSummary extends StatelessWidget {
   String vehicleID;
@@ -43,16 +45,16 @@ class RemediationSummary extends StatelessWidget {
               .getSignRemediationsWhereVehicleRemediationIs(
                   vehicleRemediationID),
           builder: (context, signremediations) {
-            return _buildCheckpointList(context, signremediations);
+            return _buildCheckpointList(context, signremediations, vehicleID);
           },
         ));
   }
 }
 
-ListView _buildCheckpointList(
-    BuildContext context, List<SignRemediation> signremediations) {
+ListView _buildCheckpointList(BuildContext context,
+    List<SignRemediation> signremediations, String vehicleID) {
   return ListView.builder(
-      itemCount: 7,
+      itemCount: signremediations.length + 4,
       itemBuilder: (_, index) {
         if (index == 0) {
           //return remediationTile(remediation, context);
@@ -75,50 +77,66 @@ ListView _buildCheckpointList(
 
         return remediationCheckpoint(
             signremediations[index - 4].checkpointTitle.toString(),
-            "https://upload.wikimedia.org/wikipedia/commons/4/4a/100x100_logo.png",
-            signremediations[index - 4].title.toString(),
+            signremediations[index - 4],
+            signremediations[index - 4]
+                .preRemediationConformanceStatus
+                .toString(),
+            vehicleID,
             context);
       });
 }
 
-Widget remediationCheckpoint(String sectionName, String imageURL,
-    String issueDescription, BuildContext context) {
-  return BorderedContainer(
-      padding: const EdgeInsets.all(0),
-      height: 230,
-      borderRadius: 10,
-      borderColor: MyColors.backgroundPrimary,
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(
-          sectionName,
-          style: MyTextStyles.headerText1,
-        ),
-        Row(children: [
-          SizedBox(
-            width: 100,
-            child: Image(image: NetworkImage(imageURL)),
-          ),
-          const SizedBox(
-            width: 30,
-          ),
-          issueAction(issueDescription)
-        ]),
-        spacing(10),
-        Center(
-          child: MyTextButton.secondary(
-              text: "View",
-              onPressed: () {
-                context.pushNamed(
-                  Routes.remediationCheckpoint,
-                  params: {
-                    "remediationWalkthroughID": "2",
-                    "vehicleID": "707-008",
-                    "remediationCheckpointID": "2"
-                  },
-                );
-              }),
-        ),
-      ]));
+Widget remediationCheckpoint(
+    String sectionName,
+    SignRemediation signRemediation,
+    String issueDescription,
+    String vehicleID,
+    BuildContext context) {
+  return CustomStreamBuilder(
+      stream: RemediationController.instance.getSignRemediationDownloadURL(
+          vehicleID, signRemediation.vehicleRemediationID, signRemediation.id),
+      builder: (context, imageURL) {
+        return BorderedContainer(
+            padding: const EdgeInsets.all(0),
+            height: 230,
+            borderRadius: 10,
+            borderColor: MyColors.backgroundPrimary,
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(
+                sectionName,
+                style: MyTextStyles.headerText1,
+              ),
+              Row(children: [
+                SizedBox(
+                  height: 150,
+                  child: Image(image: NetworkImage(imageURL)),
+                ),
+                const SizedBox(
+                  width: 30,
+                ),
+                issueAction(issueDescription)
+              ]),
+              spacing(10),
+              Center(
+                child: MyTextButton.secondary(
+                    text: "View",
+                    onPressed: () {
+                      context.pushNamed(
+                        Routes.remediationCheckpoint,
+                        params: {
+                          "remediationWalkthroughID":
+                              signRemediation.vehicleRemediationID,
+                          "vehicleID": vehicleID,
+                          "remediationCheckpointID":
+                              signRemediation.checkpointID,
+                          "signID": signRemediation.id,
+                        },
+                      );
+                    }),
+              ),
+            ]));
+      });
 }
 
 Widget issueAction(String issueDescription) {
@@ -138,50 +156,52 @@ Widget issueAction(String issueDescription) {
 
 Widget issue(String issueDescription) {
   return BorderedContainer(
-      width: 250,
-      height: 45,
-      backgroundColor: MyColors.negativeAccent,
-      borderColor: MyColors.negative,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.warning,
-            color: MyColors.negative,
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-          Text(
-            issueDescription,
-            style: MyTextStyles.buttonTextStyle,
-          )
-        ],
-      ));
+    isDense: true,
+    borderColor: MyColors.negative,
+    backgroundColor: MyColors.negativeAccent,
+    padding: const EdgeInsets.all(MySizes.paddingValue / 2),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Icon(
+          FontAwesomeIcons.exclamation,
+          size: MySizes.smallIconSize,
+          color: MyColors.negative,
+        ),
+        const SizedBox(width: MySizes.spacing),
+        Text(
+          issueDescription,
+          style: MyTextStyles.bodyText1,
+        ),
+      ],
+    ),
+  );
 }
 
 Widget remediatedWidget() {
   return BorderedContainer(
-      width: 160,
-      height: 45,
-      backgroundColor: MyColors.greenAccent,
-      borderColor: MyColors.green,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: const [
-          Icon(
-            Icons.check_circle,
-            color: MyColors.green,
-          ),
-          SizedBox(
-            width: 10,
-          ),
-          Text(
-            "Remediated",
-            style: MyTextStyles.buttonTextStyle,
-          )
-        ],
-      ));
+    isDense: true,
+    borderColor: MyColors.green,
+    backgroundColor: MyColors.greenAccent,
+    padding: const EdgeInsets.all(MySizes.paddingValue / 2),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: const [
+        Icon(
+          FontAwesomeIcons.recycle,
+          size: MySizes.smallIconSize,
+          color: MyColors.green,
+        ),
+        SizedBox(width: MySizes.spacing),
+        Text(
+          "Replaced",
+          style: MyTextStyles.bodyText1,
+        ),
+      ],
+    ),
+  );
 }
 
 Widget spacing(double size) {

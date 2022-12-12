@@ -34,15 +34,15 @@ class RemediationsList extends StatelessWidget {
         stream: RemediationController.instance
             .getVehicleRemediationsWhereVehicleIs(vehicleID),
         builder: (context, remediations) {
-          return _buildRemediationList(context, remediations);
+          return _buildRemediationList(context, remediations, vehicleID);
         },
       ),
     );
   }
 }
 
-ListView _buildRemediationList(
-    BuildContext context, List<VehicleRemediation> remediations) {
+ListView _buildRemediationList(BuildContext context,
+    List<VehicleRemediation> remediations, String vehicleID) {
   return ListView.builder(
       padding: EdgeInsets.zero,
       itemCount: remediations.length * 2,
@@ -52,11 +52,12 @@ ListView _buildRemediationList(
             height: 8,
           );
         }
-        return remediationTile(remediations[index ~/ 2], context);
+        return remediationTile(remediations[index ~/ 2], vehicleID, context);
       });
 }
 
-Widget remediationTile(VehicleRemediation remediation, BuildContext context) {
+Widget remediationTile(
+    VehicleRemediation remediation, String vehicleID, BuildContext context) {
   return BorderedContainer(
       padding: const EdgeInsets.all(0),
       height: 70,
@@ -103,8 +104,8 @@ Widget remediationTile(VehicleRemediation remediation, BuildContext context) {
                   context.pushNamed(
                     Routes.remediationWalkthrough,
                     params: {
-                      "remediationWalkthroughID": "2",
-                      "vehicleID": "707-008"
+                      "remediationWalkthroughID": remediation.id,
+                      "vehicleID": vehicleID
                     },
                   );
                 },

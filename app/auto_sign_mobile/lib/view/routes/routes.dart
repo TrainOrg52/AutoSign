@@ -249,14 +249,19 @@ class Routes {
                 routes: [
                   GoRoute(
                     name: Routes.remediationCheckpoint,
-                    path: ":remediationCheckpointID",
+                    path: ":remediationCheckpointID/:signID",
                     builder: (context, state) {
                       // getting params from state
+                      String vehicleID = state.params["vehicleID"]!;
+                      String remediationWalkthroughID =
+                          state.params["remediationWalkthroughID"]!;
                       String remediationCheckpointID =
                           state.params["remediationCheckpointID"]!;
+                      String signID = state.params["signID"]!;
 
                       // displaying remediate page
-                      return RemediationFix();
+                      return RemediationFix(vehicleID, remediationWalkthroughID,
+                          remediationCheckpointID, signID);
                     },
                   )
                 ],
