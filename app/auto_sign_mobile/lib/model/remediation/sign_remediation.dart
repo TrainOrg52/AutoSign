@@ -11,6 +11,7 @@ class SignRemediation extends ModelObject {
   String title; // the title of the sign being remediated
   String checkpointID; // id of the corresponding checkpoint
   String checkpointTitle; // title of the checkpoint
+  String checkpointInspectionID; // ID of checkpoint inspection being remediated
   String vehicleRemediationID; // ID of the vehicle remediation this is for
   ConformanceStatus
       preRemediationConformanceStatus; // conformance status prior to remediation
@@ -30,6 +31,7 @@ class SignRemediation extends ModelObject {
     this.title = "",
     this.checkpointID = "",
     this.checkpointTitle = "",
+    this.checkpointInspectionID = "",
     this.vehicleRemediationID = "",
     ConformanceStatus? preRemediationConformanceStatus,
     RemediationAction? remediationAction,
@@ -47,6 +49,7 @@ class SignRemediation extends ModelObject {
     required Sign sign,
     required String checkpointID,
     required String checkpointTitle,
+    required String checkpointInspectionID,
     required RemediationAction remediationAction,
     required String capturePath,
   }) {
@@ -55,6 +58,7 @@ class SignRemediation extends ModelObject {
       title: sign.title,
       checkpointID: checkpointID,
       checkpointTitle: checkpointTitle,
+      checkpointInspectionID: checkpointInspectionID,
       preRemediationConformanceStatus: sign.conformanceStatus,
       remediationAction: remediationAction,
       capturePath: capturePath,
@@ -79,6 +83,7 @@ class SignRemediation extends ModelObject {
       title: data?["title"],
       checkpointID: data?["checkpointID"],
       checkpointTitle: data?["checkpointTitle"],
+      checkpointInspectionID: data?["checkpointInspectionID"],
       vehicleRemediationID: data?["vehicleRemediationID"],
       preRemediationConformanceStatus: ConformanceStatus.fromString(
           data?["preRemediationConformanceStatus"]),
@@ -97,6 +102,7 @@ class SignRemediation extends ModelObject {
       "title": title,
       "checkpointID": checkpointID,
       "checkpointTitle": checkpointTitle,
+      "checkpointInspectionID": checkpointInspectionID,
       "vehicleRemediationID": vehicleRemediationID,
       "preRemediationConformanceStatus":
           preRemediationConformanceStatus.toString(),

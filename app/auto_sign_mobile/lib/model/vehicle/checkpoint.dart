@@ -16,6 +16,7 @@ class Checkpoint extends ModelObject {
   CaptureType captureType; // capture type for the checkpoint
   ConformanceStatus conformanceStatus; // current status of the checkpoint
   String lastVehicleInspectionID; // last inspection
+  String lastCheckpointInspectionID; // ID of last checkpoint inspection
   ConformanceStatus lastVehicleInspectionResult; // result of last inspection
   RemediationStatus remediationStatus; // remediation status of the checkpoint
   String? lastVehicleRemediationID; // last remediation (if exists)
@@ -35,6 +36,7 @@ class Checkpoint extends ModelObject {
     CaptureType? captureType,
     ConformanceStatus? conformanceStatus,
     this.lastVehicleInspectionID = "",
+    this.lastCheckpointInspectionID = "",
     ConformanceStatus? lastVehicleInspectionResult,
     RemediationStatus? remediationStatus,
     this.lastVehicleRemediationID,
@@ -62,6 +64,8 @@ class Checkpoint extends ModelObject {
       signs.add(Sign.fromFirestoreData(sign));
     });
 
+    print(data?["lastCheckpointInspectionID"]);
+
     // cocnverting document data to an object
     return Checkpoint(
       id: snapshot.id,
@@ -75,6 +79,7 @@ class Checkpoint extends ModelObject {
       conformanceStatus:
           ConformanceStatus.fromString(data?["conformanceStatus"]),
       lastVehicleInspectionID: data?["lastVehicleInspectionID"],
+      lastCheckpointInspectionID: data?["lastCheckpointInspectionID"],
       lastVehicleInspectionResult:
           ConformanceStatus.fromString(data?["lastVehicleInspectionResult"]),
       remediationStatus:
@@ -101,6 +106,7 @@ class Checkpoint extends ModelObject {
       ],
       "conformanceStatus": conformanceStatus.toString(),
       "lastVehicleInspectionID": lastVehicleInspectionID,
+      "lastCheckpointInspectionID": lastCheckpointInspectionID,
       "lastVehicleInspectionResult": lastVehicleInspectionResult.toString(),
       "remediationStatus": remediationStatus.toString(),
       "lastVehicleRemediationID": lastVehicleRemediationID,

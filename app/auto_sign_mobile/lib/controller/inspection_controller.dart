@@ -110,6 +110,7 @@ class InspectionController {
       await VehicleController.instance.resetCheckpointConformanceStatus(
         checkpointInspection.checkpointID,
         vehicleInspection.id,
+        checkpointInspection.id,
       );
     }
 

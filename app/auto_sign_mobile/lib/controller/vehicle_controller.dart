@@ -196,12 +196,14 @@ class VehicleController {
   Future<void> resetCheckpointConformanceStatus(
     String checkpointID,
     String lastVehicleInspectionID,
+    String lastCheckpointInspectionID,
   ) async {
     // updating checkpoint properties
     await _checkpointsRef.doc(checkpointID).update(
       {
         "conformanceStatus": ConformanceStatus.pending.toString(),
         "lastVehicleInspectionID": lastVehicleInspectionID,
+        "lastCheckpointInspectionID": lastCheckpointInspectionID,
         "lastVehicleInspectionResult": ConformanceStatus.pending.toString(),
         "lastVehicleRemediationID": "",
       },
