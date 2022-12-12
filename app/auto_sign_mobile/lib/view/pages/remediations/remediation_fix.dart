@@ -1,11 +1,8 @@
 import 'package:auto_sign_mobile/controller/inspection_controller.dart';
 import 'package:auto_sign_mobile/controller/remediation_controller.dart';
 import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
-import 'package:auto_sign_mobile/model/remediation/vehicle_remediation.dart';
-import 'package:auto_sign_mobile/view/pages/remediations/remediation_summary.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
-import 'package:auto_sign_mobile/view/theme/widgets/my_text_button.dart';
 import 'package:auto_sign_mobile/view/widgets/colored_container.dart';
 import 'package:auto_sign_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:auto_sign_mobile/view/widgets/padded_custom_scroll_view.dart';
@@ -21,32 +18,40 @@ import '../../widgets/capture_preview.dart';
 class RemediationFix extends StatefulWidget {
   String vehicleID;
   String vehicleRemediationID;
-  String remediationCheckpointID;
-  String signID;
+  String signRemediationID;
 
-  RemediationFix(this.vehicleID, this.vehicleRemediationID,
-      this.remediationCheckpointID, this.signID);
+  RemediationFix(
+    this.vehicleID,
+    this.vehicleRemediationID,
+    this.signRemediationID,
+  );
 
   @override
   RemediationFixState createState() => RemediationFixState(
-      vehicleID, vehicleRemediationID, remediationCheckpointID, signID);
+        vehicleID,
+        vehicleRemediationID,
+        signRemediationID,
+      );
 }
 
 ///Stateful class showing the desired image.
 class RemediationFixState extends State<RemediationFix> {
   String vehicleID;
   String vehicleRemediationID;
-  String remediationCheckpointID;
-  String signID;
+  String signRemediationID;
 
-  RemediationFixState(this.vehicleID, this.vehicleRemediationID,
-      this.remediationCheckpointID, this.signID);
+  RemediationFixState(
+    this.vehicleID,
+    this.vehicleRemediationID,
+    this.signRemediationID,
+  );
   final List<bool> toggleStates = <bool>[true, false, false];
 
   @override
   Widget build(BuildContext context) {
     return CustomStreamBuilder(
-        stream: RemediationController.instance.getSignRemediation(signID),
+        stream: RemediationController.instance
+            .getSignRemediation(signRemediationID),
         builder: (context, sign) {
           return Scaffold(
               appBar: AppBar(
@@ -71,7 +76,7 @@ class RemediationFixState extends State<RemediationFix> {
                                 style: MyTextStyles.headerText1,
                               )
                             ]),
-                        SizedBox(
+                        const SizedBox(
                           height: MySizes.spacing,
                         ),
                         Row(children: [
@@ -85,12 +90,12 @@ class RemediationFixState extends State<RemediationFix> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
+                                const Icon(
                                   FontAwesomeIcons.exclamation,
                                   size: MySizes.smallIconSize,
                                   color: MyColors.negative,
                                 ),
-                                SizedBox(width: MySizes.spacing),
+                                const SizedBox(width: MySizes.spacing),
                                 Text(
                                   sign.preRemediationConformanceStatus
                                       .toString(),
@@ -100,7 +105,7 @@ class RemediationFixState extends State<RemediationFix> {
                             ),
                           )
                         ]),
-                        SizedBox(
+                        const SizedBox(
                           height: MySizes.spacing,
                         ),
                         Row(
@@ -111,7 +116,7 @@ class RemediationFixState extends State<RemediationFix> {
                                 style: MyTextStyles.headerText1,
                               )
                             ]),
-                        SizedBox(
+                        const SizedBox(
                           height: MySizes.spacing,
                         ),
                         Row(children: [
@@ -119,17 +124,18 @@ class RemediationFixState extends State<RemediationFix> {
                             isDense: true,
                             borderColor: MyColors.green,
                             backgroundColor: MyColors.greenAccent,
-                            padding: EdgeInsets.all(MySizes.paddingValue / 2),
+                            padding:
+                                const EdgeInsets.all(MySizes.paddingValue / 2),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
+                                const Icon(
                                   FontAwesomeIcons.recycle,
                                   size: MySizes.smallIconSize,
                                   color: MyColors.green,
                                 ),
-                                SizedBox(width: MySizes.spacing),
+                                const SizedBox(width: MySizes.spacing),
                                 Text(
                                   sign.remediationAction.toString(),
                                   style: MyTextStyles.bodyText1,
@@ -138,7 +144,7 @@ class RemediationFixState extends State<RemediationFix> {
                             ),
                           )
                         ]),
-                        SizedBox(
+                        const SizedBox(
                           height: MySizes.spacing,
                         ),
                         Row(
@@ -198,7 +204,7 @@ class RemediationFixState extends State<RemediationFix> {
                                       toggleStates,
                                       vehicleID,
                                       vehicleRemediationID,
-                                      signID,
+                                      signRemediationID,
                                       vehicleRemediation.vehicleInspectionID,
                                       sign.checkpointInspectionID,
                                       sign.checkpointCaptureType,

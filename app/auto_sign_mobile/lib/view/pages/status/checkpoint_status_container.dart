@@ -293,7 +293,7 @@ class CheckpointStatusContainer extends StatelessWidget {
                             onPressed: () {
                               // navigating to remediation
                               context.pushNamed(
-                                Routes.remediationWalkthrough,
+                                Routes.vehicleRemediation,
                                 params: {
                                   "vehicleID": checkpoint.vehicleID,
                                   "vehicleRemediationID":

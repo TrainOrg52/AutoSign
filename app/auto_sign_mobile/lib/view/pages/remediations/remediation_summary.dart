@@ -58,7 +58,7 @@ ListView _buildCheckpointList(BuildContext context,
       itemBuilder: (_, index) {
         if (index == 0) {
           //return remediationTile(remediation, context);
-          return Text("TODO");
+          return const Text("TODO");
         } else if (index == 1) {
           return const Text(
             "Inspection",
@@ -67,7 +67,7 @@ ListView _buildCheckpointList(BuildContext context,
         } else if (index == 2) {
           //return reportTile(
           //  Report("22/06/22", "Reading", false, true, []), context);
-          return (Text("FILLER"));
+          return (const Text("FILLER"));
         } else if (index == 3) {
           return const Text(
             "Report",
@@ -123,14 +123,12 @@ Widget remediationCheckpoint(
                     text: "View",
                     onPressed: () {
                       context.pushNamed(
-                        Routes.remediationCheckpoint,
+                        Routes.signRemdiation,
                         params: {
-                          "remediationWalkthroughID":
-                              signRemediation.vehicleRemediationID,
                           "vehicleID": vehicleID,
-                          "remediationCheckpointID":
-                              signRemediation.checkpointID,
-                          "signID": signRemediation.id,
+                          "vehicleRemediationID":
+                              signRemediation.vehicleRemediationID,
+                          "signRemediationID": signRemediation.id,
                         },
                       );
                     }),

@@ -1,8 +1,6 @@
-import 'package:auto_sign_mobile/controller/inspection_controller.dart';
 import 'package:auto_sign_mobile/controller/remediation_controller.dart';
 import 'package:auto_sign_mobile/main.dart';
 import 'package:auto_sign_mobile/view/pages/inspections/inspections.dart';
-import 'package:auto_sign_mobile/view/pages/remediations/remediation_checkpoint_page.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
@@ -102,10 +100,10 @@ Widget remediationTile(
                 ),
                 onPressed: () {
                   context.pushNamed(
-                    Routes.remediationWalkthrough,
+                    Routes.vehicleRemediation,
                     params: {
-                      "remediationWalkthroughID": remediation.id,
-                      "vehicleID": vehicleID
+                      "vehicleID": vehicleID,
+                      "vehicleRemediationID": remediation.id,
                     },
                   );
                 },

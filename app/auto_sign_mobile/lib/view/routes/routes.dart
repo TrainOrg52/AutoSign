@@ -33,8 +33,8 @@ class Routes {
   static const vehicleInspection = "inspectionWalkthrough";
   static const checkpointInspection = "inspectionCheckpoint";
   static const remediations = "remediations";
-  static const remediationWalkthrough = "remediationWalkthrough";
-  static const remediationCheckpoint = "remediationCheckpoint";
+  static const vehicleRemediation = "vehicleRemediation";
+  static const signRemdiation = "signRemdiation";
 
   // ///////////////// //
   // ROUTER DEFINITION //
@@ -229,17 +229,16 @@ class Routes {
               // /////////////////////// //
 
               GoRoute(
-                name: Routes.remediationWalkthrough,
-                path: ":remediationWalkthroughID",
+                name: Routes.vehicleRemediation,
+                path: ":vehicleRemediationID",
                 builder: (context, state) {
                   // getting params from state
-                  String remediationWalkthroughID =
-                      state.params["remediationWalkthroughID"]!;
+                  String vehicleRemediationID =
+                      state.params["vehicleRemediationID"]!;
                   String vehicleID = state.params["vehicleID"]!;
 
                   // displaying remediate page
-                  return RemediationSummary(
-                      vehicleID, remediationWalkthroughID);
+                  return RemediationSummary(vehicleID, vehicleRemediationID);
                 },
 
                 // ////////////////////// //
@@ -248,20 +247,19 @@ class Routes {
 
                 routes: [
                   GoRoute(
-                    name: Routes.remediationCheckpoint,
-                    path: ":remediationCheckpointID/:signID",
+                    name: Routes.signRemdiation,
+                    path: ":signRemediationID",
                     builder: (context, state) {
                       // getting params from state
                       String vehicleID = state.params["vehicleID"]!;
-                      String remediationWalkthroughID =
-                          state.params["remediationWalkthroughID"]!;
-                      String remediationCheckpointID =
-                          state.params["remediationCheckpointID"]!;
-                      String signID = state.params["signID"]!;
+                      String vehicleRemediationID =
+                          state.params["vehicleRemediationID"]!;
+                      String signRemdiationID =
+                          state.params["signRemediationID"]!;
 
                       // displaying remediate page
-                      return RemediationFix(vehicleID, remediationWalkthroughID,
-                          remediationCheckpointID, signID);
+                      return RemediationFix(
+                          vehicleID, vehicleRemediationID, signRemdiationID);
                     },
                   )
                 ],
