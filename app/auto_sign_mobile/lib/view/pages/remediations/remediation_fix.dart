@@ -258,7 +258,12 @@ Widget showImage(
         stream: RemediationController.instance.getSignRemediationDownloadURL(
             vehicleID, vehicleRemediationID, signRemediationID),
         builder: (context, imageURL) {
-          return Image(image: NetworkImage(imageURL));
+          return CapturePreview(
+            key: GlobalKey(),
+            captureType: CaptureType.photo,
+            path: imageURL,
+            isNetworkURL: true,
+          );
         });
   } else {
     return CustomStreamBuilder<String>(
