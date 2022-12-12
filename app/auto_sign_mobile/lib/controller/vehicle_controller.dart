@@ -205,6 +205,7 @@ class VehicleController {
         "lastVehicleInspectionID": lastVehicleInspectionID,
         "lastCheckpointInspectionID": lastCheckpointInspectionID,
         "lastVehicleInspectionResult": ConformanceStatus.pending.toString(),
+        "remediationStatus": RemediationStatus.none.toString(),
         "lastVehicleRemediationID": "",
       },
     );
