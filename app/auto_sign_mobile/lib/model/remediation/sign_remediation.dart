@@ -80,8 +80,10 @@ class SignRemediation extends ModelObject {
       checkpointID: data?["checkpointID"],
       checkpointTitle: data?["checkpointTitle"],
       vehicleRemediationID: data?["vehicleRemediationID"],
-      preRemediationConformanceStatus: data?["preRemediationConformanceStatus"],
-      remediationAction: data?["remediationAction"],
+      preRemediationConformanceStatus: ConformanceStatus.fromString(
+          data?["preRemediationConformanceStatus"]),
+      remediationAction:
+          RemediationAction.fromString(data?["remediationAction"]),
     );
   }
 
