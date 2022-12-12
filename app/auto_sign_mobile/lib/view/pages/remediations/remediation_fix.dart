@@ -1,13 +1,14 @@
 import 'package:auto_sign_mobile/controller/inspection_controller.dart';
 import 'package:auto_sign_mobile/controller/remediation_controller.dart';
 import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
+import 'package:auto_sign_mobile/main.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
+import 'package:auto_sign_mobile/view/theme/widgets/my_icon_button.dart';
 import 'package:auto_sign_mobile/view/widgets/colored_container.dart';
 import 'package:auto_sign_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:auto_sign_mobile/view/widgets/padded_custom_scroll_view.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../model/enums/capture_type.dart';
 import '../../theme/data/my_sizes.dart';
@@ -61,6 +62,11 @@ class RemediationFixState extends State<RemediationFix> {
                 ),
                 backgroundColor: MyColors.antiPrimary,
                 centerTitle: true,
+                leading: MyIconButton.back(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
               ),
               body: PaddedCustomScrollView(
                 slivers: [
@@ -73,7 +79,7 @@ class RemediationFixState extends State<RemediationFix> {
                             children: const [
                               Text(
                                 "Issue",
-                                style: MyTextStyles.headerText1,
+                                style: MyTextStyles.headerText2,
                               )
                             ]),
                         const SizedBox(
@@ -90,15 +96,16 @@ class RemediationFixState extends State<RemediationFix> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(
-                                  FontAwesomeIcons.exclamation,
+                                Icon(
+                                  sign.preRemediationConformanceStatus.iconData,
                                   size: MySizes.smallIconSize,
-                                  color: MyColors.negative,
+                                  color: sign
+                                      .preRemediationConformanceStatus.color,
                                 ),
                                 const SizedBox(width: MySizes.spacing),
                                 Text(
-                                  sign.preRemediationConformanceStatus
-                                      .toString(),
+                                  sign.preRemediationConformanceStatus.title
+                                      .toTitleCase(),
                                   style: MyTextStyles.bodyText1,
                                 ),
                               ],
@@ -113,7 +120,7 @@ class RemediationFixState extends State<RemediationFix> {
                             children: const [
                               Text(
                                 "Action",
-                                style: MyTextStyles.headerText1,
+                                style: MyTextStyles.headerText2,
                               )
                             ]),
                         const SizedBox(
@@ -130,14 +137,14 @@ class RemediationFixState extends State<RemediationFix> {
                               mainAxisAlignment: MainAxisAlignment.end,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(
-                                  FontAwesomeIcons.recycle,
+                                Icon(
+                                  sign.remediationAction.iconData,
                                   size: MySizes.smallIconSize,
-                                  color: MyColors.green,
+                                  color: sign.remediationAction.color,
                                 ),
                                 const SizedBox(width: MySizes.spacing),
                                 Text(
-                                  sign.remediationAction.toString(),
+                                  sign.remediationAction.title.toTitleCase(),
                                   style: MyTextStyles.bodyText1,
                                 ),
                               ],
@@ -151,10 +158,13 @@ class RemediationFixState extends State<RemediationFix> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: const [
                               Text(
-                                "Photos",
-                                style: MyTextStyles.headerText1,
+                                "Images",
+                                style: MyTextStyles.headerText3,
                               )
                             ]),
+                        const SizedBox(
+                          height: MySizes.spacing,
+                        ),
                         ToggleButtons(
                           onPressed: (int index) {
                             setState(() {
