@@ -122,7 +122,7 @@ Widget reportTile(
         ),
         const Icon(
           FontAwesomeIcons.circleChevronRight,
-          size: MySizes.largeIconSize,
+          size: MySizes.mediumIconSize,
           color: MyColors.textPrimary,
         ),
       ],

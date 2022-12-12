@@ -5,6 +5,7 @@ import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
+import 'package:auto_sign_mobile/view/theme/widgets/my_icon_button.dart';
 import 'package:auto_sign_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:auto_sign_mobile/view/widgets/padded_custom_scroll_view.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,11 @@ class RemediationsList extends StatelessWidget {
         ),
         backgroundColor: MyColors.antiPrimary,
         centerTitle: true,
+        leading: MyIconButton.back(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
       ),
       body: CustomStreamBuilder(
         stream: RemediationController.instance
@@ -121,7 +127,7 @@ Widget remediationTile(
         ),
         const Icon(
           FontAwesomeIcons.circleChevronRight,
-          size: MySizes.largeIconSize,
+          size: MySizes.mediumIconSize,
           color: MyColors.textPrimary,
         ),
       ],
