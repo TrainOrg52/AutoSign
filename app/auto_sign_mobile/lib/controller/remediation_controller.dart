@@ -215,7 +215,7 @@ class RemediationController {
   ) {
     // defining reference to Storage
     Reference reference = FirebaseStorage.instance.ref(
-        "$vehicleID/vehicleRemediations/$vehicleRemediationID/$signRemediationID.png}");
+        "$vehicleID/vehicleRemediations/$vehicleRemediationID/$signRemediationID.png");
 
     // returning download URL
     return reference.getDownloadURL().asStream();
