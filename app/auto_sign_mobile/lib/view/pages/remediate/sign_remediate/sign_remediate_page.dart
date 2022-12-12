@@ -636,6 +636,7 @@ class _SignRemediatePageState extends State<SignRemediatePage> {
       sign: sign,
       checkpointID: checkpoint.id,
       checkpointTitle: checkpoint.title,
+      checkpointCaptureType: checkpoint.captureType,
       checkpointInspectionID: checkpoint.lastCheckpointInspectionID,
       remediationAction: remediationAction,
       capturePath: capturePath,
