@@ -64,8 +64,6 @@ class Checkpoint extends ModelObject {
       signs.add(Sign.fromFirestoreData(sign));
     });
 
-    print(data?["lastCheckpointInspectionID"]);
-
     // cocnverting document data to an object
     return Checkpoint(
       id: snapshot.id,
