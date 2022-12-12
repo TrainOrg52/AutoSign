@@ -92,15 +92,15 @@ class RemediationController {
           .ref(
               "${vehicleRemediation.vehicleID}/vehicleRemediations/${vehicleRemediation.id}/${signRemediation.id}.png")
           .putData(data);
+
+      // updating checkpoint
+      await VehicleController.instance.remediateCheckpointSign(signRemediation);
     } on FirebaseException catch (e) {
       // handling exception
       print("Upload failed : $e");
 
       await _signRemediationsRef.doc(signRemediation.id).delete();
     }
-
-    // updating checkpoint
-    await VehicleController.instance.remediateCheckpointSign(signRemediation);
   }
 
   /// TODO

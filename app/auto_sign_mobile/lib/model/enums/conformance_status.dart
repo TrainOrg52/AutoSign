@@ -101,7 +101,6 @@ class ConformanceStatus {
   // user-selectable instances
   static const List<ConformanceStatus> userSelectableValues = [
     conforming,
-    nonConforming,
     missing,
     damaged,
   ];

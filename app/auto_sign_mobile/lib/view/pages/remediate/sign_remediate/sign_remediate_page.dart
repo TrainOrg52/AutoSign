@@ -237,15 +237,15 @@ class _SignRemediatePageState extends State<SignRemediatePage> {
 
         BorderedContainer(
           isDense: true,
-          borderColor: MyColors.red,
-          backgroundColor: MyColors.redAccent,
+          borderColor: sign.conformanceStatus.color,
+          backgroundColor: sign.conformanceStatus.accentColor,
           padding: const EdgeInsets.all(MySizes.paddingValue / 2),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
-                FontAwesomeIcons.circleExclamation,
-                color: MyColors.red,
+              Icon(
+                sign.conformanceStatus.iconData,
+                color: sign.conformanceStatus.color,
                 size: MySizes.smallIconSize,
               ),
               const SizedBox(width: MySizes.spacing),

@@ -115,14 +115,14 @@ class ImageViewState extends State<ImageView> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          insetPadding: EdgeInsets.all(0),
-          contentPadding: EdgeInsets.zero,
+          insetPadding: const EdgeInsets.all(0),
           title: const Text(
             'Update Inspection',
             textAlign: TextAlign.center,
+            style: MyTextStyles.headerText2,
           ),
           actionsAlignment: MainAxisAlignment.center,
-          content: Container(
+          content: SizedBox(
             width: 300,
             child: _buildSignList(
                 context, checkpointInspection.signs, checkpointInspection),
@@ -147,64 +147,66 @@ class ImageViewState extends State<ImageView> {
       itemCount: signs.length,
       itemBuilder: ((context, index) {
         return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              flex: 5,
+              child: Text(
                 signs[index].title.toString(),
-                style: MyTextStyles.bodyText3,
+                style: MyTextStyles.bodyText2,
               ),
-              SizedBox(
-                  width: 175,
-                  child: CustomDropdownButton<ConformanceStatus>(
-                    // value
-                    value: signs[index]
-                        .conformanceStatus, // TODO change this to be the current conformance status of the sign
-                    // on changed
-                    onChanged: (ConformanceStatus? conformanceStatus) async {
-                      if (conformanceStatus != null) {
-                        // updating the conformance status
-                        // TODO
-                        InspectionController.instance
-                            .updateCheckpointInspectionSignConformanceStatus(
-                                checkpointInspection,
-                                signs[index],
-                                conformanceStatus);
-                      }
-                    },
-                    // items
-                    items: ConformanceStatus.userSelectableValues
-                        .map<DropdownMenuItem<ConformanceStatus>>(
-                      (conformanceStatus) {
-                        return (DropdownMenuItem(
-                          value: conformanceStatus,
-                          child: BorderedContainer(
-                            isDense: true,
-                            borderColor: conformanceStatus.color,
-                            backgroundColor: conformanceStatus.accentColor,
-                            padding:
-                                const EdgeInsets.all(MySizes.paddingValue / 2),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  conformanceStatus.iconData,
-                                  size: MySizes.smallIconSize,
-                                  color: conformanceStatus.color,
-                                ),
-                                const SizedBox(width: MySizes.spacing),
-                                Text(
-                                  conformanceStatus.title.toCapitalized(),
-                                  style: MyTextStyles.bodyText3,
-                                ),
-                              ],
+            ),
+            Flexible(
+              flex: 6,
+              child: CustomDropdownButton<ConformanceStatus>(
+                // value
+                value: signs[index].conformanceStatus,
+                // on changed
+                onChanged: (ConformanceStatus? conformanceStatus) async {
+                  if (conformanceStatus != null) {
+                    // updating the conformance status
+                    InspectionController.instance
+                        .updateCheckpointInspectionSignConformanceStatus(
+                            checkpointInspection,
+                            signs[index],
+                            conformanceStatus);
+                  }
+                },
+                // items
+                items: ConformanceStatus.userSelectableValues
+                    .map<DropdownMenuItem<ConformanceStatus>>(
+                  (conformanceStatus) {
+                    return (DropdownMenuItem(
+                      value: conformanceStatus,
+                      child: BorderedContainer(
+                        isDense: true,
+                        borderColor: conformanceStatus.color,
+                        backgroundColor: conformanceStatus.accentColor,
+                        padding: const EdgeInsets.all(MySizes.paddingValue / 2),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              conformanceStatus.iconData,
+                              size: MySizes.smallIconSize,
+                              color: conformanceStatus.color,
                             ),
-                          ),
-                        ));
-                      },
-                    ).toList(),
-                  ))
-            ]);
+                            const SizedBox(width: MySizes.spacing),
+                            Text(
+                              conformanceStatus.title.toCapitalized(),
+                              style: MyTextStyles.bodyText2,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ));
+                  },
+                ).toList(),
+              ),
+            ),
+          ],
+        );
       }),
     );
   }

@@ -320,7 +320,8 @@ Widget remediationCheckpoint(
                           ),
                           const SizedBox(width: MySizes.spacing),
                           Text(
-                            "${signRemediation.title} : missing".toTitleCase(),
+                            "${signRemediation.title} : ${signRemediation.preRemediationConformanceStatus.title}"
+                                .toTitleCase(),
                             style: MyTextStyles.bodyText2,
                           ),
                         ],
