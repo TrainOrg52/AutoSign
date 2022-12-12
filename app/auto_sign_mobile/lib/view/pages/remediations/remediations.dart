@@ -3,9 +3,10 @@ import 'package:auto_sign_mobile/main.dart';
 import 'package:auto_sign_mobile/view/pages/inspections/inspections.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
+import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
-import 'package:auto_sign_mobile/view/widgets/bordered_container.dart';
 import 'package:auto_sign_mobile/view/widgets/custom_stream_builder.dart';
+import 'package:auto_sign_mobile/view/widgets/padded_custom_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -32,7 +33,13 @@ class RemediationsList extends StatelessWidget {
         stream: RemediationController.instance
             .getVehicleRemediationsWhereVehicleIs(vehicleID),
         builder: (context, remediations) {
-          return _buildRemediationList(context, remediations, vehicleID);
+          return PaddedCustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: _buildRemediationList(context, remediations, vehicleID),
+              ),
+            ],
+          );
         },
       ),
     );
@@ -42,82 +49,100 @@ class RemediationsList extends StatelessWidget {
 ListView _buildRemediationList(BuildContext context,
     List<VehicleRemediation> remediations, String vehicleID) {
   return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       padding: EdgeInsets.zero,
-      itemCount: remediations.length * 2,
-      itemBuilder: (_, index) {
-        if (index.isEven) {
-          return const Divider(
-            height: 8,
-          );
-        }
-        return remediationTile(remediations[index ~/ 2], vehicleID, context);
+      itemCount: remediations.length,
+      itemBuilder: (context, index) {
+        return Column(
+          children: [
+            remediationTile(remediations[index], vehicleID, context),
+            if (index != remediations.length - 1)
+              const SizedBox(height: MySizes.spacing),
+          ],
+        );
       });
 }
 
 Widget remediationTile(
     VehicleRemediation remediation, String vehicleID, BuildContext context) {
-  return BorderedContainer(
-      padding: const EdgeInsets.all(0),
-      height: 70,
-      borderRadius: 10,
-      child: Center(
-          child: ListTile(
-              horizontalTitleGap: 0,
-              title: Text(
+  return OutlinedButton(
+    style: OutlinedButton.styleFrom(
+      foregroundColor: MyColors.textPrimary,
+      backgroundColor: MyColors.backgroundSecondary,
+      padding: MySizes.padding,
+      side: const BorderSide(
+        width: 0,
+        color: MyColors.backgroundSecondary,
+      ),
+    ),
+    onPressed: () {
+      context.pushNamed(
+        Routes.vehicleRemediation,
+        params: {
+          "vehicleRemediationID": remediation.id,
+          "vehicleID": vehicleID
+        },
+      );
+    },
+    child: Row(
+      children: [
+        const Icon(
+          FontAwesomeIcons.hammer,
+          color: MyColors.textPrimary,
+          size: MySizes.largeIconSize,
+        ),
+        const SizedBox(width: MySizes.spacing),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
                 remediation.timestamp.toDateString().toString(),
                 style: MyTextStyles.headerText1,
               ),
-              subtitle: Row(
+              const SizedBox(height: MySizes.spacing / 2),
+              Row(
                 children: [
                   locationWidget(remediation.location),
-                  const SizedBox(
-                    width: 16,
-                  ),
+                  const SizedBox(width: MySizes.spacing * 2),
                   CustomStreamBuilder(
-                      stream: RemediationController.instance
-                          .getSignRemediationsWhereVehicleRemediationIs(
-                              remediation.id),
-                      builder: (context, signremediations) {
-                        return numIssuesWidget(signremediations.length);
-                      })
+                    stream: RemediationController.instance
+                        .getSignRemediationsWhereVehicleRemediationIs(
+                            remediation.id),
+                    builder: (context, signremediations) {
+                      return numIssuesWidget(signremediations.length);
+                    },
+                  ),
                 ],
               ),
-              leading: const SizedBox(
-                height: 30,
-                width: 30,
-                child: Center(
-                    child: Icon(
-                  FontAwesomeIcons.hammer,
-                  size: 25,
-                  color: Colors.black,
-                )),
-              ),
-              trailing: IconButton(
-                icon: const Icon(
-                  Icons.navigate_next_sharp,
-                  color: Colors.black,
-                  size: 40,
-                ),
-                onPressed: () {
-                  context.pushNamed(
-                    Routes.vehicleRemediation,
-                    params: {
-                      "vehicleID": vehicleID,
-                      "vehicleRemediationID": remediation.id,
-                    },
-                  );
-                },
-              ))));
+            ],
+          ),
+        ),
+        const Icon(
+          FontAwesomeIcons.circleChevronRight,
+          size: MySizes.largeIconSize,
+          color: MyColors.textPrimary,
+        ),
+      ],
+    ),
+  );
 }
 
 Widget numIssuesWidget(int numIssues) {
+  numIssues = 2;
   return Row(
     children: [
       const Icon(
-        Icons.check_circle,
+        FontAwesomeIcons.solidCircleCheck,
         color: MyColors.green,
+        size: MySizes.smallIconSize,
       ),
-      Text("$numIssues issues remediated")
+      const SizedBox(width: MySizes.spacing / 2),
+      Text(
+        "$numIssues remediation${numIssues > 1 ? 's' : ''}",
+        style: MyTextStyles.bodyText1,
+      ),
     ],
   );
 }
