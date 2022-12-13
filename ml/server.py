@@ -9,6 +9,7 @@ from firebase import Firebase
 from firebase_admin import credentials, firestore, initialize_app, storage
 import torchvision.transforms as transforms
 from object_detector.inference import ObjectDetector
+from damage_detector.inference import DamageDetector
 
 """
     @brief: 
@@ -80,7 +81,7 @@ def processVehicleInspection(vehicle_inspection, vehicle):
                                                                      vehicle_inspection.id).get()
 
     vehicle_checkpoints, vehicle_checkpoint_signs = [], []
-    identified_signs = []
+    identified_signs, conformance_statuses = [], []
     media_type = []
     for checkpoint_inspection in checkpoint_inspections:
         # STEP 2.1: GATHERING INSPECTION CHECKPOINT DOCUMENT #
@@ -114,13 +115,12 @@ def processVehicleInspection(vehicle_inspection, vehicle):
             local_root = 'samples/processed_images'
 
             _, image_identified_signs = obj_det(dst_root, local_root)
-
             identified_signs.extend(image_identified_signs)
 
             # damage detection
             damage_root = 'samples/normalized_images'
-
-
+            damage_classifications = damage_det(damage_root)
+            conformance_statuses.append(damage_classifications)
         elif vehicle_checkpoint.captureType == 'video':
             # defining path to Cloud Storage
             storage_path = f"/{vehicle_inspection.vehicleID}/vehicleInspections/{vehicle_inspection.id}/{vehicle_checkpoint.id}.mp4"
@@ -171,15 +171,14 @@ def processVehicleInspection(vehicle_inspection, vehicle):
 
     # STEP 2.4: PROCESSING MEDIA AND SAVING TO STORAGE #
 
-    print(f"\n\t\tIdentified Signs: {identified_signs}")
+    print(f"\t\tIdentified Signs: {identified_signs}")
+    print(f"\t\tConformance Status{conformance_statuses}")
 
     # STEP 2.5: COMPARE LOCATED LABELS TO EXPECTED #
 
     print("\tChecking Conformance Status...")
-    for predicted_signs, vehicle_sign, vehicle_checkpoint in zip(identified_signs, vehicle_checkpoint_signs,
+    for predicted_signs, conformance_status, vehicle_sign, vehicle_checkpoint in zip(identified_signs, conformance_statuses, vehicle_checkpoint_signs,
                                                                  vehicle_checkpoints):
-
-        new_checkpoint_conformance = "conforming"
 
         # updating signs
         new_signs = vehicle_sign
@@ -188,7 +187,15 @@ def processVehicleInspection(vehicle_inspection, vehicle):
         checkpoint = Checkpoint.from_doc(checkpoint)
 
         checkpoint.conformanceStatus = "processing"
-        checkpoint.lastVehicleInspectionResult = "conforming"
+
+        if 'Damaged' in conformance_status:
+            checkpoint.lastVehicleInspectionResult = "non-conforming"
+            new_checkpoint_conformance = "non-conforming"
+        else:
+            checkpoint.lastVehicleInspectionResult = "conforming"
+            new_checkpoint_conformance = "conforming"
+
+        print(f"Sign: {predicted_signs}\tConformance: {conformance_status}")
 
         for pos, (signage) in enumerate(vehicle_sign):
             # checking if inspection sign identified
@@ -196,17 +203,16 @@ def processVehicleInspection(vehicle_inspection, vehicle):
                 # sign identified -> updating status
 
                 # setting new sign conformance
-                new_sign_conformance = "conforming"
+                new_sign_conformance = conformance_status[pos]
 
                 # removing identified sign from list
                 idx = predicted_signs.index(signage['title'])
                 predicted_signs.pop(idx)
-
             else:
                 # sign missing -> updating status
 
                 # setting new sign conformance
-                new_sign_conformance = "non-conforming"
+                new_sign_conformance = "missing"
 
                 # setting checkpoint conformance
                 new_checkpoint_conformance = "non-conforming"
@@ -293,6 +299,11 @@ if __name__ == "__main__":
 
     # initialize object detector
     obj_det = ObjectDetector(image_size=1280, conf_thresh=0.65, iou_thresh=0.65, num_classes=38, view_img=False)
+
+    print("Damage Detector Setup...")
+
+    # initialize damage detector
+    damage_det = DamageDetector(image_size=1280, conf_thresh=0.66, iou_thresh=0.65, num_classes=2)
 
     print("Setup Complete!")
     print("-----------------------")

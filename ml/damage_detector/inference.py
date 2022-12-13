@@ -5,9 +5,15 @@ import ntpath
 import cv2
 import torch
 import torch.nn as nn
+import numpy as np
+from numpy import random
+from PIL import Image
+from skimage import transform
 from numpy import random
 import sys
 from tqdm import tqdm
+
+import torchvision.transforms as transforms
 
 sys.path.insert(0, r'damage_detector/yolov7')
 
@@ -27,7 +33,7 @@ class DamageDetector(nn.Module):
     @authors: Benjamin Sanati
     """
 
-    def __init__(self, image_size, conf_thresh, iou_thresh, num_classes, view_img):
+    def __init__(self, image_size, conf_thresh, iou_thresh, num_classes):
         """
         @brief: Initializes the object detector for processing. Sets up object detector once, reducing the total processing time compared to setting up on every inference call.
                 NMS breakdown:
@@ -41,7 +47,6 @@ class DamageDetector(nn.Module):
             conf_thresh: Minimum confidence requirement from YOLOv7 model output (~0.55 is seen to be the best from the object detector training plots)
             iou_thresh: IoU threshold for NMS
             num_classes: Number of classes that can be defined (number of the types of signs)
-            view_img: A bool to view the output of a processed image during processing
 
         @authors: Benjamin Sanati
         """
@@ -51,22 +56,20 @@ class DamageDetector(nn.Module):
 
         # Initialize data and hyperparameters (to be made into argparse arguments)
         self.device = select_device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.weights = r"damage_detector/finetuned_models/best_e6_40_epochs.pt"
+        self.weights = "damage_detector/finetuned_models/best_e6_50_epochs.pt"
         self.image_size = image_size  # input  image should be (1280 x 1280)
         self.conf_thresh = conf_thresh
         self.iou_thresh = iou_thresh
         self.num_classes = num_classes
         self.classes = list(range(0, self.num_classes))
-        self.view_img = view_img
 
         # Load model
         self.model = attempt_load(self.weights, map_location=self.device).half()  # load FP32 model
         self.stride = int(self.model.stride.max())  # model stride
         self.image_size = check_img_size(self.image_size, s=self.stride)  # check img_size
 
-        # Get names and colors
+        # Get names
         self.names = ['Conforming', 'Damaged']
-        self.colours = [[random.randint(0, 255) for _ in range(3)] for _ in self.names]  # define random colours for each label in the dataset
 
         # model warmup
         self.model(
@@ -74,12 +77,11 @@ class DamageDetector(nn.Module):
 
         sys.stdout = sys.__stdout__  # enable printing
 
-    def forward(self, data_src, processed_destination):
+    def forward(self, data_src):
         """
         @brief: Runs object detection model on each image in inspectionWalkthrough. Uploads processed images to firestore storage. Returns bbox coordinate and labels for each object in each image.
         Args:
             data_src: source of images in local storage folder
-            processed_destination: destination of processed image to be saved to local storage folder
 
         Returns:
             bboxes - A list of [# images, # objects, 4] bbox coordinates
@@ -91,7 +93,7 @@ class DamageDetector(nn.Module):
         # Set Dataloader
         dataset = LoadImages(data_src, img_size=self.image_size, stride=self.stride)
 
-        labels = [], []
+        labels = []
         loop = tqdm(enumerate(dataset), total=len(dataset))
         for index, (path, img, im0s, vid_cap) in loop:  # for every image in data path
             # STEP 2.4.1: Run Object Detector on each image
@@ -101,60 +103,48 @@ class DamageDetector(nn.Module):
 
             # Inference
             with torch.no_grad():  # Calculating gradients would cause a GPU memory leak
+                #pred, train_out = self.model(img, augment=None)
                 pred = self.model(img, augment=None)[0]
 
             # Apply NMS
             pred = non_max_suppression(pred, self.conf_thresh, self.iou_thresh, classes=self.classes, agnostic=False)[0]
 
-            # there can only be one classification, therefore, get the label with the highest confidence score
+            print(pred[:, -1])
 
-            # get label info
             labels.append([self.names[int(p.item())] for p in pred[:, -1]])
+            """
+            # Apply NMS
+            # predictions = non_max_suppression(pred, self.conf_thresh, self.iou_thresh, classes=self.classes, agnostic=False)
+            pred = non_max_suppression(pred, self.conf_thresh, self.iou_thresh, classes=self.classes, agnostic=False)[0]
 
             # save image with bbox predictions overlay
             p, s, im0, frame = path, '', im0s, getattr(dataset, 'frame', 0)
-            # Rescale boxes from img_size to im0 size
-            pred[:, :4] = scale_coords(img.shape[2:], pred[:, :4], im0.shape).round()
 
-            for info in pred:
-                # get prediction information
-                box = info[:4]
-                label = int(info[-1])
+            # resize image
+            resize_image = transforms.Resize([1280, 1280])
+            im0 = np.array(resize_image(Image.fromarray(im0)))
 
-                # add filled bboxes with object label above bboxes
-                c1, c2 = (5, 20), (int(box[2]), int(box[3]))
-                line_thickness = 2  # line/font thickness
-                tf = max(line_thickness - 1, 1)  # font thickness
-                t_size = cv2.getTextSize(self.names[label], 0, fontScale=line_thickness / 3, thickness=tf)[0]
-                c2 = int(box[0]) + t_size[0], int(box[1]) - t_size[1] - 3
-                cv2.rectangle(im0, c1, c2, self.colours[label], -1, cv2.LINE_AA)  # filled
-                cv2.putText(im0, self.names[label], (c1[0], c1[1] - 2), 0, line_thickness / 3, [225, 255, 255],
-                            thickness=tf, lineType=cv2.LINE_AA)
+            predictions = torch.stack(predictions)
+            confs = predictions[..., 4]
+            label = predictions[..., -1]
 
+            # there can only be one classification, therefore, get the label with the highest confidence score
+            _, highest_confidence_index = torch.max(confs, 1)
+            labels.append(self.names[int(label[..., highest_confidence_index].item())])
+            """
+            p, s, im0, frame = path, '', im0s, getattr(dataset, 'frame', 0)
+            resize_image = transforms.Resize([1280, 1280])
+            im0 = np.array(resize_image(Image.fromarray(im0)))
             # save image
-            data_dst = os.path.join(processed_destination, tail)
-            cv2.imwrite(data_dst, im0)
+            cv2.imwrite(f"C:/Users/benja/Downloads/{index}.png", im0)
 
             # STEP 2.4.2: DELETE LOCAL IMAGES
-
-            # delete image (both processed and non-processed images)
-            """
-            processed_file = os.path.join(processed_destination, tail)
             unprocessed_file = os.path.join(data_src, tail)
-            if os.path.exists(processed_file):
-                os.remove(processed_file)
             if os.path.exists(unprocessed_file):
                 os.remove(unprocessed_file)
-            """
-
-            # view img with bbox predictions overlay
-            if self.view_img:
-                cv2.imshow(str(p), im0)
-                cv2.waitKey(0)  # number in millisecond
-                cv2.destroyAllWindows()
 
             # update progress bar
-            loop.set_description(f"Image [{index + 1}/{len(dataset)}]")
+            loop.set_description(f"\tSign [{index + 1}/{len(dataset)}]")
 
         return labels
 

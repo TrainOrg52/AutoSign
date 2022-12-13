@@ -172,6 +172,7 @@ class ObjectDetector(nn.Module):
             # save image
             data_dst = os.path.join(processed_destination, tail)
             cv2.imwrite(data_dst, im0)
+
             # STEP 2.4.2: SAVE NORMALIZED SIGN IMAGES
 
             for i, (box) in enumerate(pred[:, :4].cpu().numpy()):
