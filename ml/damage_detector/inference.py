@@ -105,16 +105,8 @@ class DamageDetector(nn.Module):
             with torch.no_grad():  # Calculating gradients would cause a GPU memory leak
                 #pred, train_out = self.model(img, augment=None)
                 pred = self.model(img, augment=None)[0]
-
+                
             # Apply NMS
-            pred = non_max_suppression(pred, self.conf_thresh, self.iou_thresh, classes=self.classes, agnostic=False)[0]
-
-            print(pred[:, -1])
-
-            labels.append([self.names[int(p.item())] for p in pred[:, -1]])
-            """
-            # Apply NMS
-            # predictions = non_max_suppression(pred, self.conf_thresh, self.iou_thresh, classes=self.classes, agnostic=False)
             pred = non_max_suppression(pred, self.conf_thresh, self.iou_thresh, classes=self.classes, agnostic=False)[0]
 
             # save image with bbox predictions overlay
@@ -131,7 +123,7 @@ class DamageDetector(nn.Module):
             # there can only be one classification, therefore, get the label with the highest confidence score
             _, highest_confidence_index = torch.max(confs, 1)
             labels.append(self.names[int(label[..., highest_confidence_index].item())])
-            """
+            
             p, s, im0, frame = path, '', im0s, getattr(dataset, 'frame', 0)
             resize_image = transforms.Resize([1280, 1280])
             im0 = np.array(resize_image(Image.fromarray(im0)))
