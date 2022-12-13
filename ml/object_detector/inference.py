@@ -294,14 +294,12 @@ class ObjectDetector(nn.Module):
             cv2.imwrite(data_dst, im0)
 
             # delete image (both processed and non-processed images)
-            """
             processed_file = os.path.join(processed_destination, tail)
             unprocessed_file = os.path.join(data_src, tail)
             if os.path.exists(processed_file):
                 os.remove(processed_file)
             if os.path.exists(unprocessed_file):
                 os.remove(unprocessed_file)
-            """
 
             # view img with bbox predictions overlay
             if self.view_img:
