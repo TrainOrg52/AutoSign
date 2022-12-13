@@ -5,6 +5,7 @@ import logging
 import math
 import os
 import random
+import natsort
 import shutil
 import time
 from itertools import repeat
@@ -131,7 +132,8 @@ class LoadImages:  # for inference
         if '*' in p:
             files = sorted(glob.glob(p, recursive=True))  # glob
         elif os.path.isdir(p):
-            files = sorted(glob.glob(os.path.join(p, '*.*')))  # dir
+            __files__ = glob.glob(os.path.join(p, '*.*'))  # dir
+            files = natsort.natsorted(__files__, reverse=False)
         elif os.path.isfile(p):
             files = [p]  # files
         else:

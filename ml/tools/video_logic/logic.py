@@ -3,7 +3,13 @@ import sys
 import cv2
 import numpy as np
 import pandas as pd
+from skimage import transform
+import matplotlib.pyplot as plt
 
+
+# ########################## #
+# VIDEO PROCESSING FUNCTIONS #
+# ########################## #
 
 def video_decorator(func):
     def wrapper(*args):
@@ -46,19 +52,11 @@ def video_processing(video, frame_num, frame_root):
         return ret, frame_num
 
 
-def sign_presence_logic(identified_signs, bbox_coords):
-    # ################### #
-    # SIGN PRESENCE LOGIC #
-    # ################### #
+# ####################### #
+# SIGN PRESENCE FUNCTIONS #
+# ####################### #
 
-    debug = False
-    nms_diff = 5
-
-    if not debug:
-        sys.stdout = open(os.devnull, 'w')  # block printing momentarily
-
-    # remove signs identified outside the window of acceptance, perform "BTEC" NMS and remove once occurring signs
-    padding = 10
+def sign_filter(identified_signs, bbox_coords, nms_diff, padding):
     print(identified_signs, flush=True)
     for frame_index in range(len(identified_signs)):
         # get the signs in the frame
@@ -105,7 +103,8 @@ def sign_presence_logic(identified_signs, bbox_coords):
             y1 = frame_coords[sign_index][3]
 
             # pop identified sign if sign is in padded area
-            if (x0 < padding) or (y0 < padding) or (x1 > (1280 - padding)) or (y1 > (1280 - padding)):
+            if (x0 < padding) or (y0 < padding) or (x1 > (1280 - padding)) or (
+                    y1 > (1280 - padding)):
                 identified_signs[frame_index].pop(sign_index - lag)
                 lag += 1
 
@@ -116,27 +115,55 @@ def sign_presence_logic(identified_signs, bbox_coords):
         if frame_index >= 1:
             lag = 0
             for sign_index in range(len(identified_signs[frame_index])):
-                current_sign = identified_signs[frame_index][sign_index-lag]
+                current_sign = identified_signs[frame_index][sign_index - lag]
                 if current_sign not in identified_signs[frame_index - 1]:
                     if (frame_index < len(identified_signs)) and (
                             current_sign not in identified_signs[frame_index + 1]):
-                        identified_signs[frame_index].pop(sign_index-lag)
+                        identified_signs[frame_index].pop(sign_index - lag)
                         lag += 1
 
-    # identify signs in video
-    print("-" * 20)
+    return identified_signs
+
+
+def sign_logic(identified_signs, bbox_coords, images_root):
+    print("-" * 50)
     video_signs, prior_signs, prior_coords = [], [], []
+    num_signs = 0
     for frame_index in range(len(identified_signs)):
         print(f"Frame: {frame_index}")
 
         # get the signs in the frame
         frame_signs = identified_signs[frame_index]
+        frame_coord = bbox_coords[frame_index]
 
         # frame_index = 0 always has new signs
         if frame_index == 0:
             video_signs.extend(frame_signs)
             prior_signs.extend(frame_signs)
-            prior_coords.extend(bbox_coords[frame_index])
+            prior_coords.extend(frame_coord)
+
+            # save each sign to normalized signs folder
+            frame_image = cv2.imread(f"{images_root}/{frame_index}.png")
+
+            for signs, coord in zip(frame_signs, frame_coord):
+                x1, y1 = coord[0], coord[1]
+                x2, y2 = coord[2], coord[3]
+                src = np.array([[x1, y1], [x1, y2], [x2, y2], [x2, y1]]).reshape((4, 2))
+                dst = np.array(
+                    [[0, 0], [0, frame_image.shape[1]], [frame_image.shape[0], frame_image.shape[1]],
+                     [frame_image.shape[0], 0]]).reshape((4, 2))
+
+                tform = transform.estimate_transform('projective', src, dst)
+                tf_img = transform.warp(frame_image, tform.inverse)
+
+                # plotting the transformed image
+                fig, ax = plt.subplots()
+                ax.imshow(tf_img)
+
+                plt.axis('off')
+                plt.savefig(f"samples/normalized_images/{num_signs}.png", bbox_inches='tight', pad_inches=0)
+                plt.close()
+                num_signs += 1
         else:
             # debugging
             print(f"Video Signs: {video_signs}")
@@ -154,17 +181,6 @@ def sign_presence_logic(identified_signs, bbox_coords):
                     print(f"\t\t\tPrior Coord: {prior_bbox_sign}")
                     print(f"\t\t\tCurrent Coord: {frame_bbox_sign}")
 
-                    """
-                    # Removed this block because directionless logic works better
-                    # if sign is to the opposing side of the bbox movement => new sign to append
-                    if ((direction == 'left') and (prior_bbox_sign[0] > frame_bbox_sign[0])) or (
-                            (direction == 'right') and (prior_bbox_sign[0] < frame_bbox_sign[0])):
-                        video_signs.append(frame_signs[sign_index])
-                        print(f"\t\t\tNew sign")
-                    else:
-                        print(f"\t\t\tPresent sign")
-                    """
-
                     print(f"\t\t\tPresent sign")
 
                     # pop sign from prior_signs and prior coordinates
@@ -177,14 +193,68 @@ def sign_presence_logic(identified_signs, bbox_coords):
 
                     video_signs.append(frame_signs[sign_index])
 
+                    # save each sign to normalized signs folder
+                    frame_image = cv2.imread(f"{images_root}/{frame_index}.png")
+
+                    x1, y1 = bbox_coords[frame_index][sign_index][0], bbox_coords[frame_index][sign_index][1]
+                    x2, y2 = bbox_coords[frame_index][sign_index][2], bbox_coords[frame_index][sign_index][3]
+                    src = np.array([[x1, y1], [x1, y2], [x2, y2], [x2, y1]]).reshape((4, 2))
+                    dst = np.array(
+                        [[0, 0], [0, frame_image.shape[1]], [frame_image.shape[0], frame_image.shape[1]],
+                         [frame_image.shape[0], 0]]).reshape((4, 2))
+
+                    tform = transform.estimate_transform('projective', src, dst)
+                    tf_img = transform.warp(frame_image, tform.inverse)
+
+                    # plotting the transformed image
+                    fig, ax = plt.subplots()
+                    ax.imshow(tf_img)
+
+                    plt.axis('off')
+                    plt.savefig(f"samples/normalized_images/{num_signs}.png", bbox_inches='tight', pad_inches=0)
+                    plt.close()
+                    num_signs += 1
+
             # prior signs update
             prior_signs.clear()
             prior_signs.extend(frame_signs)
             prior_coords.clear()
             prior_coords.extend(bbox_coords[frame_index])
 
-        print("-" * 20)
-
-    sys.stdout = sys.__stdout__  # enable printing
+        print("-" * 50)
 
     return video_signs
+
+
+class Sign_Presence:
+    def __init__(self, nms_diff, padding, debug=False):
+        # ########################## #
+        # INITIALIZE HYPERPARAMETERS #
+        # ########################## #
+
+        self.nms_diff = nms_diff
+        self.padding = padding
+        self.debug = debug
+
+    def sign_presence_logic(self, identified_signs, bbox_coords, images_root):
+        # ################### #
+        # SIGN PRESENCE LOGIC #
+        # ################### #
+
+        # only print to console if in debug mode
+        if not self.debug:
+            sys.stdout = open(os.devnull, 'w')  # block printing momentarily
+
+        # remove signs identified outside the window of acceptance, perform "BTEC" NMS and remove once occurring signs
+        print(identified_signs, flush=True)
+        identified_signs = sign_filter(identified_signs, bbox_coords, self.nms_diff, self.padding)
+
+        # ####################### #
+        # IDENTIFY SIGNS IN VIDEO #
+        # ####################### #
+
+        video_signs = sign_logic(identified_signs, bbox_coords, images_root)
+
+        sys.stdout = sys.__stdout__  # enable printing
+
+        return video_signs

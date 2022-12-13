@@ -69,7 +69,7 @@ class DamageDetector(nn.Module):
         self.image_size = check_img_size(self.image_size, s=self.stride)  # check img_size
 
         # Get names
-        self.names = ['Conforming', 'Damaged']
+        self.names = ['conforming', 'damaged']
 
         # model warmup
         self.model(
@@ -107,28 +107,13 @@ class DamageDetector(nn.Module):
                 pred = self.model(img, augment=None)[0]
                 
             # Apply NMS
-            pred = non_max_suppression(pred, self.conf_thresh, self.iou_thresh, classes=self.classes, agnostic=False)[0]
-
-            # save image with bbox predictions overlay
-            p, s, im0, frame = path, '', im0s, getattr(dataset, 'frame', 0)
-
-            # resize image
-            resize_image = transforms.Resize([1280, 1280])
-            im0 = np.array(resize_image(Image.fromarray(im0)))
-
-            predictions = torch.stack(predictions)
-            confs = predictions[..., 4]
+            predictions = non_max_suppression(pred, 0, 0, classes=self.classes, agnostic=False)[0]
+            confs = predictions[..., -2]
             label = predictions[..., -1]
 
             # there can only be one classification, therefore, get the label with the highest confidence score
-            _, highest_confidence_index = torch.max(confs, 1)
+            _, highest_confidence_index = torch.max(confs, 0)
             labels.append(self.names[int(label[..., highest_confidence_index].item())])
-            
-            p, s, im0, frame = path, '', im0s, getattr(dataset, 'frame', 0)
-            resize_image = transforms.Resize([1280, 1280])
-            im0 = np.array(resize_image(Image.fromarray(im0)))
-            # save image
-            cv2.imwrite(f"C:/Users/benja/Downloads/{index}.png", im0)
 
             # STEP 2.4.2: DELETE LOCAL IMAGES
             unprocessed_file = os.path.join(data_src, tail)

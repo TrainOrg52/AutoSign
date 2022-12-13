@@ -91,7 +91,6 @@ def processVehicleInspection(vehicle_inspection, vehicle):
 
         media_type.append(vehicle_checkpoint.captureType)
 
-        print(vehicle_checkpoint.captureType)
         if vehicle_checkpoint.captureType == 'photo':
             # defining path to Cloud Storage
             storage_path = f"/{vehicle_inspection.vehicleID}/vehicleInspections/{vehicle_inspection.id}/{vehicle_checkpoint.id}.png"
@@ -118,9 +117,13 @@ def processVehicleInspection(vehicle_inspection, vehicle):
             identified_signs.extend(image_identified_signs)
 
             # damage detection
-            damage_root = 'samples/normalized_images'
-            damage_classifications = damage_det(damage_root)
-            conformance_statuses.append(damage_classifications)
+            if len(image_identified_signs[0]) != 0:
+                print(f"\tSign Damage Detection Processing...")
+                damage_root = 'samples/normalized_images'
+                damage_classifications = damage_det(damage_root)
+                conformance_statuses.append(damage_classifications)
+            else:
+                conformance_statuses.append([])
         elif vehicle_checkpoint.captureType == 'video':
             # defining path to Cloud Storage
             storage_path = f"/{vehicle_inspection.vehicleID}/vehicleInspections/{vehicle_inspection.id}/{vehicle_checkpoint.id}.mp4"
@@ -158,12 +161,21 @@ def processVehicleInspection(vehicle_inspection, vehicle):
             local_root = 'samples/processed_videos'
             video_bbox_coords, video_signs = obj_det.video_forward(dst_root, local_root)
 
-            print(video_signs)
-
             # filter signs with video logic
-            filtered_signs = sign_presence_logic(video_signs, video_bbox_coords)
+            print("\tExtracting Signs from Video...")
+            SignLogic = Sign_Presence(nms_diff=5, padding=10, debug=False)
+            filtered_signs = SignLogic.sign_presence_logic(video_signs, video_bbox_coords, dst_root)
             identified_signs.append(filtered_signs)
             print(f"\tFiltered Signs: {filtered_signs}")
+
+            # damage detection
+            if len(filtered_signs[0]) != 0:
+                print(f"\tSign Damage Detection Processing...")
+                damage_root = 'samples/normalized_images'
+                damage_classifications = damage_det(damage_root)
+                conformance_statuses.append(damage_classifications)
+            else:
+                conformance_statuses.append([])
 
         # adding data to lists
         vehicle_checkpoints.append(vehicle_checkpoint)
@@ -188,14 +200,14 @@ def processVehicleInspection(vehicle_inspection, vehicle):
 
         checkpoint.conformanceStatus = "processing"
 
-        if 'Damaged' in conformance_status:
+        if 'damaged' in conformance_status:
             checkpoint.lastVehicleInspectionResult = "non-conforming"
             new_checkpoint_conformance = "non-conforming"
+            vehicle_inspection.conformanceStatus = "non-conforming"
+            vehicle.conformanceStatus = "non-conforming"
         else:
             checkpoint.lastVehicleInspectionResult = "conforming"
             new_checkpoint_conformance = "conforming"
-
-        print(f"Sign: {predicted_signs}\tConformance: {conformance_status}")
 
         for pos, (signage) in enumerate(vehicle_sign):
             # checking if inspection sign identified
@@ -204,6 +216,7 @@ def processVehicleInspection(vehicle_inspection, vehicle):
 
                 # setting new sign conformance
                 new_sign_conformance = conformance_status[pos]
+                checkpoint.signs[pos]['conformanceStatus'] = new_sign_conformance
 
                 # removing identified sign from list
                 idx = predicted_signs.index(signage['title'])
@@ -213,6 +226,7 @@ def processVehicleInspection(vehicle_inspection, vehicle):
 
                 # setting new sign conformance
                 new_sign_conformance = "missing"
+                checkpoint.signs[pos]['conformanceStatus'] = new_sign_conformance
 
                 # setting checkpoint conformance
                 new_checkpoint_conformance = "non-conforming"
