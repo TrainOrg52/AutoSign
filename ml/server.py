@@ -151,6 +151,7 @@ def processVehicleInspection(vehicle_inspection, vehicle):
             # video preprocessing
             frame_num, count = 0, math.floor(total_num_frames / 20)
             count = count if (count > 7) else 7
+            count = count if (count < 15) else 15
             video_processing(video, frame_num, count, frame_root, total_num_frames)
 
             if os.path.exists(local_path):
