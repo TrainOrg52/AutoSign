@@ -149,9 +149,7 @@ def sign_logic(identified_signs, bbox_coords, images_root):
                 x1, y1 = coord[0], coord[1]
                 x2, y2 = coord[2], coord[3]
                 src = np.array([[x1, y1], [x1, y2], [x2, y2], [x2, y1]]).reshape((4, 2))
-                dst = np.array(
-                    [[0, 0], [0, frame_image.shape[1]], [frame_image.shape[0], frame_image.shape[1]],
-                     [frame_image.shape[0], 0]]).reshape((4, 2))
+                dst = np.array([[0, 0], [0, frame_image.shape[1]], [frame_image.shape[0], frame_image.shape[1]], [frame_image.shape[0], 0]]).reshape((4, 2))
 
                 tform = transform.estimate_transform('projective', src, dst)
                 tf_img = transform.warp(frame_image, tform.inverse)
@@ -254,6 +252,14 @@ class Sign_Presence:
         # ####################### #
 
         video_signs = sign_logic(identified_signs, bbox_coords, images_root)
+
+        # #################### #
+        # UNCACHE LOCAL IMAGES #
+        # #################### #
+
+        for filename in os.listdir(images_root):
+            file_path = os.path.join(images_root, filename)
+            os.remove(file_path)
 
         sys.stdout = sys.__stdout__  # enable printing
 
