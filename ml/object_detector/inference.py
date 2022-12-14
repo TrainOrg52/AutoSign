@@ -135,7 +135,19 @@ class ObjectDetector(nn.Module):
 
             # get bbox and label info
             bboxes.append(pred[:, :4].tolist())
-            labels.append([self.names[int(p.item())] for p in pred[:, -1]])
+            __labels__ = []
+            for p in pred[:, -1]:
+                names = self.names[int(p.item())]
+                if (names == 'Exit Right') or (names == 'Exit Left'):
+                    names = 'Exit Left/Right'
+                elif (names == 'Fire Extinguisher Right') or (names == 'Fire Extinguisher Left'):
+                    names = 'Fire Extinguisher Left/Right'
+                elif (names == 'Toilet Right') or (names == 'Toilet Left'):
+                    names = 'Toilet Left/Right'
+
+                __labels__.append(names)
+
+            labels.append(__labels__)
 
             # save image with bbox predictions overlay
             p, s, im0, frame = path, '', im0s, getattr(dataset, 'frame', 0)

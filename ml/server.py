@@ -170,11 +170,12 @@ def processVehicleInspection(vehicle_inspection, vehicle):
             print(f"\tFiltered Signs: {filtered_signs}")
 
             # damage detection
-            if len(filtered_signs[0]) != 0:
-                print(f"\tSign Damage Detection Processing...")
-                damage_root = 'samples/normalized_images'
-                damage_classifications = damage_det(damage_root)
-                conformance_statuses.append(damage_classifications)
+            if len(filtered_signs) != 0:
+                if len(filtered_signs[0]) != 0:
+                    print(f"\tSign Damage Detection Processing...")
+                    damage_root = 'samples/normalized_images'
+                    damage_classifications = damage_det(damage_root)
+                    conformance_statuses.append(damage_classifications)
             else:
                 conformance_statuses.append([])
 
@@ -210,13 +211,14 @@ def processVehicleInspection(vehicle_inspection, vehicle):
             checkpoint.lastVehicleInspectionResult = "conforming"
             new_checkpoint_conformance = "conforming"
 
+        lag = 0
         for pos, (signage) in enumerate(vehicle_sign):
             # checking if inspection sign identified
             if signage['title'] in predicted_signs:
                 # sign identified -> updating status
 
                 # setting new sign conformance
-                new_sign_conformance = conformance_status[pos]
+                new_sign_conformance = conformance_status[pos-lag]
                 checkpoint.signs[pos]['conformanceStatus'] = new_sign_conformance
 
                 # removing identified sign from list
@@ -224,6 +226,7 @@ def processVehicleInspection(vehicle_inspection, vehicle):
                 predicted_signs.pop(idx)
             else:
                 # sign missing -> updating status
+                lag += 1
 
                 # setting new sign conformance
                 new_sign_conformance = "missing"
