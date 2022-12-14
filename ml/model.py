@@ -40,7 +40,7 @@ class Checkpoint:
     """
     @authors: Charlie Powell, Benjamin Sanati
     """
-    def __init__(self, id, timestamp, index, vehicleID, title, prompt, signs, conformanceStatus, lastVehicleInspectionID, lastVehicleInspectionResult, lastVehicleRemediationID, remediationStatus, captureType):
+    def __init__(self, id, timestamp, index, vehicleID, title, prompt, signs, conformanceStatus, lastVehicleInspectionID, lastVehicleInspectionResult, lastVehicleRemediationID, remediationStatus, captureType, lastCheckpointInspectionID):
         self.id = id
         self.timestamp = timestamp
         self.index = index
@@ -54,6 +54,7 @@ class Checkpoint:
         self.lastVehicleRemediationID = lastVehicleRemediationID
         self.remediationStatus = remediationStatus
         self.captureType = captureType
+        self.lastCheckpointInspectionID = lastCheckpointInspectionID
 
     @staticmethod
     def from_doc(doc):
@@ -72,7 +73,8 @@ class Checkpoint:
             data["lastVehicleInspectionResult"],
             data["lastVehicleRemediationID"],
             data["remediationStatus"],
-            data["captureType"]
+            data["captureType"],
+            data["lastCheckpointInspectionID"]
         )
 
     def to_dict(self):
@@ -88,7 +90,8 @@ class Checkpoint:
             "lastVehicleRemediationID": self.lastVehicleRemediationID,
             "signs": self.signs,
             "remediationStatus": self.remediationStatus,
-            "captureType": self.captureType
+            "captureType": self.captureType,
+            "lastCheckpointInspectionID": self.lastCheckpointInspectionID
         }
 
     def update(self, db):
