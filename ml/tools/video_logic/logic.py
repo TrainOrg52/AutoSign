@@ -57,7 +57,6 @@ def video_processing(video, frame_num, frame_root):
 # ####################### #
 
 def sign_filter(identified_signs, bbox_coords, nms_diff, padding):
-    print(identified_signs, flush=True)
     for frame_index in range(len(identified_signs)):
         # get the signs in the frame
         frame_signs = identified_signs[frame_index]
@@ -90,6 +89,7 @@ def sign_filter(identified_signs, bbox_coords, nms_diff, padding):
 
             if (x_diff < nms_diff) and (y_diff < nms_diff):
                 identified_signs[frame_index].pop(indices[0])
+                bbox_coords[frame_index].pop(indices[0])
 
         # ########################### #
         # REMOVE SIGNS OUTSIDE WINDOW #
@@ -97,15 +97,16 @@ def sign_filter(identified_signs, bbox_coords, nms_diff, padding):
 
         lag = 0
         for sign_index in range(len(frame_signs)):
-            x0 = frame_coords[sign_index][0]
-            y0 = frame_coords[sign_index][1]
-            x1 = frame_coords[sign_index][2]
-            y1 = frame_coords[sign_index][3]
+            x0 = frame_coords[sign_index - lag][0]
+            y0 = frame_coords[sign_index - lag][1]
+            x1 = frame_coords[sign_index - lag][2]
+            y1 = frame_coords[sign_index - lag][3]
 
             # pop identified sign if sign is in padded area
             if (x0 < padding) or (y0 < padding) or (x1 > (1280 - padding)) or (
                     y1 > (1280 - padding)):
                 identified_signs[frame_index].pop(sign_index - lag)
+                bbox_coords[frame_index].pop(sign_index - lag)
                 lag += 1
 
         # ########################### #
@@ -116,17 +117,51 @@ def sign_filter(identified_signs, bbox_coords, nms_diff, padding):
             lag = 0
             for sign_index in range(len(identified_signs[frame_index])):
                 current_sign = identified_signs[frame_index][sign_index - lag]
-                if current_sign not in identified_signs[frame_index - 1]:
-                    if (frame_index < len(identified_signs)) and (
-                            current_sign not in identified_signs[frame_index + 1]):
+                if (current_sign not in identified_signs[frame_index - 1]) and (frame_index < len(identified_signs)-1):  # if current sign is not in prior frame
+                    if current_sign not in identified_signs[frame_index + 1]:  # if frame index is less than the total number of frames
                         identified_signs[frame_index].pop(sign_index - lag)
+                        bbox_coords[frame_index].pop(sign_index - lag)
                         lag += 1
 
-    return identified_signs
+    return identified_signs, bbox_coords
 
 
-def sign_logic(identified_signs, bbox_coords, images_root):
+def sign_logic(identified_signs, bbox_coords, images_root, image_size):
+    # ###################### #
+    # GET MOVEMENT DIRECTION #
+    # ###################### #
+
+    frame_index, reoccurring_sign_found = 0, False
+    while not reoccurring_sign_found:
+        # we find that the general movement of the camera occurs after a few frames
+        if (frame_index < len(identified_signs) - 1) and (frame_index > 2):
+            for sign_index in range(len(identified_signs[frame_index])):
+                if identified_signs[frame_index][sign_index] in identified_signs[frame_index+1]:
+                    reoccurring_sign_found = True
+                    reoccurring_sign = identified_signs[frame_index][sign_index]
+                    reoccurring_coord = bbox_coords[frame_index][sign_index]
+                    frame_init = frame_index
+                    break
+        elif frame_index > len(identified_signs) - 1:
+            break
+
+        frame_index += 1
+
+    reoccurring_pos = identified_signs[frame_init+1].index(reoccurring_sign)
+    next_reoccurring_coord = bbox_coords[frame_init+1][reoccurring_pos]
+
+    if reoccurring_coord < next_reoccurring_coord:
+        movement_direction = 'left'
+    else:
+        movement_direction = 'right'
+
+    # ################### #
+    # SIGN PRESENCE LOGIC #
+    # ################### #
+
     print("-" * 50)
+    # set movement buffer to a third the frame size
+    movement_buffer = image_size / 3
     video_signs, prior_signs, prior_coords = [], [], []
     num_signs = 0
     for frame_index in range(len(identified_signs)):
@@ -175,15 +210,46 @@ def sign_logic(identified_signs, bbox_coords, images_root):
                     frame_bbox_sign = bbox_coords[frame_index][sign_index]
                     prior_bbox_sign = prior_coords[prior_signs.index(frame_signs[sign_index])]
 
-                    print(f"\n\t\t{frame_signs[sign_index]}")
-                    print(f"\t\t\tPrior Coord: {prior_bbox_sign}")
-                    print(f"\t\t\tCurrent Coord: {frame_bbox_sign}")
+                    if ((movement_direction == 'left') and (prior_bbox_sign[0] < frame_bbox_sign[0] + movement_buffer)) or \
+                            ((movement_direction == 'right') and (prior_bbox_sign[0] > frame_bbox_sign[0] + movement_buffer)):
+                        print(f"\n\t\t{frame_signs[sign_index]}")
+                        print(f"\t\t\tPrior Coord: {prior_bbox_sign}")
+                        print(f"\t\t\tCurrent Coord: {frame_bbox_sign}")
 
-                    print(f"\t\t\tPresent sign")
+                        print(f"\t\t\tPresent sign")
 
-                    # pop sign from prior_signs and prior coordinates
-                    prior_signs.pop(prior_signs.index(frame_signs[sign_index]))
-                    prior_coords.pop(prior_coords.index(prior_bbox_sign))
+                        # pop sign from prior_signs and prior coordinates
+                        prior_signs.pop(prior_signs.index(frame_signs[sign_index]))
+                        prior_coords.pop(prior_coords.index(prior_bbox_sign))
+                    else:
+                        print(f"\n\t\t{frame_signs[sign_index]}")
+                        print(f"\t\t\tPrior Coord: {prior_bbox_sign}")
+                        print(f"\t\t\tCurrent Coord: {frame_bbox_sign}")
+                        print(f"\t\t\t**Movement Captured** New sign")
+
+                        video_signs.append(frame_signs[sign_index])
+
+                        # save each sign to normalized signs folder
+                        frame_image = cv2.imread(f"{images_root}/{frame_index}.png")
+
+                        x1, y1 = bbox_coords[frame_index][sign_index][0], bbox_coords[frame_index][sign_index][1]
+                        x2, y2 = bbox_coords[frame_index][sign_index][2], bbox_coords[frame_index][sign_index][3]
+                        src = np.array([[x1, y1], [x1, y2], [x2, y2], [x2, y1]]).reshape((4, 2))
+                        dst = np.array(
+                            [[0, 0], [0, frame_image.shape[1]], [frame_image.shape[0], frame_image.shape[1]],
+                             [frame_image.shape[0], 0]]).reshape((4, 2))
+
+                        tform = transform.estimate_transform('projective', src, dst)
+                        tf_img = transform.warp(frame_image, tform.inverse)
+
+                        # plotting the transformed image
+                        fig, ax = plt.subplots()
+                        ax.imshow(tf_img)
+
+                        plt.axis('off')
+                        plt.savefig(f"samples/normalized_images/{num_signs}.png", bbox_inches='tight', pad_inches=0)
+                        plt.close()
+                        num_signs += 1
                 # if sign is not in the prior frame and the sign is in the window of acceptance => append sign to list
                 else:
                     print(f"\n\t\t{frame_signs[sign_index]}")
@@ -233,6 +299,7 @@ class Sign_Presence:
         self.nms_diff = nms_diff
         self.padding = padding
         self.debug = debug
+        self.image_size = 1280
 
     def sign_presence_logic(self, identified_signs, bbox_coords, images_root):
         # ################### #
@@ -244,14 +311,13 @@ class Sign_Presence:
             sys.stdout = open(os.devnull, 'w')  # block printing momentarily
 
         # remove signs identified outside the window of acceptance, perform "BTEC" NMS and remove once occurring signs
-        print(identified_signs, flush=True)
-        identified_signs = sign_filter(identified_signs, bbox_coords, self.nms_diff, self.padding)
+        filtered_signs, filtered_boxes = sign_filter(identified_signs, bbox_coords, self.nms_diff, self.padding)
 
         # ####################### #
         # IDENTIFY SIGNS IN VIDEO #
         # ####################### #
 
-        video_signs = sign_logic(identified_signs, bbox_coords, images_root)
+        video_signs = sign_logic(filtered_signs, filtered_boxes, images_root, self.image_size)
 
         # #################### #
         # UNCACHE LOCAL IMAGES #
