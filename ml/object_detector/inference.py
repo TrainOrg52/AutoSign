@@ -307,8 +307,8 @@ class ObjectDetector(nn.Module):
 
             # delete image (processed images)
             processed_file = os.path.join(processed_destination, tail)
-            # if os.path.exists(processed_file):
-                # os.remove(processed_file)
+            if os.path.exists(processed_file):
+                os.remove(processed_file)
 
             # view img with bbox predictions overlay
             if self.view_img:

@@ -163,7 +163,7 @@ def processVehicleInspection(vehicle_inspection, vehicle):
 
             # filter signs with video logic
             print("\tExtracting Signs from Video...")
-            SignLogic = Sign_Presence(nms_diff=5, padding=10, debug=True)
+            SignLogic = Sign_Presence(nms_diff=5, padding=10, debug=False)
             filtered_signs = SignLogic.sign_presence_logic(video_signs, video_bbox_coords, dst_root)
             identified_signs.append(filtered_signs)
             print(f"\tFiltered Signs: {filtered_signs}", flush=True)
