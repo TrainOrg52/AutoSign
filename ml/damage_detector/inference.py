@@ -120,6 +120,6 @@ class DamageDetector(nn.Module):
                 os.remove(unprocessed_file)
 
             # update progress bar
-            loop.set_description(f"\tSign [{index + 1}/{len(dataset)}]")
+            loop.set_description(f"\t\tSign [{index + 1}/{len(dataset)}]")
 
         return labels

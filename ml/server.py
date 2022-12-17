@@ -163,7 +163,7 @@ def processVehicleInspection(vehicle_inspection, vehicle):
 
             # filter signs with video logic
             print("\tExtracting Signs from Video...")
-            SignLogic = Sign_Presence(nms_diff=5, padding=10, debug=False)
+            SignLogic = Sign_Presence(nms_diff=5, padding=10, debug=True)
             filtered_signs = SignLogic.sign_presence_logic(video_signs, video_bbox_coords, dst_root)
             identified_signs.append(filtered_signs)
             print(f"\tFiltered Signs: {filtered_signs}", flush=True)
@@ -171,7 +171,7 @@ def processVehicleInspection(vehicle_inspection, vehicle):
             # damage detection
             if len(filtered_signs) != 0:
                 if len(filtered_signs[0]) != 0:
-                    print(f"\tSign Damage Detection Processing...", flush=True)
+                    print(f"\t\tSign Damage Detection Processing...", flush=True)
                     damage_root = 'samples/normalized_images'
                     damage_classifications = damage_det(damage_root)
                     conformance_statuses.append(damage_classifications)
@@ -182,9 +182,8 @@ def processVehicleInspection(vehicle_inspection, vehicle):
         vehicle_checkpoints.append(vehicle_checkpoint)
         vehicle_checkpoint_signs.append(vehicle_checkpoint.signs)
 
-    print(f"\t\tIdentified Signs: {identified_signs}")
-    print(f"\t\tConformance Status: {conformance_statuses}")
-    print(f"\t\tSign Length: {len(identified_signs[0])}\tConformance Length: {len(conformance_statuses[0])}")
+    print(f"\tIdentified Signs: {identified_signs}")
+    print(f"\tConformance Status: {conformance_statuses}")
 
     # STEP 2.5: COMPARE LOCATED LABELS TO EXPECTED #
 

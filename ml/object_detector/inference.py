@@ -307,8 +307,8 @@ class ObjectDetector(nn.Module):
 
             # delete image (processed images)
             processed_file = os.path.join(processed_destination, tail)
-            if os.path.exists(processed_file):
-                os.remove(processed_file)
+            # if os.path.exists(processed_file):
+                # os.remove(processed_file)
 
             # view img with bbox predictions overlay
             if self.view_img:
@@ -317,6 +317,6 @@ class ObjectDetector(nn.Module):
                 cv2.destroyAllWindows()
 
             # update progress bar
-            loop.set_description(f"Video Frame [{index + 1}/{len(dataset)}]")
+            loop.set_description(f"\tVideo Frame [{index + 1}/{len(dataset)}]")
 
         return bboxes, labels

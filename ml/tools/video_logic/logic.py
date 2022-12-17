@@ -69,7 +69,7 @@ def sign_filter(identified_signs, bbox_coords, nms_diff, padding):
         # ######## #
 
         # find repeating signs
-        repeated_signs = pd.Series(frame_signs)[pd.Series(frame_signs).duplicated()].values
+        repeated_signs = pd.Series(frame_signs, dtype=pd.StringDtype())[pd.Series(frame_signs, dtype=pd.StringDtype()).duplicated()].values
         if repeated_signs.size > 0:
             repeated_signs = repeated_signs[0]
 
@@ -87,6 +87,7 @@ def sign_filter(identified_signs, bbox_coords, nms_diff, padding):
             x_diff = np.diff(x_coords)
             y_diff = np.diff(y_coords)
 
+            print(f"NMS Diff: {nms_diff}\ty_diff: {y_diff}\tx_diff: {x_diff}")
             if (x_diff < nms_diff) and (y_diff < nms_diff):
                 identified_signs[frame_index].pop(indices[0])
                 bbox_coords[frame_index].pop(indices[0])
@@ -103,8 +104,11 @@ def sign_filter(identified_signs, bbox_coords, nms_diff, padding):
             y1 = frame_coords[sign_index - lag][3]
 
             # pop identified sign if sign is in padded area
+            """
             if (x0 < padding) or (y0 < padding) or (x1 > (1280 - padding)) or (
                     y1 > (1280 - padding)):
+            """
+            if (x0 < padding) or (x1 > (1280 - padding)):
                 identified_signs[frame_index].pop(sign_index - lag)
                 bbox_coords[frame_index].pop(sign_index - lag)
                 lag += 1
@@ -154,6 +158,8 @@ def sign_logic(identified_signs, bbox_coords, images_root, image_size):
         movement_direction = 'left'
     else:
         movement_direction = 'right'
+
+    print(f"Movement Direction: {movement_direction}")
 
     # ################### #
     # SIGN PRESENCE LOGIC #
@@ -210,8 +216,9 @@ def sign_logic(identified_signs, bbox_coords, images_root, image_size):
                     frame_bbox_sign = bbox_coords[frame_index][sign_index]
                     prior_bbox_sign = prior_coords[prior_signs.index(frame_signs[sign_index])]
 
+                    # movement logic (used in case a new sign enters as soon as another sign leaves the frame)
                     if ((movement_direction == 'left') and (prior_bbox_sign[0] < frame_bbox_sign[0] + movement_buffer)) or \
-                            ((movement_direction == 'right') and (prior_bbox_sign[0] > frame_bbox_sign[0] + movement_buffer)):
+                            ((movement_direction == 'right') and (prior_bbox_sign[0] > frame_bbox_sign[0] - movement_buffer)):
                         print(f"\n\t\t{frame_signs[sign_index]}")
                         print(f"\t\t\tPrior Coord: {prior_bbox_sign}")
                         print(f"\t\t\tCurrent Coord: {frame_bbox_sign}")
