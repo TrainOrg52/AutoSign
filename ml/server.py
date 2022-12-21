@@ -11,6 +11,7 @@ import torchvision.transforms as transforms
 from object_detector.inference import ObjectDetector
 from damage_detector.inference import DamageDetector
 
+
 """
     @brief: 
         Every 3 seconds, performs a get request from firestore and looks for any inspection walkthrough processing status fields that are 'pending'. 
@@ -22,7 +23,6 @@ from damage_detector.inference import DamageDetector
 """
 def runServer():
     while True:
-
         print("Checking for unprocessed inspection walkthroughs...")
 
         # get all inspections where status is "pending"
@@ -118,9 +118,9 @@ def processVehicleInspection(vehicle_inspection, vehicle):
 
             # damage detection
             if len(image_identified_signs[0]) != 0:
-                print(f"\tSign Damage Detection Processing...")
+                print(f"\tSign Damage Detection Processing...", flush=True)
                 damage_root = 'samples/normalized_images'
-                damage_classifications = damage_det(damage_root)
+                damage_classifications = BeIT_damage_detector(damage_root)
                 conformance_statuses.append(damage_classifications)
             else:
                 conformance_statuses.append([])
@@ -150,7 +150,8 @@ def processVehicleInspection(vehicle_inspection, vehicle):
 
             # video preprocessing
             frame_num, count = 0, math.floor(total_num_frames / 20)
-            count = count if (count > 7) else 7
+            count = count if (count > 5) else 6
+            count = count if (count < 15) else 14
             video_processing(video, frame_num, count, frame_root, total_num_frames)
 
             if os.path.exists(local_path):
@@ -166,14 +167,15 @@ def processVehicleInspection(vehicle_inspection, vehicle):
             SignLogic = Sign_Presence(nms_diff=5, padding=10, debug=False)
             filtered_signs = SignLogic.sign_presence_logic(video_signs, video_bbox_coords, dst_root)
             identified_signs.append(filtered_signs)
-            print(f"\tFiltered Signs: {filtered_signs}")
+            print(f"\tFiltered Signs: {filtered_signs}", flush=True)
 
             # damage detection
-            if len(filtered_signs[0]) != 0:
-                print(f"\tSign Damage Detection Processing...")
-                damage_root = 'samples/normalized_images'
-                damage_classifications = damage_det(damage_root)
-                conformance_statuses.append(damage_classifications)
+            if len(filtered_signs) != 0:
+                if len(filtered_signs[0]) != 0:
+                    print(f"\t\tSign Damage Detection Processing...", flush=True)
+                    damage_root = 'samples/normalized_images'
+                    damage_classifications = BeIT_damage_detector(damage_root)
+                    conformance_statuses.append(damage_classifications)
             else:
                 conformance_statuses.append([])
 
@@ -181,16 +183,16 @@ def processVehicleInspection(vehicle_inspection, vehicle):
         vehicle_checkpoints.append(vehicle_checkpoint)
         vehicle_checkpoint_signs.append(vehicle_checkpoint.signs)
 
-    # STEP 2.4: PROCESSING MEDIA AND SAVING TO STORAGE #
-
-    print(f"\t\tIdentified Signs: {identified_signs}")
-    print(f"\t\tConformance Status{conformance_statuses}")
+    print(f"\tIdentified Signs: {identified_signs}")
+    print(f"\tConformance Status: {conformance_statuses}")
 
     # STEP 2.5: COMPARE LOCATED LABELS TO EXPECTED #
 
     print("\tChecking Conformance Status...")
-    for predicted_signs, conformance_status, vehicle_sign, vehicle_checkpoint in zip(identified_signs, conformance_statuses, vehicle_checkpoint_signs,
-                                                                 vehicle_checkpoints):
+    for predicted_signs, conformance_status, vehicle_sign, vehicle_checkpoint in zip(identified_signs,
+                                                                                     conformance_statuses,
+                                                                                     vehicle_checkpoint_signs,
+                                                                                     vehicle_checkpoints):
 
         # updating signs
         new_signs = vehicle_sign
@@ -209,13 +211,14 @@ def processVehicleInspection(vehicle_inspection, vehicle):
             checkpoint.lastVehicleInspectionResult = "conforming"
             new_checkpoint_conformance = "conforming"
 
+        lag = 0
         for pos, (signage) in enumerate(vehicle_sign):
             # checking if inspection sign identified
             if signage['title'] in predicted_signs:
                 # sign identified -> updating status
 
                 # setting new sign conformance
-                new_sign_conformance = conformance_status[pos]
+                new_sign_conformance = conformance_status[pos - lag]
                 checkpoint.signs[pos]['conformanceStatus'] = new_sign_conformance
 
                 # removing identified sign from list
@@ -223,6 +226,7 @@ def processVehicleInspection(vehicle_inspection, vehicle):
                 predicted_signs.pop(idx)
             else:
                 # sign missing -> updating status
+                lag += 1
 
                 # setting new sign conformance
                 new_sign_conformance = "missing"
@@ -316,8 +320,8 @@ if __name__ == "__main__":
 
     print("Damage Detector Setup...")
 
-    # initialize damage detector
-    damage_det = DamageDetector(image_size=1280, conf_thresh=0.66, iou_thresh=0.65, num_classes=2)
+    # initialize damage classifier
+    BeIT_damage_detector = DamageDetector()
 
     print("Setup Complete!")
     print("-----------------------")
