@@ -202,7 +202,8 @@ def processVehicleInspection(vehicle_inspection, vehicle):
 
         checkpoint.conformanceStatus = "processing"
 
-        if 'damaged' in conformance_status:
+        conformance_status_temp = 'damaged' if (conformance_status == 'torn' or conformance_status == 'scribble' or conformance_status == 'scribbled_and_torn') else conformance_status
+        if 'damaged' in conformance_status_temp:
             checkpoint.lastVehicleInspectionResult = "non-conforming"
             new_checkpoint_conformance = "non-conforming"
             vehicle_inspection.conformanceStatus = "non-conforming"
