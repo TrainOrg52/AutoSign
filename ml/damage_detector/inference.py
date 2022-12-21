@@ -88,10 +88,12 @@ class DamageDetector(nn.Module):
             # update progress bar
             loop.set_description(f"\t\tSign [{index + 1}/{len(os.listdir(data_src))}]")
 
+        """
         # STEP 2.4.2: DELETE LOCAL IMAGES
         for filename in os.listdir(data_src):
             image_path = os.path.join(data_src, filename)
             if os.path.exists(image_path):
                 os.remove(image_path)
+        """
 
         return labels

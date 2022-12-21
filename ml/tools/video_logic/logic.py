@@ -4,7 +4,6 @@ import cv2
 import numpy as np
 import pandas as pd
 from skimage import transform
-import matplotlib.pyplot as plt
 
 
 # ########################## #
@@ -51,6 +50,18 @@ def video_processing(video, frame_num, frame_root):
     else:
         return ret, frame_num
 
+
+def perform_homography(coord, frame_image, num_signs, path):
+    x1, y1 = coord[0], coord[1]
+    x2, y2 = coord[2], coord[3]
+    src = np.array([[x1, y1], [x1, y2], [x2, y2], [x2, y1]]).reshape((4, 2))
+    dst = np.array([[0, 0], [0, frame_image.shape[1]], [frame_image.shape[0], frame_image.shape[1]], [frame_image.shape[0], 0]]).reshape((4, 2))
+
+    tform = transform.estimate_transform('projective', src, dst)
+    tf_img = transform.warp(frame_image, tform.inverse) * 255
+
+    # plotting the transformed image
+    cv2.imwrite(path, tf_img)
 
 # ####################### #
 # SIGN PRESENCE FUNCTIONS #
@@ -187,21 +198,7 @@ def sign_logic(identified_signs, bbox_coords, images_root, image_size):
             frame_image = cv2.imread(f"{images_root}/{frame_index}.png")
 
             for signs, coord in zip(frame_signs, frame_coord):
-                x1, y1 = coord[0], coord[1]
-                x2, y2 = coord[2], coord[3]
-                src = np.array([[x1, y1], [x1, y2], [x2, y2], [x2, y1]]).reshape((4, 2))
-                dst = np.array([[0, 0], [0, frame_image.shape[1]], [frame_image.shape[0], frame_image.shape[1]], [frame_image.shape[0], 0]]).reshape((4, 2))
-
-                tform = transform.estimate_transform('projective', src, dst)
-                tf_img = transform.warp(frame_image, tform.inverse)
-
-                # plotting the transformed image
-                fig, ax = plt.subplots()
-                ax.imshow(tf_img)
-
-                plt.axis('off')
-                plt.savefig(f"samples/normalized_images/{num_signs}.png", bbox_inches='tight', pad_inches=0)
-                plt.close()
+                perform_homography(coord, frame_image, num_signs, f"samples/normalized_images/{num_signs}.png")
                 num_signs += 1
         else:
             # debugging
@@ -239,23 +236,7 @@ def sign_logic(identified_signs, bbox_coords, images_root, image_size):
                         # save each sign to normalized signs folder
                         frame_image = cv2.imread(f"{images_root}/{frame_index}.png")
 
-                        x1, y1 = bbox_coords[frame_index][sign_index][0], bbox_coords[frame_index][sign_index][1]
-                        x2, y2 = bbox_coords[frame_index][sign_index][2], bbox_coords[frame_index][sign_index][3]
-                        src = np.array([[x1, y1], [x1, y2], [x2, y2], [x2, y1]]).reshape((4, 2))
-                        dst = np.array(
-                            [[0, 0], [0, frame_image.shape[1]], [frame_image.shape[0], frame_image.shape[1]],
-                             [frame_image.shape[0], 0]]).reshape((4, 2))
-
-                        tform = transform.estimate_transform('projective', src, dst)
-                        tf_img = transform.warp(frame_image, tform.inverse)
-
-                        # plotting the transformed image
-                        fig, ax = plt.subplots()
-                        ax.imshow(tf_img)
-
-                        plt.axis('off')
-                        plt.savefig(f"samples/normalized_images/{num_signs}.png", bbox_inches='tight', pad_inches=0)
-                        plt.close()
+                        perform_homography(bbox_coords[frame_index][sign_index], frame_image, num_signs, f"samples/normalized_images/{num_signs}.png")
                         num_signs += 1
                 # if sign is not in the prior frame and the sign is in the window of acceptance => append sign to list
                 else:
@@ -267,23 +248,7 @@ def sign_logic(identified_signs, bbox_coords, images_root, image_size):
                     # save each sign to normalized signs folder
                     frame_image = cv2.imread(f"{images_root}/{frame_index}.png")
 
-                    x1, y1 = bbox_coords[frame_index][sign_index][0], bbox_coords[frame_index][sign_index][1]
-                    x2, y2 = bbox_coords[frame_index][sign_index][2], bbox_coords[frame_index][sign_index][3]
-                    src = np.array([[x1, y1], [x1, y2], [x2, y2], [x2, y1]]).reshape((4, 2))
-                    dst = np.array(
-                        [[0, 0], [0, frame_image.shape[1]], [frame_image.shape[0], frame_image.shape[1]],
-                         [frame_image.shape[0], 0]]).reshape((4, 2))
-
-                    tform = transform.estimate_transform('projective', src, dst)
-                    tf_img = transform.warp(frame_image, tform.inverse)
-
-                    # plotting the transformed image
-                    fig, ax = plt.subplots()
-                    ax.imshow(tf_img)
-
-                    plt.axis('off')
-                    plt.savefig(f"samples/normalized_images/{num_signs}.png", bbox_inches='tight', pad_inches=0)
-                    plt.close()
+                    perform_homography(bbox_coords[frame_index][sign_index], frame_image, num_signs, f"samples/normalized_images/{num_signs}.png")
                     num_signs += 1
 
             # prior signs update

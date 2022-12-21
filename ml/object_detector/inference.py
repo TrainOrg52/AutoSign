@@ -183,7 +183,7 @@ class ObjectDetector(nn.Module):
 
             # save image
             data_dst = os.path.join(processed_destination, tail)
-            cv2.imwrite(data_dst, im0)
+            cv2.imwrite(data_dst, cv2.cvtColor(im0, cv2.COLOR_RGB2BGR))
 
             # STEP 2.4.2: SAVE NORMALIZED SIGN IMAGES
 
@@ -200,12 +200,7 @@ class ObjectDetector(nn.Module):
                 tf_img = transform.warp(image, tform.inverse)
 
                 # plotting the transformed image
-                fig, ax = plt.subplots()
-                ax.imshow(tf_img)
-
-                plt.axis('off')
-                plt.savefig(f"samples/normalized_images/{i}.png", bbox_inches='tight', pad_inches=0)
-                plt.close()
+                cv2.imwrite(f"samples/normalized_images/{i}.png", cv2.cvtColor(tf_img, cv2.COLOR_RGB2BGR))
 
             # STEP 2.4.3: DELETE LOCAL IMAGES
 
@@ -303,7 +298,7 @@ class ObjectDetector(nn.Module):
 
             # save image
             data_dst = os.path.join(processed_destination, tail)
-            cv2.imwrite(data_dst, im0)
+            cv2.imwrite(data_dst, cv2.cvtColor(im0, cv2.COLOR_RGB2BGR))
 
             # delete image (processed images)
             processed_file = os.path.join(processed_destination, tail)
