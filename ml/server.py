@@ -11,6 +11,7 @@ import torchvision.transforms as transforms
 from object_detector.inference import ObjectDetector
 from damage_detector.inference import DamageDetector
 
+
 """
     @brief: 
         Every 3 seconds, performs a get request from firestore and looks for any inspection walkthrough processing status fields that are 'pending'. 
@@ -119,7 +120,7 @@ def processVehicleInspection(vehicle_inspection, vehicle):
             if len(image_identified_signs[0]) != 0:
                 print(f"\tSign Damage Detection Processing...", flush=True)
                 damage_root = 'samples/normalized_images'
-                damage_classifications = damage_det(damage_root)
+                damage_classifications = BeIT_damage_detector(damage_root)
                 conformance_statuses.append(damage_classifications)
             else:
                 conformance_statuses.append([])
@@ -173,7 +174,7 @@ def processVehicleInspection(vehicle_inspection, vehicle):
                 if len(filtered_signs[0]) != 0:
                     print(f"\t\tSign Damage Detection Processing...", flush=True)
                     damage_root = 'samples/normalized_images'
-                    damage_classifications = damage_det(damage_root)
+                    damage_classifications = BeIT_damage_detector(damage_root)
                     conformance_statuses.append(damage_classifications)
             else:
                 conformance_statuses.append([])
@@ -319,8 +320,8 @@ if __name__ == "__main__":
 
     print("Damage Detector Setup...")
 
-    # initialize damage detector
-    damage_det = DamageDetector(image_size=1280, conf_thresh=0.66, iou_thresh=0.65, num_classes=2)
+    # initialize damage classifier
+    BeIT_damage_detector = DamageDetector()
 
     print("Setup Complete!")
     print("-----------------------")
