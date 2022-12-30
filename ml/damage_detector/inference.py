@@ -34,7 +34,7 @@ class DamageDetector(nn.Module):
     @authors: Benjamin Sanati
     """
 
-    def __init__(self):
+    def __init__(self, model_type):
         """
         @brief: Initializes the damage detector for processing. Sets up the classifier once, reducing the total processing time compared to
         setting up on every inference call.
@@ -44,7 +44,11 @@ class DamageDetector(nn.Module):
         super(DamageDetector, self).__init__()
 
         sys.stdout = open(os.devnull, 'w')  # block printing momentarily
-        repo_name = r"damage_detector\finetuned_models\beit-base-patch16-224-pt22k-finetuned-autosign"
+        if model_type == 'detailed':
+            repo_name = r"damage_detector\finetuned_models\beit-base-patch16-224-pt22k-finetuned-autosign"
+        elif model_type == 'simple':
+            repo_name = r"damage_detector\finetuned_models\beit-base-patch16-224-pt22k-finetuned-autosign-damaged-no-tears"
+
         self.feature_extractor = BeitFeatureExtractor.from_pretrained(repo_name)
         self.model = BeitForImageClassification.from_pretrained(repo_name)
 
