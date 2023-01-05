@@ -98,8 +98,10 @@ def sign_filter(identified_signs, bbox_coords, nms_diff, padding):
             x_diff = np.diff(x_coords)
             y_diff = np.diff(y_coords)
 
+            print(x_diff, y_diff, flush=True)
+
             print(f"NMS Diff: {nms_diff}\ty_diff: {y_diff}\tx_diff: {x_diff}")
-            if (x_diff < nms_diff) and (y_diff < nms_diff):
+            if (np.all(x_diff) < nms_diff) and (np.all(y_diff) < nms_diff):
                 identified_signs[frame_index].pop(indices[0])
                 bbox_coords[frame_index].pop(indices[0])
 

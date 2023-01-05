@@ -1,5 +1,3 @@
-import cv2
-import math
 from model import *
 from time import sleep
 from PIL import Image, ImageOps
@@ -84,6 +82,7 @@ def processVehicleInspection(vehicle_inspection, vehicle):
     identified_signs, conformance_statuses = [], []
     media_type = []
     for checkpoint_inspection in checkpoint_inspections:
+        print(identified_signs)
         # STEP 2.1: GATHERING INSPECTION CHECKPOINT DOCUMENT #
         vehicle_checkpoint = CheckpointInspection.from_doc(checkpoint_inspection)
 
@@ -114,7 +113,7 @@ def processVehicleInspection(vehicle_inspection, vehicle):
             local_root = 'samples/processed_images'
 
             _, image_identified_signs = obj_det(dst_root, local_root)
-            identified_signs.extend(image_identified_signs)
+            identified_signs += image_identified_signs
 
             # damage detection
             if len(image_identified_signs[0]) != 0:
@@ -149,9 +148,9 @@ def processVehicleInspection(vehicle_inspection, vehicle):
             frame_root = f"samples/video_images"
 
             # video preprocessing
-            frame_num, count = 0, math.floor(total_num_frames / 20)
-            count = count if (count > 5) else 6
-            count = count if (count < 15) else 14
+            frame_num, count = 0, 5 # math.floor(total_num_frames / 10)
+            #count = count if (count > 5) else 6
+            count = count if (count < 11) else 10
             video_processing(video, frame_num, count, frame_root, total_num_frames)
 
             if os.path.exists(local_path):
@@ -166,7 +165,7 @@ def processVehicleInspection(vehicle_inspection, vehicle):
             print("\tExtracting Signs from Video...")
             SignLogic = Sign_Presence(nms_diff=5, padding=10, debug=False)
             filtered_signs = SignLogic.sign_presence_logic(video_signs, video_bbox_coords, dst_root)
-            identified_signs.append(filtered_signs)
+            identified_signs += [filtered_signs]
             print(f"\tFiltered Signs: {filtered_signs}", flush=True)
 
             # damage detection
@@ -189,10 +188,13 @@ def processVehicleInspection(vehicle_inspection, vehicle):
     # STEP 2.5: COMPARE LOCATED LABELS TO EXPECTED #
 
     print("\tChecking Conformance Status...")
-    for predicted_signs, conformance_status, vehicle_sign, vehicle_checkpoint in zip(identified_signs,
+    print('-' * 30)
+    for idx_s, (predicted_signs, conformance_status, vehicle_sign, vehicle_checkpoint) in enumerate(zip(identified_signs,
                                                                                      conformance_statuses,
                                                                                      vehicle_checkpoint_signs,
-                                                                                     vehicle_checkpoints):
+                                                                                     vehicle_checkpoints)):
+
+        print(f"\t{idx_s}:")
 
         # updating signs
         new_signs = vehicle_sign
@@ -202,8 +204,10 @@ def processVehicleInspection(vehicle_inspection, vehicle):
 
         checkpoint.conformanceStatus = "processing"
 
-        conformance_status_temp = 'damaged' if (conformance_status == 'torn' or conformance_status == 'scribble' or conformance_status == 'scribbled_and_torn') else conformance_status
-        if 'damaged' in conformance_status_temp:
+        for index in range(len(conformance_status)):
+            conformance_status[index] = conformance_status[index] if (conformance_status[index] == 'conforming') else 'damaged'
+
+        if 'damaged' in conformance_status:
             checkpoint.lastVehicleInspectionResult = "non-conforming"
             new_checkpoint_conformance = "non-conforming"
             vehicle_inspection.conformanceStatus = "non-conforming"
@@ -212,23 +216,21 @@ def processVehicleInspection(vehicle_inspection, vehicle):
             checkpoint.lastVehicleInspectionResult = "conforming"
             new_checkpoint_conformance = "conforming"
 
-        lag = 0
-        for pos, (signage) in enumerate(vehicle_sign):
+        for pos, (signage) in enumerate(zip(vehicle_sign)):
             # checking if inspection sign identified
-            if signage['title'] in predicted_signs:
+            if (signage[0]['title'] in predicted_signs):
                 # sign identified -> updating status
+                sign_index = predicted_signs.index(signage[0]['title'])
 
                 # setting new sign conformance
-                new_sign_conformance = conformance_status[pos - lag]
+                new_sign_conformance = conformance_status[sign_index]
                 checkpoint.signs[pos]['conformanceStatus'] = new_sign_conformance
 
                 # removing identified sign from list
-                idx = predicted_signs.index(signage['title'])
-                predicted_signs.pop(idx)
+                print(f"\t\tSign: {predicted_signs[sign_index]}\t-\t{sign_index}\t-\t{conformance_status[sign_index]}")
+                predicted_signs.pop(sign_index)
+                conformance_status.pop(sign_index)
             else:
-                # sign missing -> updating status
-                lag += 1
-
                 # setting new sign conformance
                 new_sign_conformance = "missing"
                 checkpoint.signs[pos]['conformanceStatus'] = new_sign_conformance
@@ -239,6 +241,8 @@ def processVehicleInspection(vehicle_inspection, vehicle):
                 vehicle.conformanceStatus = "non-conforming"
 
                 checkpoint.lastVehicleInspectionResult = "non-conforming"
+
+                print(f"\t\tSign: {signage[0]['title']}\t-\tmissing")
 
             # updating checkpoints object
             checkpoint.conformanceStatus = checkpoint.lastVehicleInspectionResult
@@ -255,6 +259,8 @@ def processVehicleInspection(vehicle_inspection, vehicle):
             checkpoint.signs = new_signs
             vehicle_checkpoint.conformanceStatus = new_checkpoint_conformance
             vehicle_checkpoint.update(db)
+
+    print('-' * 30)
 
     vehicle_inspection.processingStatus = "processed"
     vehicle_inspection.update(db)
@@ -317,12 +323,12 @@ if __name__ == "__main__":
     resize = transforms.Resize([1280, 1280])
 
     # initialize object detector
-    obj_det = ObjectDetector(image_size=1280, conf_thresh=0.65, iou_thresh=0.65, num_classes=38, view_img=False)
+    obj_det = ObjectDetector(image_size=1280, conf_thresh=0.6, iou_thresh=0.55, num_classes=36, view_img=False)
 
     print("Damage Detector Setup...")
 
     # initialize damage classifier
-    BeIT_damage_detector = DamageDetector(model_type='simple')
+    BeIT_damage_detector = DamageDetector(model_type='detailed')
 
     print("Setup Complete!")
     print("-----------------------")

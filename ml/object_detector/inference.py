@@ -14,6 +14,7 @@ from tqdm import tqdm
 
 import matplotlib.pyplot as plt
 from torchvision.transforms import transforms
+from tools.video_logic.logic import perform_homography
 
 sys.path.insert(0, r'object_detector/yolov7')
 
@@ -25,7 +26,6 @@ from utils.torch_utils import select_device, load_classifier, time_synchronized,
 
 
 def resize_bbox(bbox, image_height, image_width):
-
     x_scale = (image_height / 1280)
     y_scale = (image_width / 1280)
 
@@ -69,8 +69,8 @@ class ObjectDetector(nn.Module):
 
         # Initialize data and hyperparameters (to be made into argparse arguments)
         self.device = select_device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.weights = r"object_detector\finetuned_models\real_best_e6_200_epochs.pt"
-        self.weights = r"object_detector\finetuned_models\real_best_e6_200_epochs.pt"
+        self.weights = r"object_detector\finetuned_models\real_best_e6_no_lr.pt"
+        self.weights = r"object_detector\finetuned_models\real_best_e6_no_lr.pt"
         self.image_size = image_size  # input  image should be (1280 x 1280)
         self.conf_thresh = conf_thresh
         self.iou_thresh = iou_thresh
@@ -84,15 +84,16 @@ class ObjectDetector(nn.Module):
         self.image_size = check_img_size(self.image_size, s=self.stride)  # check img_size
 
         # Get names and colors
-        self.names = ['Exit Right', 'Exit Left', 'Exit Straight', 'Fire Extinguisher Right', 'Fire Extinguisher Left',
-                      'Fire Extinguisher Straight', 'Seat Numbers', 'Wheelchair Seat Numbers', 'Seat Utilities',
-                      'Cycle Reservation', 'Wi-Fi', 'Toilet Right', 'Toilet Left', 'Wheelchair Area',
-                      'Wheelchair Assistants Area', 'Priority Seat', 'Priority Seating Area', 'Overhead Racks Warning',
-                      'Mind The Gap', 'CCTV Warning', 'Call Cancellation', 'Telephone S.O.S', 'Push To Stop Train',
-                      'Emergency Door Release', 'Emergency Information', 'Litter Bin', 'Smoke Alarm',
-                      'Toilet Door Latch', 'Hand Washing', 'Toilet Tissue', 'Toilet Warning', 'Handrail',
-                      'Caution Magnet', 'Baby Changing Bed', 'C3', 'AC', 'Electricity Hazard', 'Ladder']
-        self.colours = [[random.randint(0, 255) for _ in range(3)] for _ in self.names]  # define random colours for each label in the dataset
+        self.names = ['Exit', 'Exit Straight', 'Fire Extinguisher', 'Fire Extinguisher Straight', 'Seat Numbers',
+                      'Wheelchair Seat Numbers', 'Seat Utilities', 'Cycle Reservation', 'Wi-Fi', 'Toilet Right',
+                      'Toilet Left', 'Wheelchair Area', 'Wheelchair Assistants Area', 'Priority Seat',
+                      'Priority Seating Area', 'Overhead Racks Warning', 'Mind The Gap', 'CCTV Warning',
+                      'Call Cancellation', 'Telephone S.O.S', 'Push To Stop Train', 'Emergency Door Release',
+                      'Emergency Information', 'Litter Bin', 'Smoke Alarm', 'Toilet Door Latch', 'Hand Washing',
+                      'Toilet Tissue', 'Toilet Warning', 'Handrail', 'Caution Magnet', 'Baby Changing Bed', 'C3', 'AC',
+                      'Electricity Hazard', 'Ladder']
+        self.colours = [[random.randint(0, 255) for _ in range(3)] for _ in
+                        self.names]  # define random colours for each label in the dataset
 
         # model warmup
         self.model(
@@ -158,8 +159,9 @@ class ObjectDetector(nn.Module):
             # resize image
             resize_image = transforms.Resize([w, h])
             im0 = np.array(resize_image(Image.fromarray(im0)))
+            image_copy = im0.copy()
 
-            for info in pred:
+            for num_signs, (info) in enumerate(pred):
                 # add bboxes around objects
                 box = info[:4]
                 label = int(info[-1])
@@ -183,7 +185,7 @@ class ObjectDetector(nn.Module):
 
             # save image
             data_dst = os.path.join(processed_destination, tail)
-            cv2.imwrite(data_dst, cv2.cvtColor(im0, cv2.COLOR_RGB2BGR))
+            cv2.imwrite(data_dst, im0)
 
             # STEP 2.4.2: SAVE NORMALIZED SIGN IMAGES
 
@@ -194,21 +196,19 @@ class ObjectDetector(nn.Module):
                 x1, y1 = box[0], box[1]
                 x2, y2 = box[2], box[3]
                 src = np.array([[x1, y1], [x1, y2], [x2, y2], [x2, y1]]).reshape((4, 2))
-                dst = np.array([[0, 0], [0, image.shape[1]], [image.shape[0], image.shape[1]], [image.shape[0], 0]]).reshape((4, 2))
+                dst = np.array(
+                    [[0, 0], [0, image.shape[1]], [image.shape[0], image.shape[1]], [image.shape[0], 0]]).reshape(
+                    (4, 2))
 
-                tform = transform.estimate_transform('projective', src, dst)
-                tf_img = transform.warp(image, tform.inverse)
-
-                # plotting the transformed image
-                cv2.imwrite(f"samples/normalized_images/{i}.png", cv2.cvtColor(tf_img, cv2.COLOR_RGB2BGR))
+                perform_homography(box, image_copy, 3, f"samples/normalized_images/{i}.png")
 
             # STEP 2.4.3: DELETE LOCAL IMAGES
 
             # delete image (both processed and non-processed images)
             processed_file = os.path.join(processed_destination, tail)
             unprocessed_file = os.path.join(data_src, tail)
-            if os.path.exists(processed_file):
-                os.remove(processed_file)
+            # if os.path.exists(processed_file):
+                # os.remove(processed_file)
             if os.path.exists(unprocessed_file):
                 os.remove(unprocessed_file)
 
@@ -298,7 +298,7 @@ class ObjectDetector(nn.Module):
 
             # save image
             data_dst = os.path.join(processed_destination, tail)
-            cv2.imwrite(data_dst, cv2.cvtColor(im0, cv2.COLOR_RGB2BGR))
+            cv2.imwrite(data_dst, im0)
 
             # delete image (processed images)
             processed_file = os.path.join(processed_destination, tail)
