@@ -45,9 +45,9 @@ class DamageDetector(nn.Module):
 
         sys.stdout = open(os.devnull, 'w')  # block printing momentarily
         if model_type == 'detailed':
-            repo_name = r"damage_detector\finetuned_models\beit-base-patch16-224-pt22k-finetuned-autosign"
+            repo_name = r"damage_detector\finetuned_models\beit-base-patch16-224-pt22k-finetuned-autosign-fine"
         elif model_type == 'simple':
-            repo_name = r"damage_detector\finetuned_models\beit-base-patch16-224-pt22k-finetuned-autosign-damaged-no-tears"
+            repo_name = r"damage_detector\finetuned_models\beit-base-patch16-224-pt22k-finetuned-autosign-coarse"
 
         self.feature_extractor = BeitFeatureExtractor.from_pretrained(repo_name)
         self.model = BeitForImageClassification.from_pretrained(repo_name)
