@@ -188,7 +188,7 @@ def processVehicleInspection(vehicle_inspection, vehicle):
     # STEP 2.5: COMPARE LOCATED LABELS TO EXPECTED #
 
     print("\tChecking Conformance Status...")
-    print('-' * 30)
+    print('\t' + ('-' * 30))
     for idx_s, (predicted_signs, conformance_status, vehicle_sign, vehicle_checkpoint) in enumerate(zip(identified_signs,
                                                                                      conformance_statuses,
                                                                                      vehicle_checkpoint_signs,
@@ -227,7 +227,7 @@ def processVehicleInspection(vehicle_inspection, vehicle):
                 checkpoint.signs[pos]['conformanceStatus'] = new_sign_conformance
 
                 # removing identified sign from list
-                print(f"\t\tSign: {predicted_signs[sign_index]}\t-\t{sign_index}\t-\t{conformance_status[sign_index]}")
+                print(f"\t\tSign: {predicted_signs[sign_index]}\t-\t{conformance_status[sign_index]}")
                 predicted_signs.pop(sign_index)
                 conformance_status.pop(sign_index)
             else:
@@ -260,7 +260,7 @@ def processVehicleInspection(vehicle_inspection, vehicle):
             vehicle_checkpoint.conformanceStatus = new_checkpoint_conformance
             vehicle_checkpoint.update(db)
 
-    print('-' * 30)
+    print('\t' + ('-' * 30))
 
     vehicle_inspection.processingStatus = "processed"
     vehicle_inspection.update(db)

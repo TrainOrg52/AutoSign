@@ -68,8 +68,7 @@ class ObjectDetector(nn.Module):
         sys.stdout = open(os.devnull, 'w')  # block printing momentarily
 
         # Initialize data and hyperparameters (to be made into argparse arguments)
-        self.device = select_device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.weights = r"object_detector\finetuned_models\real_best_e6_no_lr.pt"
+        self.device = torch.device('cuda:0')
         self.weights = r"object_detector\finetuned_models\real_best_e6_no_lr.pt"
         self.image_size = image_size  # input  image should be (1280 x 1280)
         self.conf_thresh = conf_thresh
@@ -79,7 +78,7 @@ class ObjectDetector(nn.Module):
         self.view_img = view_img
 
         # Load model
-        self.model = attempt_load(self.weights, map_location=self.device).half()  # load FP32 model
+        self.model = attempt_load(self.weights, map_location=self.device).half().to(self.device)  # load FP32 model
         self.stride = int(self.model.stride.max())  # model stride
         self.image_size = check_img_size(self.image_size, s=self.stride)  # check img_size
 
@@ -97,7 +96,7 @@ class ObjectDetector(nn.Module):
 
         # model warmup
         self.model(
-            torch.zeros(1, 3, self.image_size, self.image_size).to(self.device).type_as(next(self.model.parameters())))
+            torch.zeros(1, 3, self.image_size, self.image_size).type_as(next(self.model.parameters())))
 
         sys.stdout = sys.__stdout__  # enable printing
 
@@ -124,7 +123,7 @@ class ObjectDetector(nn.Module):
         for index, (path, img, im0s, vid_cap) in loop:  # for every image in data path
             # STEP 2.4.1: Run Object Detector on each image
             head, tail = ntpath.split(path)
-            img = torch.from_numpy(img).to(self.device).half().unsqueeze(0)
+            img = torch.from_numpy(img).half().unsqueeze(0).to(self.device)
             img /= 255.0  # 0 - 255 to 0.0 - 1.0
 
             # Inference
@@ -246,7 +245,7 @@ class ObjectDetector(nn.Module):
 
             # STEP 2.4.1: Run Object Detector on each image
             head, tail = ntpath.split(path)
-            img = torch.from_numpy(img).to(self.device).half().unsqueeze(0)
+            img = torch.from_numpy(img).half().unsqueeze(0).cuda()
             img /= 255.0  # 0 - 255 to 0.0 - 1.0
             # print(f"Path: {tail}")
 

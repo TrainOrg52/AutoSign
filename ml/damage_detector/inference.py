@@ -45,12 +45,13 @@ class DamageDetector(nn.Module):
 
         sys.stdout = open(os.devnull, 'w')  # block printing momentarily
         if model_type == 'detailed':
-            repo_name = r"damage_detector\finetuned_models\beit-base-patch16-224-pt22k-finetuned-autosign-fine"
+            repo_name = r"damage_detector\finetuned_models\BEiT-fine-finetuned"
         elif model_type == 'simple':
-            repo_name = r"damage_detector\finetuned_models\beit-base-patch16-224-pt22k-finetuned-autosign-coarse"
+            repo_name = r"damage_detector\finetuned_models\BEiT-coarse-finetuned"
 
+        self.device = torch.device('cuda')
         self.feature_extractor = BeitFeatureExtractor.from_pretrained(repo_name)
-        self.model = BeitForImageClassification.from_pretrained(repo_name)
+        self.model = BeitForImageClassification.from_pretrained(repo_name).to(self.device)
 
         sys.stdout = sys.__stdout__  # enable printing
 
@@ -81,12 +82,14 @@ class DamageDetector(nn.Module):
 
             # forward pass
             with torch.no_grad():
+                encoding['pixel_values'] = encoding['pixel_values'].to(self.device)
                 outputs = self.model(**encoding)
                 logits = outputs.logits
 
             # prediction
             predicted_class_idx = logits.argmax(-1).item()
             predicted_class = self.model.config.id2label[predicted_class_idx]
+            predicted_class = predicted_class.lower()
             labels.append(predicted_class)
 
             # update progress bar
