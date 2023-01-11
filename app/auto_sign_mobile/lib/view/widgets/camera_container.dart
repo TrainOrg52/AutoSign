@@ -1,9 +1,11 @@
 import 'package:auto_sign_mobile/model/enums/capture_type.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
+import 'package:auto_sign_mobile/view/theme/widgets/my_icon_button.dart';
 import 'package:auto_sign_mobile/view/widgets/custom_future_builder.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 
 // ////////// //
@@ -86,6 +88,7 @@ class _CameraContainerAuxState extends State<CameraContainerAux> {
   late bool isInitialized; // initialization state of camera
   late bool isRecording; // current recording state of the capture
   late bool mediaCaptured; // if a photo/video has been captured or not
+  late bool flashEnabled; // if flash is enabled
 
   // THEME-ING
   // sizes
@@ -105,6 +108,7 @@ class _CameraContainerAuxState extends State<CameraContainerAux> {
     isInitialized = false;
     isRecording = false;
     mediaCaptured = false;
+    flashEnabled = false;
 
     // initializing controller
     controller = CameraController(
@@ -165,6 +169,15 @@ class _CameraContainerAuxState extends State<CameraContainerAux> {
       // camera initialized -> building UI
       return Stack(
         children: [
+          // ///////////// //
+          // FLASH CONTROL //
+          // //////////// //
+
+          // Align(
+          //   alignment: Alignment.topRight,
+          //   child: _buildFlashControl(),
+          // ),
+
           // ////////////// //
           // CAMERA PREVIEW //
           // ////////////// //
@@ -192,6 +205,23 @@ class _CameraContainerAuxState extends State<CameraContainerAux> {
   // ////////////////////// //
   // HELPER BUILDER METHODS //
   // ////////////////////// //
+
+  Widget _buildFlashControl() {
+    return MyIconButton.secondary(
+      iconData: FontAwesomeIcons.boltLightning,
+      onPressed: () {
+        setState(() {
+          if (flashEnabled) {
+            controller.setFlashMode(FlashMode.always);
+          } else {
+            controller.setFlashMode(FlashMode.off);
+          }
+
+          flashEnabled = !flashEnabled;
+        });
+      },
+    );
+  }
 
   /// Builds the capture button for the capture of a photo.
   Widget _buildPhotoCaptureButton() {
