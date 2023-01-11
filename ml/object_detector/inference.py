@@ -69,7 +69,7 @@ class ObjectDetector(nn.Module):
 
         # Initialize data and hyperparameters (to be made into argparse arguments)
         self.device = torch.device('cuda:0')
-        self.weights = r"object_detector\finetuned_models\real_best_e6_no_lr.pt"
+        self.weights = r"object_detector\finetuned_models\best.pt"
         self.image_size = image_size  # input  image should be (1280 x 1280)
         self.conf_thresh = conf_thresh
         self.iou_thresh = iou_thresh

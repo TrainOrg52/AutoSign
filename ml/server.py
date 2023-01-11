@@ -328,7 +328,7 @@ if __name__ == "__main__":
     print("Damage Detector Setup...")
 
     # initialize damage classifier
-    BeIT_damage_detector = DamageDetector(model_type='detailed')
+    BeIT_damage_detector = DamageDetector(model_type='simple')
 
     print("Setup Complete!")
     print("-----------------------")
