@@ -84,13 +84,12 @@ class ObjectDetector(nn.Module):
 
         # Get names and colors
         self.names = ['Exit', 'Exit Straight', 'Fire Extinguisher', 'Fire Extinguisher Straight', 'Seat Numbers',
-                      'Wheelchair Seat Numbers', 'Seat Utilities', 'Cycle Reservation', 'Wi-Fi', 'Toilet Right',
-                      'Toilet Left', 'Wheelchair Area', 'Wheelchair Assistants Area', 'Priority Seat',
-                      'Priority Seating Area', 'Overhead Racks Warning', 'Mind The Gap', 'CCTV Warning',
-                      'Call Cancellation', 'Telephone S.O.S', 'Push To Stop Train', 'Emergency Door Release',
-                      'Emergency Information', 'Litter Bin', 'Smoke Alarm', 'Toilet Door Latch', 'Hand Washing',
-                      'Toilet Tissue', 'Toilet Warning', 'Handrail', 'Caution Magnet', 'Baby Changing Bed', 'C3', 'AC',
-                      'Electricity Hazard', 'Ladder']
+                      'Wheelchair Seat Numbers', 'Seat Utilities', 'Cycle Reservation', 'Wi-Fi', 'Toilet',
+                      'Wheelchair Area', 'Wheelchair Assistants Area', 'Priority Seat', 'Priority Seating Area',
+                      'Overhead Racks Warning', 'Mind The Gap', 'CCTV Warning', 'Call Cancellation', 'Telephone S.O.S',
+                      'Push To Stop Train', 'Emergency Door Release', 'Emergency Information', 'Litter Bin',
+                      'Smoke Alarm', 'Toilet Door Latch', 'Hand Washing', 'Toilet Tissue', 'Toilet Warning', 'Handrail',
+                      'Caution Magnet', 'Baby Changing Bed', 'C3', 'AC', 'Electricity Hazard', 'Ladder']
         self.colours = [[random.randint(0, 255) for _ in range(3)] for _ in
                         self.names]  # define random colours for each label in the dataset
 
@@ -206,8 +205,8 @@ class ObjectDetector(nn.Module):
             # delete image (both processed and non-processed images)
             processed_file = os.path.join(processed_destination, tail)
             unprocessed_file = os.path.join(data_src, tail)
-            # if os.path.exists(processed_file):
-                # os.remove(processed_file)
+            if os.path.exists(processed_file):
+                os.remove(processed_file)
             if os.path.exists(unprocessed_file):
                 os.remove(unprocessed_file)
 
