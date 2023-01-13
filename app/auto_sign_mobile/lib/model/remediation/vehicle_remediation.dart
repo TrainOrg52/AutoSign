@@ -17,7 +17,7 @@ class VehicleRemediation extends ModelObject {
     String id = "",
     int? timestamp,
     this.vehicleID = "",
-    this.location = "",
+    this.location = "Reading",
     this.vehicleInspectionID = "",
   }) : super(id: id, timestamp: timestamp);
 

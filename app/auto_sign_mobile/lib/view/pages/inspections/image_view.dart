@@ -16,6 +16,11 @@ import 'package:auto_sign_mobile/view/widgets/padded_custom_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../../model/enums/conformance_status.dart';
+import '../../../model/vehicle/sign.dart';
+import '../../theme/widgets/my_text_button.dart';
+import '../../widgets/custom_dropdown_button.dart';
+
 ///Class for showing an image within the app
 class ImageView extends StatefulWidget {
   String vehicleID;
@@ -103,31 +108,106 @@ class ImageViewState extends State<ImageView> {
     );
   }
 
-  Future<void> updateCheckpoint(BuildContext context) async {
+  Future<void> updateCheckpoint(
+      BuildContext context, CheckpointInspection checkpointInspection) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('AlertDialog Title'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: const <Widget>[
-                Text('This is a demo alert dialog.'),
-                Text('Would you like to approve of this message?'),
-              ],
-            ),
+          insetPadding: const EdgeInsets.all(0),
+          title: const Text(
+            'Update Inspection',
+            textAlign: TextAlign.center,
+            style: MyTextStyles.headerText2,
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          content: SizedBox(
+            width: 300,
+            child: _buildSignList(
+                context, checkpointInspection.signs, checkpointInspection),
           ),
           actions: <Widget>[
-            TextButton(
-              child: const Text('Approve'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
+            MyTextButton.secondary(
+                text: "Finish",
+                onPressed: () {
+                  Navigator.of(context).pop();
+                }),
           ],
         );
       },
+    );
+  }
+
+  ListView _buildSignList(BuildContext context, List<Sign> signs,
+      CheckpointInspection checkpointInspection) {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: signs.length,
+      itemBuilder: ((context, index) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              flex: 5,
+              child: Text(
+                signs[index].title.toString(),
+                style: MyTextStyles.bodyText2,
+              ),
+            ),
+            Flexible(
+              flex: 6,
+              child: CustomDropdownButton<ConformanceStatus>(
+                // value
+                value: signs[index].conformanceStatus,
+                // on changed
+                onChanged: (ConformanceStatus? conformanceStatus) async {
+                  if (conformanceStatus != null) {
+                    // updating the conformance status
+                    InspectionController.instance
+                        .updateCheckpointInspectionSignConformanceStatus(
+                            checkpointInspection,
+                            signs[index],
+                            conformanceStatus);
+                  }
+                },
+                // items
+                items: ConformanceStatus.userSelectableValues
+                    .map<DropdownMenuItem<ConformanceStatus>>(
+                  (conformanceStatus) {
+                    return (DropdownMenuItem(
+                      value: conformanceStatus,
+                      child: BorderedContainer(
+                        isDense: true,
+                        borderColor: conformanceStatus.color,
+                        backgroundColor: conformanceStatus.accentColor,
+                        padding: const EdgeInsets.all(MySizes.paddingValue / 2),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              conformanceStatus.iconData,
+                              size: MySizes.smallIconSize,
+                              color: conformanceStatus.color,
+                            ),
+                            const SizedBox(width: MySizes.spacing),
+                            Text(
+                              conformanceStatus.title.toCapitalized(),
+                              style: MyTextStyles.bodyText2,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ));
+                  },
+                ).toList(),
+              ),
+            ),
+          ],
+        );
+      }),
     );
   }
 
@@ -147,7 +227,7 @@ class ImageViewState extends State<ImageView> {
               size: 25,
             ),
             onPressed: () {
-              updateCheckpoint(context);
+              updateCheckpoint(context, checkpointInspection);
             },
           )
         ]),
@@ -174,20 +254,20 @@ class ImageViewState extends State<ImageView> {
       widgets.add(
         BorderedContainer(
           isDense: true,
-          borderColor: sign.entries.first.value.color,
-          backgroundColor: sign.entries.first.value.accentColor,
+          borderColor: sign.conformanceStatus.color,
+          backgroundColor: sign.conformanceStatus.accentColor,
           padding: const EdgeInsets.all(MySizes.paddingValue / 2),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                sign.entries.first.value.iconData,
+                sign.conformanceStatus.iconData,
                 size: MySizes.smallIconSize,
-                color: sign.entries.first.value.color,
+                color: sign.conformanceStatus.color,
               ),
               const SizedBox(width: MySizes.spacing),
               Text(
-                "${sign.entries.first.key} : ${sign.entries.first.value.toString().toCapitalized()}",
+                "${sign.title} : ${sign.conformanceStatus.toString().toCapitalized()}",
                 style: MyTextStyles.bodyText2,
               ),
             ],
@@ -282,6 +362,7 @@ Widget inspectionImage(
               vehicleInspectionID, checkpointInspectionID, captureType),
       builder: (context, downloadURL) {
         return CapturePreview(
+          key: GlobalKey(),
           captureType: captureType,
           path: downloadURL,
           isNetworkURL: true,
@@ -304,6 +385,7 @@ Widget expectedImage(vehicleID, checkpointID, captureType) {
       ),
       builder: (context, downloadURL) {
         return CapturePreview(
+          key: GlobalKey(),
           captureType: captureType,
           path: downloadURL,
           isNetworkURL: true,

@@ -1,7 +1,8 @@
+import 'package:auto_sign_mobile/controller/shop_controller.dart';
 import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
 import 'package:auto_sign_mobile/main.dart';
-import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
 import 'package:auto_sign_mobile/model/vehicle/checkpoint.dart';
+import 'package:auto_sign_mobile/model/vehicle/sign.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
@@ -10,12 +11,12 @@ import 'package:auto_sign_mobile/view/theme/widgets/my_icon_button.dart';
 import 'package:auto_sign_mobile/view/theme/widgets/my_text_button.dart';
 import 'package:auto_sign_mobile/view/widgets/bordered_container.dart';
 import 'package:auto_sign_mobile/view/widgets/colored_container.dart';
-import 'package:auto_sign_mobile/view/widgets/custom_dropdown_button.dart';
 import 'package:auto_sign_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:auto_sign_mobile/view/widgets/padded_custom_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 /// Page to carry out a remediation for a train vehicle.
 ///
@@ -41,9 +42,12 @@ class RemediatePage extends StatefulWidget {
   State<RemediatePage> createState() => _RemediatePageState();
 }
 
+/// TODO
 class _RemediatePageState extends State<RemediatePage> {
   // STATE VARIABLES //
-  late final Map<Checkpoint, Map<String, bool>> signsInCart;
+  late Map<String, List<String>>
+      cart; // signs in the cart (checkpointID -> sign ID)
+  late bool allSignsAddedToCart;
 
   // ////////// //
   // INIT STATE //
@@ -54,7 +58,9 @@ class _RemediatePageState extends State<RemediatePage> {
     // super state
     super.initState();
 
-    signsInCart = {};
+    // member state
+    cart = {};
+    allSignsAddedToCart = false;
   }
 
   // //////////// //
@@ -85,20 +91,6 @@ class _RemediatePageState extends State<RemediatePage> {
           stream: VehicleController.instance
               .getNonConformingCheckpointsWhereVehicleIs(widget.vehicleID),
           builder: (context, checkpoints) {
-            // initializing the signs in cart object
-            for (Checkpoint checkpoint in checkpoints) {
-              // adding empty map for the checkpoint
-              signsInCart[checkpoint] = {};
-
-              // populating map for the checkpoint
-              for (var sign in checkpoint.signs) {
-                if (sign.entries.first.value ==
-                    ConformanceStatus.nonConforming) {
-                  signsInCart[checkpoint]?[sign.entries.first.key] = false;
-                }
-              }
-            }
-
             // building the widget
             return Stack(
               children: [
@@ -108,7 +100,9 @@ class _RemediatePageState extends State<RemediatePage> {
                     // ADD ALL TO CART //
                     // /////////////// //
 
-                    SliverToBoxAdapter(child: _buildAddAllToCartContainer()),
+                    SliverToBoxAdapter(
+                      child: _buildAddAllToCartContainer(checkpoints),
+                    ),
 
                     const SliverToBoxAdapter(
                         child: SizedBox(height: MySizes.spacing)),
@@ -119,62 +113,20 @@ class _RemediatePageState extends State<RemediatePage> {
 
                     for (Checkpoint checkpoint in checkpoints)
                       SliverToBoxAdapter(
-                        child: _buildCheckpointRemediateContainer(
-                          context,
-                          checkpoint,
+                        child: Column(
+                          children: [
+                            _buildCheckpointRemediateContainer(
+                              context,
+                              checkpoint,
+                            ),
+                            const SizedBox(height: MySizes.spacing),
+                          ],
                         ),
                       ),
 
                     // //////////////////////// //
                     // EXAMPLE DROP DOWN BUTTON //
                     // //////////////////////// //
-
-                    SliverToBoxAdapter(
-                      child: CustomDropdownButton<ConformanceStatus>(
-                        // value
-                        value: ConformanceStatus
-                            .conforming, // TODO change this to be the current conformance status of the sign
-                        // on changed
-                        onChanged:
-                            (ConformanceStatus? conformanceStatus) async {
-                          if (conformanceStatus != null) {
-                            // updating the conformance status
-                            // TODO
-                          }
-                        },
-                        // items
-                        items: ConformanceStatus.userSelectableValues
-                            .map<DropdownMenuItem<ConformanceStatus>>(
-                          (conformanceStatus) {
-                            return DropdownMenuItem(
-                              value: conformanceStatus,
-                              child: BorderedContainer(
-                                isDense: true,
-                                borderColor: conformanceStatus.color,
-                                backgroundColor: conformanceStatus.accentColor,
-                                padding: const EdgeInsets.all(
-                                    MySizes.paddingValue / 2),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      conformanceStatus.iconData,
-                                      size: MySizes.smallIconSize,
-                                      color: conformanceStatus.color,
-                                    ),
-                                    const SizedBox(width: MySizes.spacing),
-                                    Text(
-                                      conformanceStatus.title.toCapitalized(),
-                                      style: MyTextStyles.bodyText2,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ).toList(),
-                      ),
-                    ),
                   ],
                 ),
 
@@ -182,13 +134,14 @@ class _RemediatePageState extends State<RemediatePage> {
                 // CHECKOUT CONTAINER //
                 // ////////////////// //
 
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Padding(
-                    padding: const EdgeInsets.all(MySizes.paddingValue * 2),
-                    child: _buildCheckoutContainer(context),
+                if (cart.isNotEmpty)
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.all(MySizes.paddingValue * 2),
+                      child: _buildCheckoutContainer(context, checkpoints),
+                    ),
                   ),
-                ),
               ],
             );
           },
@@ -198,7 +151,7 @@ class _RemediatePageState extends State<RemediatePage> {
   }
 
   /// TODO
-  Widget _buildAddAllToCartContainer() {
+  Widget _buildAddAllToCartContainer(List<Checkpoint> checkpoints) {
     return BorderedContainer(
       borderColor: MyColors.blue,
       backgroundColor: MyColors.blueAccent,
@@ -210,15 +163,17 @@ class _RemediatePageState extends State<RemediatePage> {
           // /////// //
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(
+            children: [
+              const Icon(
                 FontAwesomeIcons.circleInfo,
                 size: MySizes.mediumIconSize,
                 color: MyColors.blue,
               ),
-              SizedBox(width: MySizes.spacing),
+              const SizedBox(width: MySizes.spacing),
               Text(
-                "Add All Signs to Cart",
+                allSignsAddedToCart && cart.isNotEmpty
+                    ? "All Signs Added To Cart"
+                    : "Add Signs All to Cart",
                 style: MyTextStyles.headerText3,
               ),
             ],
@@ -234,10 +189,12 @@ class _RemediatePageState extends State<RemediatePage> {
             backgroundColor: MyColors.blue,
             borderColor: MyColors.blue,
             textColor: MyColors.antiPrimary,
-            text: "Add All to Cart",
+            text: allSignsAddedToCart && cart.isNotEmpty
+                ? "Undo"
+                : "Add All to Cart",
             onPressed: () {
               // addding all of the signs to the cart
-              // TODO
+              _handleAddAllToCartPressed(checkpoints);
             },
           ),
         ],
@@ -306,7 +263,7 @@ class _RemediatePageState extends State<RemediatePage> {
           const SizedBox(height: MySizes.spacing),
 
           for (var sign in checkpoint.signs)
-            if (sign.entries.first.value == ConformanceStatus.nonConforming)
+            if (sign.conformanceStatus.isNonConforming())
               Row(
                 children: [
                   // /////////// //
@@ -315,20 +272,20 @@ class _RemediatePageState extends State<RemediatePage> {
 
                   BorderedContainer(
                     isDense: true,
-                    borderColor: sign.entries.first.value.color,
-                    backgroundColor: sign.entries.first.value.accentColor,
+                    borderColor: sign.conformanceStatus.color,
+                    backgroundColor: sign.conformanceStatus.accentColor,
                     padding: const EdgeInsets.all(MySizes.paddingValue / 2),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          sign.entries.first.value.iconData,
+                          sign.conformanceStatus.iconData,
                           size: MySizes.smallIconSize,
-                          color: sign.entries.first.value.color,
+                          color: sign.conformanceStatus.color,
                         ),
                         const SizedBox(width: MySizes.spacing),
                         Text(
-                          "${sign.entries.first.key} : ${sign.entries.first.value.toString().toCapitalized()}",
+                          "${sign.title} : ${sign.conformanceStatus.toString().toCapitalized()}",
                           style: MyTextStyles.bodyText2,
                         ),
                       ],
@@ -342,10 +299,14 @@ class _RemediatePageState extends State<RemediatePage> {
                   // //////////// //
 
                   MyIconButton.secondary(
-                    iconData: FontAwesomeIcons.cartPlus,
+                    iconData: cart[checkpoint.id] != null
+                        ? cart[checkpoint.id]!.contains(sign.id)
+                            ? FontAwesomeIcons.circleCheck
+                            : FontAwesomeIcons.cartPlus
+                        : FontAwesomeIcons.cartPlus,
                     onPressed: () {
-                      // adding the sign to the cart
-                      // TODO
+                      // handling the action
+                      _handleAddToCartPressed(checkpoint, sign);
                     },
                   ),
 
@@ -357,7 +318,11 @@ class _RemediatePageState extends State<RemediatePage> {
                       // remediating the issue
                       context.pushNamed(
                         Routes.signRemediate,
-                        params: {"vehicleID": checkpoint.vehicleID},
+                        params: {
+                          "vehicleID": checkpoint.vehicleID,
+                          "checkpointID": checkpoint.id,
+                          "signID": sign.id,
+                        },
                       );
                     },
                   ),
@@ -369,7 +334,10 @@ class _RemediatePageState extends State<RemediatePage> {
   }
 
   /// TODO
-  Widget _buildCheckoutContainer(BuildContext context) {
+  Widget _buildCheckoutContainer(
+    BuildContext context,
+    List<Checkpoint> checkpoints,
+  ) {
     return BorderedContainer(
       borderColor: MyColors.blue,
       backgroundColor: MyColors.blueAccent,
@@ -384,14 +352,6 @@ class _RemediatePageState extends State<RemediatePage> {
             size: MySizes.mediumIconSize,
           ),
 
-          const SizedBox(width: MySizes.spacing),
-
-          // /////// //
-          // MESSAGE //
-          // /////// //
-
-          const Text("4 signs in cart", style: MyTextStyles.bodyText1),
-
           const Spacer(),
 
           // /////////////// //
@@ -404,7 +364,11 @@ class _RemediatePageState extends State<RemediatePage> {
             textColor: MyColors.antiPrimary,
             text: "Checkout",
             onPressed: () {
-              // going to the checkout
+              // putting the cart into the controller
+              Provider.of<ShopController>(context, listen: false).cart =
+                  _flattenCart(checkpoints);
+
+              // navigating to the checkout page
               context.pushNamed(
                 Routes.checkout,
                 params: {"vehicleID": widget.vehicleID},
@@ -420,19 +384,105 @@ class _RemediatePageState extends State<RemediatePage> {
   // HELPER METHODS //
   // ////////////// //
 
-  /// Adds the given checkpoint sign to the cart.
-  void _addSignToCart(Checkpoint checkpoint, String signID) {
-    // updating the cart
-  }
+  /// Handles the user pressing the toggle button to add/remove a sign to/from
+  /// the cart.
+  void _handleAddToCartPressed(Checkpoint checkpoint, Sign sign) {
+    // updating the state of the cart
+    setState(() {
+      // checking if this checkpoint is in the cart
+      if (cart[checkpoint.id] != null) {
+        // checkpoint in the cart -> need to add/remove the sign to it
 
-  /// Removes the given checkpoint sign from the cart.
-  void _removeSignFromCart(Checkpoint checkpoint, String signID) {
-    // updating the cart
+        // checking if the sign is in the cart
+        if (cart[checkpoint.id]!.contains(sign.id)) {
+          // sign in cart -> need to remove it
+
+          // removing the sign from the cart
+          cart[checkpoint.id]!.remove(sign.id);
+
+          // seeing if the checkpoint needs to be removed from the cart
+          if (cart[checkpoint.id]!.isEmpty) {
+            // checkpoint has no signs in cart -> need to remove it form cart
+
+            // removing checkpoint from cart
+            cart.remove(checkpoint.id);
+          }
+        } else {
+          // sign not in cart -> need to add it to cart
+
+          // adding the sign to the cart
+          cart[checkpoint.id]!.add(sign.id);
+        }
+      } else {
+        // checkpoint not in cart -> need to initialize it with empty list
+
+        // initializing the checkpoing with the sign
+        cart[checkpoint.id] = [sign.id];
+      }
+    });
   }
 
   /// Adds the signs from all of the non-conformances in the checkpoints to the
   /// cart.
-  void _addAllSignsToCart(List<Checkpoint> checkpoints) {
-    /// TODO
+  void _handleAddAllToCartPressed(List<Checkpoint> checkpoints) {
+    setState(() {
+      // checking if add all to cart pressed already
+      if (allSignsAddedToCart) {
+        // add all to cart pressed already -> need to clear the cart
+
+        // clearing the cart and resetting state
+        cart = {};
+        allSignsAddedToCart = false;
+      } else {
+        // not all signs added to cart yet -> need to add all signs to cart
+
+        // iterating over the checkpoints
+        for (Checkpoint checkpoint in checkpoints) {
+          // adding the checkpoints signs to the cart
+          cart[checkpoint.id] = [for (Sign sign in checkpoint.signs) sign.id];
+        }
+
+        // updating state
+        allSignsAddedToCart = true;
+      }
+    });
+  }
+
+  /// Flattens the string into a single map.
+  Map<String, int> _flattenCart(List<Checkpoint> checkpoints) {
+    // creating empty map
+    Map<String, int> flattenedCart = {};
+
+    // creating the flattened cart
+
+    // iterating over checkpoints in cart
+    for (MapEntry<String, List<String>> checkpointSigns in cart.entries) {
+      // converting the sign id to a title
+      Checkpoint checkpoint = checkpoints
+          .where((checkpoint) => checkpoint.id == checkpointSigns.key)
+          .first;
+
+      // iterating over the signs in the checkpoint
+      for (String signID in checkpointSigns.value) {
+        // getting the title of the sign
+        Sign sign = checkpoint.signs.where((sign) => sign.id == signID).first;
+
+        // checking if this sign is the flattened cart
+        if (flattenedCart[sign.title] == null) {
+          // sign not in cart -> need to add it
+
+          // adding the sign to the cart
+          flattenedCart[sign.title] = 1;
+        } else {
+          // sign in cart -> need to increment it
+
+          // incrementing the quantity of the sign in the cart
+          flattenedCart[sign.title] = flattenedCart[sign.title]! + 1;
+        }
+      }
+    }
+
+    // returning the flattened cart
+    return flattenedCart;
   }
 }

@@ -1,3 +1,4 @@
+import 'package:auto_sign_mobile/controller/shop_controller.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
@@ -6,11 +7,13 @@ import 'package:auto_sign_mobile/view/theme/widgets/my_text_button.dart';
 import 'package:auto_sign_mobile/view/widgets/colored_container.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 /// TODO
 class OrderSummaryContainer extends StatelessWidget {
   // MEMBER VARIABLES //
-  final Function() onSubmit; // called when the submit button is pressed
+  final Function(BuildContext context)
+      onSubmit; // called when the submit button is pressed
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -42,7 +45,7 @@ class OrderSummaryContainer extends StatelessWidget {
         // ORDER SUMMARY //
         // ///////////// //
 
-        _buildOrderSummaryContainer(),
+        _buildOrderSummaryContainer(context),
 
         const SizedBox(height: MySizes.spacing),
 
@@ -62,78 +65,103 @@ class OrderSummaryContainer extends StatelessWidget {
   // ////////////////////// //
 
   /// TODO
-  Widget _buildOrderSummaryContainer() {
+  Widget _buildOrderSummaryContainer(BuildContext context) {
     return ColoredContainer(
       color: MyColors.backgroundSecondary,
-      child: Column(
-        children: [
-          Row(
+      child: ListView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: Provider.of<ShopController>(context).cart.entries.length,
+        itemBuilder: ((context, index) {
+          return Column(
             children: [
-              // ///// //
-              // TITLE //
-              // ///// //
-
-              const Expanded(
-                child: Text(
-                  "Evacuation Instructions",
-                  style: MyTextStyles.headerText3,
-                ),
+              _buildSignOrderRow(
+                context,
+                Provider.of<ShopController>(context)
+                    .cart
+                    .entries
+                    .toList()[index],
               ),
-
-              // ////////// //
-              // - QUANTITY //
-              // ////////// //
-
-              MyIconButton.secondary(
-                iconData: FontAwesomeIcons.squareMinus,
-                onPressed: () {
-                  // reducing the quantity
-                  // TODO
-                },
-              ),
-
-              const SizedBox(width: MySizes.spacing / 2),
-
-              // //////// //
-              // QUANTITY //
-              // //////// //
-
-              const Text(
-                "1",
-                style: MyTextStyles.headerText3,
-              ),
-
-              const SizedBox(width: MySizes.spacing / 2),
-
-              // ////////// //
-              // + QUANTITY //
-              // ////////// //
-
-              MyIconButton.secondary(
-                iconData: FontAwesomeIcons.squarePlus,
-                onPressed: () {
-                  // increasing the quantity
-                  // TODO
-                },
-              ),
-
-              const SizedBox(width: MySizes.spacing / 2),
-
-              // ////// //
-              // DELETE //
-              // ////// //
-
-              MyIconButton.negative(
-                iconData: FontAwesomeIcons.trash,
-                onPressed: () {
-                  // removing the sign
-                  // TODO
-                },
-              ),
+              if (index !=
+                  Provider.of<ShopController>(context).cart.entries.length - 1)
+                const SizedBox(height: MySizes.spacing),
             ],
-          )
-        ],
+          );
+        }),
       ),
+    );
+  }
+
+  /// TODO
+  Widget _buildSignOrderRow(
+      BuildContext context, MapEntry<String, int> signOrder) {
+    return Row(
+      children: [
+        // ///// //
+        // TITLE //
+        // ///// //
+
+        Expanded(
+          child: Text(
+            signOrder.key,
+            style: MyTextStyles.headerText3,
+          ),
+        ),
+
+        // ////////// //
+        // - QUANTITY //
+        // ////////// //
+
+        MyIconButton.secondary(
+          iconData: FontAwesomeIcons.squareMinus,
+          onPressed: () {
+            // reducing the quantity
+            Provider.of<ShopController>(context, listen: false)
+                .decrementSignQuantity(signOrder.key);
+          },
+        ),
+
+        const SizedBox(width: MySizes.spacing / 2),
+
+        // //////// //
+        // QUANTITY //
+        // //////// //
+
+        Text(
+          "${signOrder.value}",
+          style: MyTextStyles.headerText3,
+        ),
+
+        const SizedBox(width: MySizes.spacing / 2),
+
+        // ////////// //
+        // + QUANTITY //
+        // ////////// //
+
+        MyIconButton.secondary(
+          iconData: FontAwesomeIcons.squarePlus,
+          onPressed: () {
+            // increasing the quantity
+            Provider.of<ShopController>(context, listen: false)
+                .incrementSignQuantity(signOrder.key);
+          },
+        ),
+
+        const SizedBox(width: MySizes.spacing / 2),
+
+        // ////// //
+        // DELETE //
+        // ////// //
+
+        MyIconButton.negative(
+          iconData: FontAwesomeIcons.trash,
+          onPressed: () {
+            // removing the sign
+            Provider.of<ShopController>(context, listen: false)
+                .removeSignFromCart(signOrder.key);
+          },
+        ),
+      ],
     );
   }
 
@@ -167,7 +195,7 @@ class OrderSummaryContainer extends StatelessWidget {
           textColor: MyColors.antiPrimary,
           onPressed: () {
             // submitting the order using the callback
-            onSubmit();
+            onSubmit(context);
           },
         ),
       ],

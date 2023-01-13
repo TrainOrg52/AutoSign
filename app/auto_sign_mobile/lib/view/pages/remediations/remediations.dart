@@ -1,12 +1,24 @@
+import 'package:auto_sign_mobile/controller/remediation_controller.dart';
+import 'package:auto_sign_mobile/main.dart';
 import 'package:auto_sign_mobile/view/pages/inspections/inspections.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
+import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_text_styles.dart';
-import 'package:auto_sign_mobile/view/widgets/bordered_container.dart';
+import 'package:auto_sign_mobile/view/theme/widgets/my_icon_button.dart';
+import 'package:auto_sign_mobile/view/widgets/custom_stream_builder.dart';
+import 'package:auto_sign_mobile/view/widgets/padded_custom_scroll_view.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../model/remediation/vehicle_remediation.dart';
+
 class RemediationsList extends StatelessWidget {
+  String vehicleID;
+
+  RemediationsList(this.vehicleID);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,84 +29,126 @@ class RemediationsList extends StatelessWidget {
         ),
         backgroundColor: MyColors.antiPrimary,
         centerTitle: true,
+        leading: MyIconButton.back(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
       ),
-      body: _buildRemediationList(context),
+      body: CustomStreamBuilder(
+        stream: RemediationController.instance
+            .getVehicleRemediationsWhereVehicleIs(vehicleID),
+        builder: (context, remediations) {
+          return PaddedCustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: _buildRemediationList(context, remediations, vehicleID),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }
 
-ListView _buildRemediationList(BuildContext context) {
-  List<Remediation> remediations = [
-    Remediation("Reading", "22/06/22", 3, [], [], []),
-    Remediation("Newport", "22/06/22", 1, [], [], []),
-    Remediation("Leeds", "22/06/22", 2, [], [], [])
-  ];
-
+ListView _buildRemediationList(BuildContext context,
+    List<VehicleRemediation> remediations, String vehicleID) {
   return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       padding: EdgeInsets.zero,
-      itemCount: remediations.length * 2,
-      itemBuilder: (_, index) {
-        if (index.isEven) {
-          return const Divider(
-            height: 8,
-          );
-        }
-        return remediationTile(remediations[index ~/ 2], context);
+      itemCount: remediations.length,
+      itemBuilder: (context, index) {
+        return Column(
+          children: [
+            remediationTile(remediations[index], vehicleID, context),
+            if (index != remediations.length - 1)
+              const SizedBox(height: MySizes.spacing),
+          ],
+        );
       });
 }
 
-Widget remediationTile(Remediation remediation, BuildContext context) {
-  return BorderedContainer(
-      padding: const EdgeInsets.all(0),
-      height: 70,
-      borderRadius: 10,
-      child: Center(
-          child: ListTile(
-              horizontalTitleGap: 0,
-              title: Text(
-                remediation.date,
+Widget remediationTile(
+    VehicleRemediation remediation, String vehicleID, BuildContext context) {
+  return OutlinedButton(
+    style: OutlinedButton.styleFrom(
+      foregroundColor: MyColors.textPrimary,
+      backgroundColor: MyColors.backgroundSecondary,
+      padding: MySizes.padding,
+      side: const BorderSide(
+        width: 0,
+        color: MyColors.backgroundSecondary,
+      ),
+    ),
+    onPressed: () {
+      context.pushNamed(
+        Routes.vehicleRemediation,
+        params: {
+          "vehicleRemediationID": remediation.id,
+          "vehicleID": vehicleID
+        },
+      );
+    },
+    child: Row(
+      children: [
+        const Icon(
+          FontAwesomeIcons.hammer,
+          color: MyColors.textPrimary,
+          size: MySizes.largeIconSize,
+        ),
+        const SizedBox(width: MySizes.spacing),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                remediation.timestamp.toDateString().toString(),
                 style: MyTextStyles.headerText1,
               ),
-              subtitle: Row(
+              const SizedBox(height: MySizes.spacing / 2),
+              Row(
                 children: [
                   locationWidget(remediation.location),
-                  const SizedBox(
-                    width: 16,
+                  const SizedBox(width: MySizes.spacing * 2),
+                  CustomStreamBuilder(
+                    stream: RemediationController.instance
+                        .getSignRemediationsWhereVehicleRemediationIs(
+                            remediation.id),
+                    builder: (context, signremediations) {
+                      return numIssuesWidget(signremediations.length);
+                    },
                   ),
-                  numIssuesWidget(remediation.numRemediations)
                 ],
               ),
-              leading: const Icon(
-                Icons.build,
-                size: 40,
-                color: Colors.black,
-              ),
-              trailing: IconButton(
-                icon: const Icon(
-                  Icons.navigate_next_sharp,
-                  color: Colors.black,
-                  size: 40,
-                ),
-                onPressed: () {
-                  context.pushNamed(
-                    Routes.remediationWalkthrough,
-                    params: {
-                      "remediationWalkthroughID": "2",
-                      "vehicleID": "707-008"
-                    },
-                  );
-                },
-              ))));
+            ],
+          ),
+        ),
+        const Icon(
+          FontAwesomeIcons.circleChevronRight,
+          size: MySizes.mediumIconSize,
+          color: MyColors.textPrimary,
+        ),
+      ],
+    ),
+  );
 }
 
 Widget numIssuesWidget(int numIssues) {
+  numIssues = 2;
   return Row(
     children: [
       const Icon(
-        Icons.check_circle,
+        FontAwesomeIcons.solidCircleCheck,
         color: MyColors.green,
+        size: MySizes.smallIconSize,
       ),
-      Text("$numIssues issues remediated")
+      const SizedBox(width: MySizes.spacing / 2),
+      Text(
+        "$numIssues remediation${numIssues > 1 ? 's' : ''}",
+        style: MyTextStyles.bodyText1,
+      ),
     ],
   );
 }

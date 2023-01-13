@@ -1,18 +1,20 @@
+import 'package:auto_sign_mobile/model/enums/capture_type.dart';
 import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
 import 'package:auto_sign_mobile/model/enums/remediation_action.dart';
-import 'package:auto_sign_mobile/model/inspection/checkpoint_inspection.dart';
 import 'package:auto_sign_mobile/model/model_object.dart';
+import 'package:auto_sign_mobile/model/vehicle/sign.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// The remediation of an individual sign within a train.
 class SignRemediation extends ModelObject {
   // MEMBERS //
-  String vehicleID; // id of the vehicle being inspected
+  String signID; // id of sign being remediated
+  String title; // the title of the sign being remediated
   String checkpointID; // id of the corresponding checkpoint
-  String checkpointInspectionID; // ID of the corresponding inspection
-  String vehicleRemediationID; // ID of the vehicle remediation
   String checkpointTitle; // title of the checkpoint
-  String signTitle; // the title of the sign being remediated
+  CaptureType checkpointCaptureType; // capture type of the checkpoint
+  String checkpointInspectionID; // ID of checkpoint inspection being remediated
+  String vehicleRemediationID; // ID of the vehicle remediation this is for
   ConformanceStatus
       preRemediationConformanceStatus; // conformance status prior to remediation
   RemediationAction remediationAction; // action taken to remediate the sign
@@ -27,16 +29,18 @@ class SignRemediation extends ModelObject {
   SignRemediation({
     String id = "",
     int? timestamp,
-    this.vehicleID = "",
+    this.signID = "",
+    this.title = "",
     this.checkpointID = "",
+    this.checkpointTitle = "",
+    CaptureType? checkpointCaptureType,
     this.checkpointInspectionID = "",
     this.vehicleRemediationID = "",
-    this.checkpointTitle = "",
-    this.signTitle = "",
     ConformanceStatus? preRemediationConformanceStatus,
     RemediationAction? remediationAction,
     this.capturePath = "",
-  })  : preRemediationConformanceStatus =
+  })  : checkpointCaptureType = checkpointCaptureType ?? CaptureType.photo,
+        preRemediationConformanceStatus =
             preRemediationConformanceStatus ?? ConformanceStatus.pending,
         remediationAction = remediationAction ?? RemediationAction.replaced,
         super(id: id, timestamp: timestamp);
@@ -45,21 +49,23 @@ class SignRemediation extends ModelObject {
   // FROM CHECKPOINT //
   // /////////////// //
 
-  factory SignRemediation.fromCheckpointInspection({
-    String vehicleRemediationID = "",
-    required CheckpointInspection checkpointInspection,
-    required String signTitle,
+  factory SignRemediation.fromSign({
+    required Sign sign,
+    required String checkpointID,
+    required String checkpointTitle,
+    required CaptureType checkpointCaptureType,
+    required String checkpointInspectionID,
     required RemediationAction remediationAction,
     required String capturePath,
   }) {
     return SignRemediation(
-      vehicleID: checkpointInspection.vehicleID,
-      checkpointID: checkpointInspection.checkpointID,
-      checkpointInspectionID: checkpointInspection.id,
-      vehicleRemediationID: vehicleRemediationID,
-      checkpointTitle: checkpointInspection.title,
-      signTitle: signTitle,
-      preRemediationConformanceStatus: checkpointInspection.conformanceStatus,
+      signID: sign.id,
+      title: sign.title,
+      checkpointID: checkpointID,
+      checkpointTitle: checkpointTitle,
+      checkpointCaptureType: checkpointCaptureType,
+      checkpointInspectionID: checkpointInspectionID,
+      preRemediationConformanceStatus: sign.conformanceStatus,
       remediationAction: remediationAction,
       capturePath: capturePath,
     );
@@ -75,22 +81,18 @@ class SignRemediation extends ModelObject {
     // getting snapshot data
     final data = snapshot.data();
 
-    // gathering sign data
-    Map<String, ConformanceStatus> signs = {};
-    data?["signs"].forEach((sign, conformanceStatus) {
-      signs[sign] = ConformanceStatus.fromString(conformanceStatus)!;
-    });
-
-    // cocnverting document data to an object
+    // creating the object using the data
     return SignRemediation(
       id: snapshot.id,
       timestamp: data?["timestamp"],
-      vehicleID: data?["vehicleID"],
+      signID: data?["signID"],
+      title: data?["title"],
       checkpointID: data?["checkpointID"],
+      checkpointTitle: data?["checkpointTitle"],
+      checkpointCaptureType:
+          CaptureType.fromString(data?["checkpointCaptureType"]),
       checkpointInspectionID: data?["checkpointInspectionID"],
-      vehicleRemediationID: data?["vehicleInspectionID"],
-      checkpointTitle: data?["title"],
-      signTitle: data?["signTitle"],
+      vehicleRemediationID: data?["vehicleRemediationID"],
       preRemediationConformanceStatus: ConformanceStatus.fromString(
           data?["preRemediationConformanceStatus"]),
       remediationAction:
@@ -104,15 +106,16 @@ class SignRemediation extends ModelObject {
     // converting the object to a map
     return {
       "timestamp": timestamp,
-      "vehicleID": vehicleID,
+      "signID": signID,
+      "title": title,
       "checkpointID": checkpointID,
+      "checkpointTitle": checkpointTitle,
+      "checkpointCaptureType": checkpointCaptureType.toString(),
       "checkpointInspectionID": checkpointInspectionID,
       "vehicleRemediationID": vehicleRemediationID,
-      "checkpointTitle": checkpointTitle,
-      "signTitle": signTitle,
       "preRemediationConformanceStatus":
           preRemediationConformanceStatus.toString(),
-      "remediationAction": remediationAction,
+      "remediationAction": remediationAction.toString(),
     };
   }
 }

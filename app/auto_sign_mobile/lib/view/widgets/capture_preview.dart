@@ -49,12 +49,18 @@ class _CapturePreviewState extends State<CapturePreview> {
 
     // member state
     if (widget.captureType == CaptureType.video) {
+      // initializing the video player
       flickManager = FlickManager(
         autoPlay: false,
         videoPlayerController: widget.isNetworkURL
-            ? VideoPlayerController.network(widget.path)
+            ? VideoPlayerController.network(
+                widget.path,
+              )
             : VideoPlayerController.file(File(widget.path)),
       );
+
+      // muting the video player
+      flickManager.flickControlManager?.mute();
     }
   }
 

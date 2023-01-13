@@ -1,9 +1,11 @@
+import 'package:auto_sign_mobile/controller/shop_controller.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
 
@@ -53,27 +55,41 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      // CONFIGURATION //
-      debugShowCheckedModeBanner: false,
+    return MultiProvider(
+      // ///////// //
+      // PROVIDERS //
+      // ///////// //
 
-      // ROUTING //
-      routerConfig: Routes.router,
+      providers: [
+        ChangeNotifierProvider(create: (context) => ShopController()),
+      ],
 
-      // THEME //
-      theme: ThemeData(
-        // scaffold
-        scaffoldBackgroundColor: MyColors.backgroundPrimary,
+      // /// //
+      // APP //
+      // /// //
 
-        // app bar
-        appBarTheme: const AppBarTheme(
-          backgroundColor: MyColors.backgroundSecondary,
-          foregroundColor: MyColors.textPrimary,
-          elevation: 0,
+      child: MaterialApp.router(
+        // CONFIGURATION //
+        debugShowCheckedModeBanner: false,
+
+        // ROUTING //
+        routerConfig: Routes.router,
+
+        // THEME //
+        theme: ThemeData(
+          // scaffold
+          scaffoldBackgroundColor: MyColors.backgroundPrimary,
+
+          // app bar
+          appBarTheme: const AppBarTheme(
+            backgroundColor: MyColors.backgroundSecondary,
+            foregroundColor: MyColors.textPrimary,
+            elevation: 0,
+          ),
+
+          // text
+          fontFamily: "Poppins",
         ),
-
-        // text
-        fontFamily: "Poppins",
       ),
     );
   }
@@ -99,7 +115,7 @@ extension StringCasingExtension on String {
 /// TODO
 extension TimestampExtension on int {
   /// TODO
-  String toDate() {
+  String toDateString() {
     // gathering date time object
     DateTime date = DateTime.fromMillisecondsSinceEpoch(this * 1000);
 
@@ -111,5 +127,16 @@ extension TimestampExtension on int {
 
     // returning formatted date
     return formattedDate;
+  }
+
+  /// TODO
+  bool isToday() {
+    // gathering date time objects
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(this * 1000);
+
+    // comparing days within timestamps
+    return (dateTime.day == DateTime.now().day &&
+        dateTime.month == DateTime.now().month &&
+        dateTime.year == DateTime.now().year);
   }
 }

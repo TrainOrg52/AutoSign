@@ -61,6 +61,29 @@ class ConformanceStatus {
     return title;
   }
 
+  // ////////////// //
+  // HELPER METHODS //
+  // ////////////// //
+
+  /// Determines if the [ConformanceStatus] is conforming.
+  ///
+  /// Returns true if it is conforming, false otherwise.
+  bool isConforming() {
+    // returning based on conformance status
+    return (this == ConformanceStatus.conforming);
+  }
+
+  /// Determines if the [ConformanceStatus] is non conforming (non-conforming,
+  /// missing or damaged).
+  ///
+  /// Returns true if it is non-conforming, false otherwise.
+  bool isNonConforming() {
+    // returning based on conformance status
+    return (this == ConformanceStatus.nonConforming ||
+        this == ConformanceStatus.missing ||
+        this == ConformanceStatus.damaged);
+  }
+
   // ///////// //
   // INSTANCES //
   // ///////// //

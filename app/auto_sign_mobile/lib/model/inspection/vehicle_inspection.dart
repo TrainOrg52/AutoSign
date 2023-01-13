@@ -20,7 +20,7 @@ class VehicleInspection extends ModelObject {
     String id = "",
     int? timestamp,
     this.vehicleID = "",
-    this.location = "",
+    this.location = "Newport",
     ProcessingStatus? processingStatus,
     ConformanceStatus? conformanceStatus,
   })  : processingStatus = processingStatus ?? ProcessingStatus.uploading,

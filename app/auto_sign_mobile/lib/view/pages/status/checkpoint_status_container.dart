@@ -1,8 +1,9 @@
 import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
 import 'package:auto_sign_mobile/main.dart';
 import 'package:auto_sign_mobile/model/enums/capture_type.dart';
-import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
+import 'package:auto_sign_mobile/model/enums/remediation_status.dart';
 import 'package:auto_sign_mobile/model/vehicle/checkpoint.dart';
+import 'package:auto_sign_mobile/model/vehicle/sign.dart';
 import 'package:auto_sign_mobile/view/routes/routes.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
@@ -206,74 +207,22 @@ class CheckpointStatusContainer extends StatelessWidget {
                   style: MyTextStyles.bodyText2,
                 ),
                 const SizedBox(height: MySizes.spacing),
-                Row(
-                  children: [
-                    BorderedContainer(
-                      isDense: true,
-                      borderColor: checkpoint.lastVehicleInspectionResult.color,
-                      backgroundColor:
-                          checkpoint.lastVehicleInspectionResult.accentColor,
-                      padding: const EdgeInsets.all(MySizes.paddingValue / 2),
-                      child: Text(
-                        checkpoint.lastVehicleInspectionResult.title
-                            .toTitleCase(),
-                        style: MyTextStyles.bodyText2,
-                      ),
-                    ),
-                    const SizedBox(width: MySizes.spacing),
-                    MyIconButton.secondary(
-                      iconData: FontAwesomeIcons.circleChevronRight,
-                      onPressed: () {
-                        // navigating to inspection
-                        context.pushNamed(
-                          Routes.vehicleInspection,
-                          params: {
-                            "vehicleID": checkpoint.vehicleID,
-                            "vehicleInspectionID":
-                                checkpoint.lastVehicleInspectionID,
-                          },
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
 
-            // //////////// //
-            // ACTION TAKEN //
-            // //////////// //
+                // LAST INSPECTION EXISTS //
 
-            // TODO needs to be re-done for the proper remediate data model
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Action Taken",
-                  style: MyTextStyles.bodyText2,
-                ),
-                const SizedBox(height: MySizes.spacing),
-                Row(
-                  children: [
-                    if (checkpoint.lastVehicleRemediationID == "")
-                      const BorderedContainer(
+                if (checkpoint.lastVehicleInspectionID != "")
+                  Row(
+                    children: [
+                      BorderedContainer(
                         isDense: true,
-                        borderColor: MyColors.lineColor,
-                        backgroundColor: MyColors.greyAccent,
-                        padding: EdgeInsets.all(MySizes.paddingValue / 2),
+                        borderColor:
+                            checkpoint.lastVehicleInspectionResult.color,
+                        backgroundColor:
+                            checkpoint.lastVehicleInspectionResult.accentColor,
+                        padding: const EdgeInsets.all(MySizes.paddingValue / 2),
                         child: Text(
-                          "None",
-                          style: MyTextStyles.bodyText2,
-                        ),
-                      )
-                    else ...[
-                      const BorderedContainer(
-                        isDense: true,
-                        borderColor: MyColors.green,
-                        backgroundColor: MyColors.greenAccent,
-                        padding: EdgeInsets.all(MySizes.paddingValue / 2),
-                        child: Text(
-                          "Remediated",
+                          checkpoint.lastVehicleInspectionResult.title
+                              .toTitleCase(),
                           style: MyTextStyles.bodyText2,
                         ),
                       ),
@@ -281,18 +230,80 @@ class CheckpointStatusContainer extends StatelessWidget {
                       MyIconButton.secondary(
                         iconData: FontAwesomeIcons.circleChevronRight,
                         onPressed: () {
-                          // navigating to remediation
+                          // navigating to inspection
                           context.pushNamed(
-                            Routes.remediationWalkthrough,
+                            Routes.vehicleInspection,
                             params: {
                               "vehicleID": checkpoint.vehicleID,
-                              "vehicleRemediationID":
-                                  checkpoint.lastVehicleRemediationID!,
+                              "vehicleInspectionID":
+                                  checkpoint.lastVehicleInspectionID,
                             },
                           );
                         },
                       ),
-                    ]
+                    ],
+                  ),
+
+                // LAST INSPECTION DOES NOT EXIST //
+
+                if (checkpoint.lastVehicleInspectionID == "")
+                  const BorderedContainer(
+                    isDense: true,
+                    borderColor: MyColors.lineColor,
+                    backgroundColor: MyColors.grey100,
+                    padding: EdgeInsets.all(MySizes.paddingValue / 2),
+                    child: Text(
+                      "None",
+                      style: MyTextStyles.bodyText2,
+                    ),
+                  ),
+              ],
+            ),
+
+            // //////////// //
+            // ACTION TAKEN //
+            // //////////// //
+
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Remediation",
+                  style: MyTextStyles.bodyText2,
+                ),
+                const SizedBox(height: MySizes.spacing),
+                Row(
+                  children: [
+                    BorderedContainer(
+                      isDense: true,
+                      borderColor: checkpoint.remediationStatus.color,
+                      backgroundColor: checkpoint.remediationStatus.accentColor,
+                      padding: const EdgeInsets.all(MySizes.paddingValue / 2),
+                      child: Text(
+                        checkpoint.remediationStatus.title.toTitleCase(),
+                        style: MyTextStyles.bodyText2,
+                      ),
+                    ),
+                    if (checkpoint.remediationStatus != RemediationStatus.none)
+                      Row(
+                        children: [
+                          const SizedBox(width: MySizes.spacing),
+                          MyIconButton.secondary(
+                            iconData: FontAwesomeIcons.circleChevronRight,
+                            onPressed: () {
+                              // navigating to remediation
+                              context.pushNamed(
+                                Routes.vehicleRemediation,
+                                params: {
+                                  "vehicleID": checkpoint.vehicleID,
+                                  "vehicleRemediationID":
+                                      checkpoint.lastVehicleRemediationID!,
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      )
                   ],
                 ),
               ],
@@ -306,9 +317,9 @@ class CheckpointStatusContainer extends StatelessWidget {
   /// TODO
   Widget _buildNonConformingSignsList() {
     // getting list of non-conforming signs
-    List<Map<String, ConformanceStatus>> nonConformingSigns = [];
+    List<Sign> nonConformingSigns = [];
     for (var sign in checkpoint.signs) {
-      if (sign.entries.first.value == ConformanceStatus.nonConforming) {
+      if (sign.conformanceStatus.isNonConforming()) {
         nonConformingSigns.add(sign);
       }
     }
@@ -335,23 +346,21 @@ class CheckpointStatusContainer extends StatelessWidget {
 
               BorderedContainer(
                 isDense: true,
-                borderColor:
-                    nonConformingSigns[index].entries.first.value.color,
+                borderColor: nonConformingSigns[index].conformanceStatus.color,
                 backgroundColor:
-                    nonConformingSigns[index].entries.first.value.accentColor,
+                    nonConformingSigns[index].conformanceStatus.accentColor,
                 padding: const EdgeInsets.all(MySizes.paddingValue / 2),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      nonConformingSigns[index].entries.first.value.iconData,
+                      nonConformingSigns[index].conformanceStatus.iconData,
                       size: MySizes.smallIconSize,
-                      color:
-                          nonConformingSigns[index].entries.first.value.color,
+                      color: nonConformingSigns[index].conformanceStatus.color,
                     ),
                     const SizedBox(width: MySizes.spacing),
                     Text(
-                      "${nonConformingSigns[index].entries.first.key} : ${nonConformingSigns[index].entries.first.value.toString().toCapitalized()}",
+                      "${nonConformingSigns[index].title} : ${nonConformingSigns[index].conformanceStatus.toString().toCapitalized()}",
                       style: MyTextStyles.bodyText2,
                     ),
                   ],

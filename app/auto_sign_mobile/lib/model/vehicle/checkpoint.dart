@@ -2,6 +2,7 @@ import 'package:auto_sign_mobile/model/enums/capture_type.dart';
 import 'package:auto_sign_mobile/model/enums/conformance_status.dart';
 import 'package:auto_sign_mobile/model/enums/remediation_status.dart';
 import 'package:auto_sign_mobile/model/model_object.dart';
+import 'package:auto_sign_mobile/model/vehicle/sign.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// A checkpoint within the gold standard walkthrough of a given train vehicle.
@@ -11,10 +12,11 @@ class Checkpoint extends ModelObject {
   String title; // title of the checkpoint
   String prompt; // prompt shown when capturing the checkpoint
   int index; // index for the checkpoint within the vehicle
-  List<Map<String, ConformanceStatus>> signs; // list of signs in the checkpoint
+  List<Sign> signs; // list of signs in the checkpoint
   CaptureType captureType; // capture type for the checkpoint
   ConformanceStatus conformanceStatus; // current status of the checkpoint
   String lastVehicleInspectionID; // last inspection
+  String lastCheckpointInspectionID; // ID of last checkpoint inspection
   ConformanceStatus lastVehicleInspectionResult; // result of last inspection
   RemediationStatus remediationStatus; // remediation status of the checkpoint
   String? lastVehicleRemediationID; // last remediation (if exists)
@@ -30,10 +32,11 @@ class Checkpoint extends ModelObject {
     this.title = "",
     this.prompt = "",
     this.index = 0,
-    List<Map<String, ConformanceStatus>>? signs,
+    List<Sign>? signs,
     CaptureType? captureType,
     ConformanceStatus? conformanceStatus,
     this.lastVehicleInspectionID = "",
+    this.lastCheckpointInspectionID = "",
     ConformanceStatus? lastVehicleInspectionResult,
     RemediationStatus? remediationStatus,
     this.lastVehicleRemediationID,
@@ -56,12 +59,9 @@ class Checkpoint extends ModelObject {
     final data = snapshot.data();
 
     // gathering sign data
-    List<Map<String, ConformanceStatus>> signs = [];
+    List<Sign> signs = [];
     data?["signs"].forEach((sign) {
-      signs.add({
-        sign.entries.first.key:
-            ConformanceStatus.fromString(sign.entries.first.value)!
-      });
+      signs.add(Sign.fromFirestoreData(sign));
     });
 
     // cocnverting document data to an object
@@ -77,6 +77,7 @@ class Checkpoint extends ModelObject {
       conformanceStatus:
           ConformanceStatus.fromString(data?["conformanceStatus"]),
       lastVehicleInspectionID: data?["lastVehicleInspectionID"],
+      lastCheckpointInspectionID: data?["lastCheckpointInspectionID"],
       lastVehicleInspectionResult:
           ConformanceStatus.fromString(data?["lastVehicleInspectionResult"]),
       remediationStatus:
@@ -98,10 +99,13 @@ class Checkpoint extends ModelObject {
       "prompt": prompt,
       "index": index,
       "captureType": captureType.toString(),
-      "signs": signs,
+      "signs": [
+        for (Sign sign in signs) sign.toFirestore(),
+      ],
       "conformanceStatus": conformanceStatus.toString(),
       "lastVehicleInspectionID": lastVehicleInspectionID,
-      "lastVehicleInspectionResult": lastVehicleInspectionResult,
+      "lastCheckpointInspectionID": lastCheckpointInspectionID,
+      "lastVehicleInspectionResult": lastVehicleInspectionResult.toString(),
       "remediationStatus": remediationStatus.toString(),
       "lastVehicleRemediationID": lastVehicleRemediationID,
     };

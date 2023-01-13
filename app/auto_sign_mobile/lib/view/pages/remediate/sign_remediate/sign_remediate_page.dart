@@ -1,4 +1,11 @@
+import 'package:auto_sign_mobile/controller/remediation_controller.dart';
+import 'package:auto_sign_mobile/controller/vehicle_controller.dart';
+import 'package:auto_sign_mobile/main.dart';
 import 'package:auto_sign_mobile/model/enums/capture_type.dart';
+import 'package:auto_sign_mobile/model/enums/remediation_action.dart';
+import 'package:auto_sign_mobile/model/remediation/sign_remediation.dart';
+import 'package:auto_sign_mobile/model/vehicle/checkpoint.dart';
+import 'package:auto_sign_mobile/model/vehicle/sign.dart';
 import 'package:auto_sign_mobile/view/pages/remediate/sign_remediate/sign_remediate_progress_bar.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_colors.dart';
 import 'package:auto_sign_mobile/view/theme/data/my_sizes.dart';
@@ -9,6 +16,7 @@ import 'package:auto_sign_mobile/view/widgets/bordered_container.dart';
 import 'package:auto_sign_mobile/view/widgets/camera_container.dart';
 import 'package:auto_sign_mobile/view/widgets/capture_preview.dart';
 import 'package:auto_sign_mobile/view/widgets/confirmation_dialog.dart';
+import 'package:auto_sign_mobile/view/widgets/custom_stream_builder.dart';
 import 'package:auto_sign_mobile/view/widgets/padded_custom_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -17,6 +25,9 @@ import 'package:go_router/go_router.dart';
 /// TODO
 class SignRemediatePage extends StatefulWidget {
   // MEMBERS //
+  final String vehicleID; // ID of vehicle being remediated
+  final String checkpointID; // ID of checkpoint being remediated
+  final String signID; // ID of sign being remediated
 
   // ///////////////// //
   // CLASS CONSTRUCTOR //
@@ -24,6 +35,9 @@ class SignRemediatePage extends StatefulWidget {
 
   const SignRemediatePage({
     super.key,
+    required this.vehicleID,
+    required this.checkpointID,
+    required this.signID,
   });
 
   // //////////// //
@@ -38,7 +52,9 @@ class SignRemediatePage extends StatefulWidget {
 class _SignRemediatePageState extends State<SignRemediatePage> {
   // STATE VARIABLES //
   late PageController pageController; // controller for pageview
+  late Sign sign; // sign being remediated
   late double remediateProgress; // progress value of the remediation
+  late RemediationAction remediationAction; // action taken to remediate
   late String capturePath; // capture path of photo of remediation
   late bool isSubmitted; // if the remediation is being submitted
   late bool isOnSubmitPage; // if current page is submit
@@ -104,78 +120,91 @@ class _SignRemediatePageState extends State<SignRemediatePage> {
         child: WillPopScope(
           // disabling swipe to go back
           onWillPop: () async => false,
-          child: PaddedCustomScrollView(
-            scrollPhysics: const NeverScrollableScrollPhysics(),
-            topPadding: MySizes.paddingValue / 4,
-            slivers: [
-              // //////////// //
-              // PROGRESS BAR //
-              // //////////// //
+          child: CustomStreamBuilder(
+            stream:
+                VehicleController.instance.getCheckpoint(widget.checkpointID),
+            builder: (context, checkpoint) {
+              // extracting the sign from the checkpoint
+              sign = checkpoint.signs
+                  .where((sign) => sign.id == widget.signID)
+                  .first;
 
-              SliverToBoxAdapter(
-                child: SignRemediateProgressBar(progress: remediateProgress),
-              ),
+              // building the widget
+              return PaddedCustomScrollView(
+                scrollPhysics: const NeverScrollableScrollPhysics(),
+                topPadding: MySizes.paddingValue / 4,
+                slivers: [
+                  // //////////// //
+                  // PROGRESS BAR //
+                  // //////////// //
 
-              const SliverToBoxAdapter(
-                child: SizedBox(height: MySizes.spacing),
-              ),
+                  SliverToBoxAdapter(
+                    child:
+                        SignRemediateProgressBar(progress: remediateProgress),
+                  ),
 
-              // ///// //
-              // TITLE //
-              // ///// //
+                  const SliverToBoxAdapter(
+                    child: SizedBox(height: MySizes.spacing),
+                  ),
 
-              SliverToBoxAdapter(child: _buildTitleContainer()),
+                  // ///// //
+                  // TITLE //
+                  // ///// //
 
-              const SliverToBoxAdapter(
-                child: SizedBox(height: MySizes.spacing),
-              ),
+                  SliverToBoxAdapter(child: _buildTitleContainer(checkpoint)),
 
-              // ////// //
-              // PROMPT //
-              // ////// //
+                  const SliverToBoxAdapter(
+                    child: SizedBox(height: MySizes.spacing),
+                  ),
 
-              // //////////////////////// //
-              // SIGN REMEDIATE PAGE VIEW //
-              // //////////////////////// //
+                  // ////// //
+                  // PROMPT //
+                  // ////// //
 
-              SliverFillRemaining(
-                child: PageView(
-                  controller: pageController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    // /// //
-                    // LOG //
-                    // /// //
+                  // //////////////////////// //
+                  // SIGN REMEDIATE PAGE VIEW //
+                  // //////////////////////// //
 
-                    _buildActionPage(),
+                  SliverFillRemaining(
+                    child: PageView(
+                      controller: pageController,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: [
+                        // /// //
+                        // LOG //
+                        // /// //
 
-                    // /////// //
-                    // CAPTURE //
-                    // /////// //
+                        _buildActionPage(),
 
-                    _buildCapturePage(),
+                        // /////// //
+                        // CAPTURE //
+                        // /////// //
 
-                    // ////// //
-                    // REVIEW //
-                    // ////// //
+                        _buildCapturePage(),
 
-                    _buildReviewPage(),
+                        // ////// //
+                        // REVIEW //
+                        // ////// //
 
-                    // ////// //
-                    // SUBMIT //
-                    // ////// //
+                        _buildReviewPage(),
 
-                    // building based on submission status
-                    if (isSubmitted)
-                      // remediation submitted -> build submitted container
-                      _buildSubmittedContainer(context)
-                    else
-                      // remediation not submitted -> build submitting container
-                      _buildSubmittingContainer()
-                  ],
-                ),
-              ),
-            ],
+                        // ////// //
+                        // SUBMIT //
+                        // ////// //
+
+                        // building based on submission status
+                        if (isSubmitted)
+                          // remediation submitted -> build submitted container
+                          _buildSubmittedContainer(context)
+                        else
+                          // remediation not submitted -> build submitting container
+                          _buildSubmittingContainer()
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -187,15 +216,16 @@ class _SignRemediatePageState extends State<SignRemediatePage> {
   // ////////////////////// //
 
   /// TODO
-  Widget _buildTitleContainer() {
+  Widget _buildTitleContainer(Checkpoint checkpoint) {
+    // building the widget
     return Column(
       children: [
         // //////////////// //
         // CHECKPOINT TITLE //
         // //////////////// //
 
-        const Text(
-          "Platform 1 Door",
+        Text(
+          checkpoint.title,
           style: MyTextStyles.headerText2,
         ),
 
@@ -207,20 +237,20 @@ class _SignRemediatePageState extends State<SignRemediatePage> {
 
         BorderedContainer(
           isDense: true,
-          borderColor: MyColors.red,
-          backgroundColor: MyColors.redAccent,
+          borderColor: sign.conformanceStatus.color,
+          backgroundColor: sign.conformanceStatus.accentColor,
           padding: const EdgeInsets.all(MySizes.paddingValue / 2),
           child: Row(
             mainAxisSize: MainAxisSize.min,
-            children: const [
+            children: [
               Icon(
-                FontAwesomeIcons.circleExclamation,
-                color: MyColors.red,
+                sign.conformanceStatus.iconData,
+                color: sign.conformanceStatus.color,
                 size: MySizes.smallIconSize,
               ),
-              SizedBox(width: MySizes.spacing),
+              const SizedBox(width: MySizes.spacing),
               Text(
-                "Fire Extinguisher missing",
+                "${sign.title} : ${sign.conformanceStatus.toString().toTitleCase()}",
                 style: MyTextStyles.bodyText2,
               ),
             ],
@@ -264,6 +294,7 @@ class _SignRemediatePageState extends State<SignRemediatePage> {
                   // updating the state
                   setState(() {
                     remediateProgress += 0.31;
+                    remediationAction = RemediationAction.cleaned;
                   });
 
                   // navigating to the next page
@@ -289,6 +320,7 @@ class _SignRemediatePageState extends State<SignRemediatePage> {
                   // updating the state
                   setState(() {
                     remediateProgress += 0.31;
+                    remediationAction = RemediationAction.replaced;
                   });
 
                   // navigating to the next page
@@ -345,9 +377,8 @@ class _SignRemediatePageState extends State<SignRemediatePage> {
 
   /// Builds the page that allows the user to capture an image of the checkpoing.
   Widget _buildCapturePage() {
-    // TODO - need a prompt in here
     return CameraContainer(
-      captureType: CaptureType.video, // TODO change
+      captureType: CaptureType.photo,
       onCaptured: (capturePath) {
         // handling capture
 
@@ -394,7 +425,7 @@ class _SignRemediatePageState extends State<SignRemediatePage> {
         Expanded(
           flex: 12,
           child: CapturePreview(
-            captureType: CaptureType.video,
+            captureType: CaptureType.photo,
             path: capturePath,
           ),
         ),
@@ -438,17 +469,7 @@ class _SignRemediatePageState extends State<SignRemediatePage> {
             MyTextButton.primary(
               text: "Submit",
               onPressed: () {
-                // navigating to submit page
-                pageController.nextPage(
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.ease,
-                );
-
-                // updating state
-                setState(() {
-                  isOnSubmitPage = true;
-                  remediateProgress += 0.32;
-                });
+                _handleSubmit();
               },
             )
           ],
@@ -542,8 +563,8 @@ class _SignRemediatePageState extends State<SignRemediatePage> {
 
         MyTextButton.custom(
           text: "Finish",
-          backgroundColor: MyColors.blue,
-          borderColor: MyColors.blue,
+          backgroundColor: MyColors.primary,
+          borderColor: MyColors.primary,
           textColor: MyColors.antiPrimary,
           onPressed: () {
             // navigating back to remediate screen
@@ -590,5 +611,47 @@ class _SignRemediatePageState extends State<SignRemediatePage> {
 
       // nothing
     }
+  }
+
+  /// Handles the submission of the sign remediation to the system.
+  Future<void> _handleSubmit() async {
+    // navigating to submit page
+    pageController.nextPage(
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.ease,
+    );
+
+    // updating state
+    setState(() {
+      isOnSubmitPage = true;
+      remediateProgress += 0.32;
+    });
+
+    // getting checkpoint inspection object
+    Checkpoint checkpoint = await VehicleController.instance
+        .getCheckpointAtInstant(widget.checkpointID);
+
+    // creating the sign remediation object
+    SignRemediation signRemediation = SignRemediation.fromSign(
+      sign: sign,
+      checkpointID: checkpoint.id,
+      checkpointTitle: checkpoint.title,
+      checkpointCaptureType: checkpoint.captureType,
+      checkpointInspectionID: checkpoint.lastCheckpointInspectionID,
+      remediationAction: remediationAction,
+      capturePath: capturePath,
+    );
+
+    // submitting the sign remediation
+    await RemediationController.instance.addSignRemediation(
+      signRemediation,
+      checkpoint.vehicleID,
+      checkpoint.lastVehicleInspectionID,
+    );
+
+    // updating state
+    setState(() {
+      isSubmitted = true;
+    });
   }
 }
