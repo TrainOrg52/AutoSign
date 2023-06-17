@@ -155,7 +155,7 @@ class ObjectDetector(nn.Module):
             pred[:, :4] = scale_coords(img.shape[2:], pred[:, :4], im0.shape).round()
 
             # resize image
-            resize_image = transforms.Resize([w, h])
+            resize_image = transforms.Resize([1280, 1280])
             im0 = np.array(resize_image(Image.fromarray(im0)))
             image_copy = im0.copy()
 
