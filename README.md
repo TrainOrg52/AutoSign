@@ -34,9 +34,17 @@ To address the inefficiencies regarding the current methods of manual train sign
 Based on consultation with the client, the group designed and developed AutoSign - a system that supports the inspection of a train vehicle, the identification of missing and/or damaged signs, the purchasing of replacement signs, and the logging of remediations. In particular, AutoSign implements a three-component architecture, consisting of a mobile application to be
 used by workers, a processing server that makes use of custom datasets and algorithms to process inspection footage, and a cloud server to host system data.
 
+<p align="center">
+  <img src="./READMEimgs/objdet_output.png" width="450"/>
+</p>
+
 In testing, AutoSign’s application was shown to function according to its requirements, while its processing techniques were shown to be highly effective and accurate. When used in live trains and mock environments, AutoSign also demonstrated an ability to function as a single, cohesive system, and was able to correctly identify real-world non-conformances. These findings, and given the time available to develop AutoSign, demonstrate the feasibility of the approach in the commercial world and provide justification for its development beyond a proof-of-concept. 
 
 Furthermore, AutoSign received positive feedback from potential users, who noted how such a system would improve their workflow and their preference for it over existing methods. This analysis is supported by the project’s comparative evaluation of AutoSign, which shows it to out-perform current approaches against a number of different criteria.
+
+<p align="center">
+  <img src="./READMEimgs/app_ss.png" width="450"/>
+</p>
 
 Based on this project’s findings, its final discussion presents a list of recommendations to the client regarding the transition of the proof-of-concept into a complete solution. This discussion aims to alleviate the constraints placed upon this project and address aspects outside of its reach. 
 
